@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About - Aryan Pawar Portfolio{% endblock %}
+
+{% block content %}
+<style>
+  /* Service Section Layout Styling Grid */
+  .service {
+    margin-top: 3rem;
+  }
+  
+  .service-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-main);
+  }
+
+  .service-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    list-style: none;
+  }
+
+  .service-item {
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border-color);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .service-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .service-icon-box {
+    color: var(--accent-primary);
+    font-size: 2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .service-content-box {
+    flex: 1;
+  }
+
+  .service-item-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-main);
+  }
+
+  .service-item-text {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .about-text p {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+  }
+  
+  .about-text p:last-child {
+    margin-bottom: 0;
+  }
+</style>
+
+<article class="about active" data-page="about">
+  <header>
+    <h2 class="h2 article-title">About me</h2>
+  </header>
+
+  <section class="about-text">
+    <p>I'm a Third-Year Diploma student in Computer Engineering at Mahavir Polytechnic, Nashik, specializing in full-stack Python development and machine learning. Currently immersed in circuits, programming, and problem-solving with a strong foundation in computer science fundamentals.</p>
+    <p>Former intern at Sumago Infotech, I've gained hands-on experience in Django, Bootstrap, and full-stack development. I'm passionate about building scalable applications, data-driven solutions, and exploring AI/ML technologies to solve real-world problems. My published research on onion market forecasting demonstrates my commitment to applying machine learning to agricultural economics.</p>
+  </section>
+
+  <section class="service">
+    <h3 class="h3 service-title">What I do</h3>
+    <ul class="service-list">
+
+      <li class="service-item">
+        <div class="service-icon-box">
+          <i class="bi bi-phone"></i>
+        </div>
+        <div class="service-content-box">
+          <h4 class="h4 service-item-title">Android Development</h4>
+          <p class="service-item-text">Native Android apps with Java and best practices.</p>
+        </div>
+      </li>
+
+      <li class="service-item">
+        <div class="service-icon-box">
+          <i class="bi bi-code-slash"></i>
+        </div>
+        <div class="service-content-box">
+          <h4 class="h4 service-item-title">Django Web Development</h4>
+          <p class="service-item-text">Scalable backend systems with Django and Python.</p>
+        </div>
+      </li>
+
+      <li class="service-item">
+        <div class="service-icon-box">
+          <i class="bi bi-cpu"></i>
+        </div>
+        <div class="service-content-box">
+          <h4 class="h4 service-item-title">Machine Learning</h4>
+          <p class="service-item-text">Data analysis and forecasting models for real-world problems.</p>
+        </div>
+      </li>
+
+    </ul>
+  </section>
+</article>
+{% endblock %}

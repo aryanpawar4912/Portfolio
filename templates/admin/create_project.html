@@ -1,0 +1,326 @@
+{% extends 'admin/admin_base.html' %}
+{% load static %}
+
+{% block title %}{% if is_edit %}Edit Project - {{ project.title }}{% else %}Add New Project{% endif %} - Admin Dashboard{% endblock %}
+
+{% block content %}
+<style>
+  /* Unified Dashboard Color Tokens */
+  :root {
+    --bg-main-panel: #0b111e;
+    --bg-surface-card: #131c2e;
+    --border-ui-element: #22314d;
+    --text-primary-light: #ffffff;
+    --text-muted-gray: #7a8b9e;
+    --accent-action-blue: #0091ff;
+    --accent-hover-blue: #0077d6;
+    --bg-input-focus: #17243a;
+    --radius-workspace: 6px;
+  }
+
+  .admin-container {
+    max-width: 950px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  /* Panel Header Layout */
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-ui-element);
+  }
+  
+  .panel-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #38bdf8;
+    margin: 0;
+  }
+  
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted-gray);
+    text-decoration: none;
+    font-size: 0.9rem;
+    background: #17243a;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-workspace);
+    border: 1px solid var(--border-ui-element);
+    transition: all 0.2s ease;
+  }
+  .btn-back:hover {
+    color: var(--text-primary-light);
+    border-color: var(--text-muted-gray);
+  }
+  
+  /* Core Workspace Card */
+  .form-card {
+    background: var(--bg-surface-card);
+    border: 1px solid var(--border-ui-element);
+    border-radius: var(--radius-workspace);
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  @media (max-width: 768px) {
+    .form-row { grid-template-columns: 1fr; gap: 0; }
+  }
+  
+  /* Form Inputs and Interactive Controls */
+  label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 500;
+    margin-bottom: 0.6rem;
+    color: var(--text-muted-gray);
+  }
+  
+  .form-control {
+    width: 100%;
+    background: var(--bg-main-panel);
+    border: 1px solid var(--border-ui-element);
+    border-radius: var(--radius-workspace);
+    padding: 0.8rem 1rem;
+    color: var(--text-primary-light);
+    font-family: inherit;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .form-control:focus {
+    outline: none;
+    border-color: var(--accent-action-blue);
+    background: var(--bg-input-focus);
+    box-shadow: 0 0 0 3px rgba(0, 145, 255, 0.15);
+  }
+  
+  .form-control::placeholder {
+    color: #4b596c;
+  }
+  
+  select.form-control {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a8b9e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.1rem;
+    padding-right: 2.5rem;
+  }
+  
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    user-select: none;
+    color: var(--text-muted-gray);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .checkbox-group input {
+    width: 1.2rem;
+    height: 1.2rem;
+    accent-color: var(--accent-action-blue);
+    cursor: pointer;
+    margin: 0;
+  }
+  
+  .file-help {
+    font-size: 0.8rem;
+    color: #5c6e84;
+    margin-top: 0.4rem;
+    line-height: 1.4;
+  }
+  
+  .current-file {
+    font-size: 0.85rem;
+    color: var(--accent-action-blue);
+    background: rgba(0, 145, 255, 0.08);
+    border: 1px dashed rgba(0, 145, 255, 0.3);
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    border-top: 1px solid var(--border-ui-element);
+    padding-top: 1.5rem;
+    margin-top: 2rem;
+  }
+  
+  .btn-submit {
+    background: var(--accent-action-blue);
+    color: var(--text-primary-light);
+    border: none;
+    padding: 0.75rem 1.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: var(--radius-workspace);
+    cursor: pointer;
+    transition: background 0.15s ease-in-out;
+  }
+  .btn-submit:hover {
+    background: var(--accent-hover-blue);
+  }
+  
+  .btn-cancel {
+    background: #1e293b;
+    color: var(--text-muted-gray);
+    border: 1px solid var(--border-ui-element);
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: var(--radius-workspace);
+    text-decoration: none;
+    transition: all 0.15s ease-in-out;
+  }
+  .btn-cancel:hover {
+    color: var(--text-primary-light);
+    background: #27354a;
+    border-color: #3b4f6c;
+  }
+</style>
+
+<div class="admin-container">
+  <div class="admin-header">
+    <h2 class="panel-title">{% if is_edit %}Modify Portfolio Project{% else %}Compose New Portfolio Project{% endif %}</h2>
+    <a href="{% url 'admin_project' %}" class="btn-back">
+      View All Logs
+    </a>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div style="padding: 1rem; margin-bottom: 1.5rem; border-radius: var(--radius-workspace); background: {% if message.tags == 'error' %}rgba(239, 68, 68, 0.15){% else %}rgba(16, 185, 129, 0.15){% endif %}; border: 1px solid {% if message.tags == 'error' %}#ef4444{% else %}#10b981{% endif %}; color: #ffffff; font-size: 0.95rem;">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="POST" enctype="multipart/form-data" class="form-card">
+    {% csrf_token %}
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="id_title">Project Title*</label>
+        <input type="text" id="id_title" name="title" class="form-control" placeholder="Enter an engaging title for your project..." value="{{ project.title|default:'' }}" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="id_category">Category Tag*</label>
+        <select id="id_category" name="category" class="form-control" required>
+          {% for value, label in categories %}
+            <option value="{{ value }}" {% if project.category == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="id_project_type">Project Setup</label>
+        <select id="id_project_type" name="project_type" class="form-control" onchange="toggleTeamField(this.value)">
+          {% for value, label in project_types %}
+            <option value="{{ value }}" {% if project.project_type == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group" id="teamMembersWrapper" style="display: {% if project.project_type == 'team' %}block{% else %}none{% endif %};">
+        <label for="id_team_members">Team Member Names</label>
+        <input type="text" id="id_team_members" name="team_members" class="form-control" placeholder="Separate names with commas (e.g., Aryan Pawar, Monali Phad)" value="{{ project.team_members|default:'' }}">
+        <div class="file-help">Provide names separated securely by commas.</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="id_description">Project Body Content (Markdown/HTML Supported)</label>
+      <textarea id="id_description" name="description" rows="8" class="form-control" placeholder="Write comprehensive project details, technical stack insights, architecture approach, and system design challenges here...">{{ project.description|default:'' }}</textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="id_github_url">GitHub Repository URL</label>
+        <input type="url" id="id_github_url" name="github_url" class="form-control" placeholder="https://github.com/username/repo" value="{{ project.github_url|default:'' }}">
+      </div>
+      
+      <div class="form-group">
+        <label for="id_url">Live Deployment / Demo URL (Optional)</label>
+        <input type="url" id="id_url" name="url" class="form-control" placeholder="https://yourdomain.com" value="{{ project.url|default:'' }}">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="id_image">Cover Image Asset / Mockup</label>
+        {% if project.image %}
+          <div class="current-file">Current Asset: {{ project.image.name }}</div>
+        {% endif %}
+        <input type="file" id="id_image" name="image" class="form-control" accept="image/*">
+        <div class="file-help">Accepts PNG, JPG, or WebP formats. Leave empty to use fallback system mockups.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_documentation">Project Report / Documentation File</label>
+        {% if project.documentation %}
+          <div class="current-file">Current Report: {{ project.documentation.name }}</div>
+        {% endif %}
+        <input type="file" id="id_documentation" name="documentation" class="form-control" accept=".pdf,.doc,.docx">
+        <div class="file-help">Upload project SRS report or companion research papers (PDF format preferred).</div>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-top: 1rem;">
+      <label class="checkbox-group">
+        <input type="checkbox" id="id_featured" name="featured" {% if project.featured %}checked{% endif %}>
+        <span>Feature this project prominently at the top of the portfolio showcase interface list</span>
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <a href="{% url 'admin_project' %}" class="btn-cancel">Discard</a>
+      <button type="submit" class="btn-submit">
+        {% if is_edit %}Update Content{% else %}Publish Content{% endif %}
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+  function toggleTeamField(selectedValue) {
+    const wrapper = document.getElementById('teamMembersWrapper');
+    const input = document.getElementById('id_team_members');
+    if (selectedValue === 'team') {
+      wrapper.style.display = 'block';
+    } else {
+      wrapper.style.display = 'none';
+      input.value = ''; 
+    }
+  }
+</script>
+{% endblock %}

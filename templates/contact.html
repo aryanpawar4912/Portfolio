@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact - Aryan Pawar Portfolio{% endblock %}
+
+{% block content %}
+<style>
+  .contact-layout { max-width: 700px; margin: 0 auto; }
+  .form-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 2rem; }
+  
+  .modern-form { display: flex; flex-direction: column; gap: 1.5rem; }
+  .input-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  @media(max-width: 600px) { .input-pair { grid-template-columns: 1fr; } }
+
+  .field-group { display: flex; flex-direction: column; gap: 0.5rem; }
+  
+  /* Dynamic inputs overrides */
+  .modern-form input, .modern-form textarea {
+    width: 100%;
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-md);
+    font-family: var(--font-primary);
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+  }
+  .modern-form input:focus, .modern-form textarea:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+  }
+  
+  .form-error { color: #f87171; font-size: 0.85rem; margin-top: 0.25rem; }
+  
+  /* Status Message Banners */
+  .message-alert {
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+    border: 1px solid transparent;
+  }
+  .message-success {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+  }
+  .message-warning {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+  }
+
+  /* Centered Action Button Layout */
+  .form-actions {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 1rem;
+  }
+  
+  .submit-btn {
+    background: var(--accent-primary);
+    color: var(--bg-main);
+    border: none;
+    padding: 1rem 2.5rem;
+    font-weight: 700;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-primary);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .submit-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+</style>
+
+<article class="contact active" data-page="contact">
+  <header><h2 class="h2 article-title">Contact</h2></header>
+  
+  <section class="contact-layout">
+    <h3 class="h3 form-title">Get in Touch</h3>
+    
+    <!-- DJANGO MESSAGES BANNER RENDERER -->
+    {% if messages %}
+      <div class="messages-wrapper">
+        {% for message in messages %}
+          <div class="message-alert message-{{ message.tags }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+    <form method="POST" class="modern-form">
+      {% csrf_token %}
+      
+      <div class="input-pair">
+        <div class="field-group">
+          {{ form.name }}
+          {% if form.name.errors %}<span class="form-error">{{ form.name.errors|striptags }}</span>{% endif %}
+        </div>
+        <div class="field-group">
+          {{ form.email }}
+          {% if form.email.errors %}<span class="form-error">{{ form.email.errors|striptags }}</span>{% endif %}
+        </div>
+      </div>
+      
+      <div class="field-group">
+        {{ form.subject }}
+        {% if form.subject.errors %}<span class="form-error">{{ form.subject.errors|striptags }}</span>{% endif %}
+      </div>
+      
+      <div class="field-group">
+        {{ form.message }}
+        {% if form.message.errors %}<span class="form-error">{{ form.message.errors|striptags }}</span>{% endif %}
+      </div>
+      
+      {% if form.non_field_errors %}
+      <div class="message-alert message-warning">
+        {{ form.non_field_errors }}
+      </div>
+      {% endif %}
+
+      <div class="form-actions">
+        <button class="submit-btn" type="submit">
+          <ion-icon name="paper-plane"></ion-icon>
+          <span>Send Message</span>
+        </button>
+      </div>
+    </form>
+  </section>
+</article>
+{% endblock %}

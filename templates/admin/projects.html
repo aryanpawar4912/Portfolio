@@ -1,0 +1,330 @@
+{% extends 'admin/admin_base.html' %}
+{% load static %}
+
+{% block title %}Active History Workspace Logs - Admin Dashboard{% endblock %}
+
+{% block content %}
+<style>
+  /* Unified Dashboard Color Tokens */
+  :root {
+    --bg-main-panel: #0b111e;
+    --bg-surface-card: #131c2e;
+    --border-ui-element: #22314d;
+    --text-primary-light: #ffffff;
+    --text-muted-gray: #7a8b9e;
+    --accent-action-blue: #0091ff;
+    --accent-hover-blue: #0077d6;
+    --bg-input-focus: #17243a;
+    --radius-workspace: 6px;
+    --color-danger: #ef4444;
+  }
+
+  .admin-container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  /* Panel Header Layout */
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-ui-element);
+  }
+  
+  .panel-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #38bdf8;
+    margin: 0;
+  }
+
+  .panel-subtitle {
+    font-size: 0.88rem;
+    color: var(--text-muted-gray);
+    margin-top: 0.25rem;
+  }
+  
+  .btn-create {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary-light);
+    background: var(--accent-action-blue);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius-workspace);
+    transition: background 0.15s ease-in-out;
+  }
+  .btn-create:hover {
+    background: var(--accent-hover-blue);
+  }
+
+  /* Counter Grid Analytics Cards */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .metric-card {
+    background: var(--bg-surface-card);
+    border: 1px solid var(--border-ui-element);
+    border-radius: var(--radius-workspace);
+    padding: 1rem 1.25rem;
+  }
+
+  .metric-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted-gray);
+  }
+
+  .metric-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-primary-light);
+    margin-top: 0.25rem;
+  }
+  
+  /* Table View Framework */
+  .workspace-card {
+    background: var(--bg-surface-card);
+    border: 1px solid var(--border-ui-element);
+    border-radius: var(--radius-workspace);
+    padding: 1.5rem 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    margin-top: 1rem;
+  }
+
+  .log-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  .log-table th {
+    padding: 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted-gray);
+    border-bottom: 2px solid var(--border-ui-element);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .log-table td {
+    padding: 1rem;
+    font-size: 0.92rem;
+    color: var(--text-primary-light);
+    border-bottom: 1px solid var(--border-ui-element);
+    vertical-align: middle;
+  }
+
+  .log-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  /* Badges and Asset Indicators */
+  .badge {
+    display: inline-flex;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 4px;
+    text-transform: capitalize;
+  }
+
+  .badge-featured {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+
+  .badge-standard {
+    background: rgba(122, 139, 158, 0.15);
+    color: var(--text-muted-gray);
+  }
+
+  .asset-indicator {
+    display: inline-flex;
+    align-items: center;
+    color: #10b981;
+    font-size: 1.1rem;
+  }
+
+  .asset-missing {
+    color: #4b596c;
+  }
+
+  /* Row Form Action Links */
+  .action-links {
+    display: flex;
+    gap: 0.85rem;
+    align-items: center;
+  }
+
+  .link-edit {
+    color: var(--accent-action-blue);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s;
+  }
+  .link-edit:hover {
+    color: #60a5fa;
+    text-decoration: underline;
+  }
+
+  .btn-link-delete {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--color-danger);
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+  .btn-link-delete:hover {
+    color: #f87171;
+    text-decoration: underline;
+  }
+
+  .empty-log-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted-gray);
+    font-size: 0.95rem;
+    border: 1px dashed var(--border-ui-element);
+    border-radius: var(--radius-workspace);
+    margin-top: 1rem;
+  }
+
+  .empty-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+</style>
+
+<div class="admin-container">
+  <div class="admin-header">
+    <div>
+      <h2 class="panel-title">Active History Workspace Logs</h2>
+      <div class="panel-subtitle">Review, modify, or delete your most recent posts instantly</div>
+    </div>
+    <a href="{% url 'admin_add_project' %}" class="btn-create">
+      + Add Project
+    </a>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div style="padding: 1rem; margin-bottom: 1.5rem; border-radius: var(--radius-workspace); background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #ffffff; font-size: 0.95rem;">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-label">Total Logs Found</div>
+      <div class="metric-value">{{ project_count }}</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Featured Showcases</div>
+      <div class="metric-value" style="color: #38bdf8;">{{ featured_count }}</div>
+    </div>
+  </div>
+
+  <div class="workspace-card">
+    {% if projects %}
+      <div class="table-responsive">
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th>Project Title</th>
+              <th>Category Tag</th>
+              <th>Setup Type</th>
+              <th style="text-align: center;">Mockup Image</th>
+              <th style="text-align: center;">Docs File</th>
+              <th style="text-align: center;">Priority Visibility</th>
+              <th style="text-align: right;">Workspace Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for project in projects %}
+              <tr>
+                <td style="font-weight: 600; max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  {{ project.title }}
+                </td>
+                
+                <td>
+                  <span style="color: #94a3b8; font-size: 0.88rem;">{{ project.get_category_display|default:project.category }}</span>
+                </td>
+                
+                <td style="text-transform: capitalize; color: var(--text-muted-gray);">
+                  {{ project.project_type|default:"Individual" }}
+                </td>
+                
+                <td style="text-align: center;">
+                  {% if project.image %}
+                    <span class="asset-indicator">●</span>
+                  {% else %}
+                    <span class="asset-missing">✕</span>
+                  {% endif %}
+                </td>
+                
+                <td style="text-align: center;">
+                  {% if project.documentation %}
+                    <span class="asset-indicator">●</span>
+                  {% else %}
+                    <span class="asset-missing">✕</span>
+                  {% endif %}
+                </td>
+
+                <td style="text-align: center;">
+                  {% if project.featured %}
+                    <span class="badge badge-featured">Featured</span>
+                  {% else %}
+                    <span class="badge badge-standard">Standard</span>
+                  {% endif %}
+                </td>
+                
+                <td style="text-align: right;">
+                  <div class="action-links" style="justify-content: flex-end;">
+                    <a href="{% url 'admin_edit_project' project.id %}" class="link-edit">Modify</a>
+                    
+                    <form method="POST" action="{% url 'admin_delete_project' project.id %}" style="margin: 0; display: inline;" onsubmit="return confirm('Are you sure you want to completely erase this project record?');">
+                      {% csrf_token %}
+                      <button type="submit" class="btn-link-delete">Remove</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-log-state">
+        <span class="empty-icon">📂</span>
+        No active dashboard entries are registered in your workspace yet.
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

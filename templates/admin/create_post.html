@@ -1,0 +1,136 @@
+{% extends 'admin/admin_base.html' %}
+{% load static %}
+
+{% block title %}{% if is_edit %}Edit Post - {{ post.title }}{% else %}Create Post{% endif %} - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="workspace-wrapper" style="max-width: 1200px; margin: 0 auto;">
+  
+  <div class="main-panel" style="margin-bottom: 24px;">
+    <div class="panel-top-bar">
+      <h2>{% if is_edit %}Modify Portfolio Post{% else %}Compose New Portfolio Post{% endif %}</h2>
+      <a href="{% url 'admin_dashboard' %}" class="back-btn">Cancel</a>
+    </div>
+
+    {% if messages %}
+      <div class="messages-container" style="margin-bottom: 24px;">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}" style="padding: 14px 20px; border-radius: 8px; margin-bottom: 8px; background: #1f2937; border-left: 4px solid {% if message.tags == 'error' %}#ef4444{% else %}#38bdf8{% endif %}; color: #f8fafc; font-size: 14px; font-weight: 500;">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="POST" action="{% if is_edit %}{% url 'admin_edit_post' post.id %}{% else %}{% url 'admin_create_post' %}{% endif %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label for="postTitle">Post Title</label>
+        <input type="text" id="postTitle" name="title" class="form-control" value="{% if is_edit %}{{ post.title }}{% endif %}" placeholder="Enter an engaging title for your project or article..." required>
+      </div>
+
+      <div class="form-row" style="margin-bottom: 24px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="postCategory">Category Tag</label>
+          <select id="postCategory" name="category" class="form-control" style="cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 16px top 50%; background-size: 12px auto; padding-right: 40px;">
+            <option value="Machine Learning" {% if is_edit and post.category == "Machine Learning" %}selected{% endif %}>Machine Learning</option>
+            <option value="Web Development" {% if is_edit and post.category == "Web Development" %}selected{% endif %}>Web Development</option>
+            <option value="Mobile App" {% if is_edit and post.category == "Mobile App" %}selected{% endif %}>Mobile App</option>
+            <option value="Data Science" {% if is_edit and post.category == "Data Science" %}selected{% endif %}>Data Science</option>
+            <option value="Updates" {% if is_edit and post.category == "Updates" %}selected{% endif %}>Updates & Logs</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="postImage">{% if is_edit %}Update Cover Image Asset{% else %}Cover Image Asset{% endif %}</label>
+          <input type="file" id="postImage" name="cover_image" class="form-control">
+          {% if is_edit and post.featured_image %}
+            <small style="color: #94a3b8; display: block; margin-top: 6px; font-size: 12px; font-family: monospace;">Current: {{ post.featured_image.name }}</small>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="postSummary">Short Feed Excerpt (Summary)</label>
+        <input type="text" id="postSummary" name="summary" class="form-control" value="{% if is_edit %}{{ post.summary }}{% endif %}" placeholder="Brief 1-sentence tagline overview for the front display feed cards...">
+      </div>
+
+      <div class="form-group">
+        <label for="postContent">Article Body Content (Markdown/HTML Supported)</label>
+        <textarea id="postContent" name="content" class="form-control" placeholder="Write comprehensive project details, technical stack insights, and system design challenges here..." required></textarea>
+      </div>
+
+      <div class="btn-container">
+        <a href="{% url 'admin_dashboard' %}" class="back-btn" style="padding: 12px 24px;">Discard</a>
+        <button type="submit" class="publish-btn">{% if is_edit %}Save Changes{% else %}Publish Content{% endif %}</button>
+      </div>
+    </form>
+  </div>
+
+
+  <div class="panel">
+    <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h2 style="border-bottom: none; padding-bottom: 0; font-size: 18px;">Active History Workspace Logs</h2>
+        <p style="color: #94a3b8; font-size: 13px; margin-top: 4px;">Review, modify, or delete your most recent posts instantly</p>
+      </div>
+      <span class="badge">Live Stream</span>
+    </div>
+
+    {% if posts %}
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        {% for h_post in posts %}
+          <div class="data-list-item" style="background: #111827; padding: 16px 20px; border-radius: 8px; border: 1px solid #1f2937;">
+            
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
+                <span class="badge" style="padding: 4px 10px; font-size: 11px;">{{ h_post.category|default:"Portfolio" }}</span>
+                <span style="color: #64748b; font-size: 12px;">Published on {{ h_post.created_at|date:"M d, Y" }}</span>
+                {% if is_edit and h_post.id == post.id %}
+                  <span class="badge" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); font-size: 11px; animation: pulseTrack 2s infinite;">Currently Editing</span>
+                {% endif %}
+              </div>
+              <h4 style="color: #f8fafc; margin: 0; font-size: 15px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ h_post.title }}</h4>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; white-space: nowrap; margin-left: 16px;">
+              <a href="{% url 'admin_edit_post' h_post.id %}" class="back-btn" style="font-size: 13px; padding: 8px 14px; border: 1px solid #374151;">Modify</a>
+              
+              <form method="POST" action="{% url 'admin_delete_post' h_post.id %}" style="margin: 0;" onsubmit="return confirm('Are you completely confident you want to permanently erase the post \&quot;{{ h_post.title }}\&quot;? This destructive execution cannot be undone.');">
+                {% csrf_token %}
+                <button type="submit" class="delete-btn" style="font-size: 13px; padding: 8px 14px; background: #7f1d1d; color: #fca5a5; transition: all 0.2s;" onmouseover="this.style.background='#b91c1c'; this.style.color='white';" onmouseout="this.style.background='#7f1d1d'; this.style.color='#fca5a5';">
+                  Delete
+                </button>
+              </form>
+            </div>
+
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="no-data" style="background: #111827; border: 1px dashed #1f2937; border-radius: 8px; padding: 24px; text-align: center; color: #94a3b8;">
+        📭 No active dashboard entries are registered in your workspace yet.
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<style>
+  @keyframes pulseTrack {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const rawContent = `{% if is_edit %}{{ post.content|escapejs }}{% endif %}`;
+    if (rawContent.trim().length > 0) {
+      document.getElementById("postContent").value = rawContent;
+    }
+  });
+</script>
+{% endblock %}

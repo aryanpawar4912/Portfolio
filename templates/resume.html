@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Resume - Aryan Pawar Portfolio{% endblock %}
+
+{% block content %}
+<style>
+  .resume-section { margin-bottom: 3.5rem; }
+  .section-heading { font-size: 1.5rem; font-weight: 600; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem; }
+  .section-heading ion-icon { color: var(--accent-primary); }
+
+  /* Interactive Timelines */
+  .custom-timeline {
+    border-left: 1px solid var(--border-color);
+    padding-left: 1.5rem;
+    margin-left: 0.5rem;
+    list-style: none;
+  }
+  .timeline-node { position: relative; margin-bottom: 2.5rem; }
+  .timeline-node::before {
+    content: '';
+    position: absolute;
+    left: calc(-1.5rem - 5px);
+    top: 6px;
+    width: 9px;
+    height: 9px;
+    background: var(--accent-primary);
+    border-radius: 50%;
+  }
+  .node-title { font-size: 1.15rem; font-weight: 600; }
+  .node-meta { font-size: 0.85rem; color: var(--accent-primary); display: block; margin: 0.25rem 0 0.75rem 0; }
+  .node-desc { color: var(--text-muted); font-size: 0.95rem; }
+  .node-link { color: var(--accent-primary); text-decoration: none; font-weight: 500; display: inline-block; margin-top: 0.5rem; }
+  .node-link mark { background: none; color: var(--accent-primary); text-decoration: underline; }
+
+  /* Sleek Skill Bars */
+  .skills-wrapper { display: flex; flex-direction: column; gap: 1.25rem; }
+  .skill-container { background: var(--bg-surface-elevated); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
+  .skill-info { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; }
+  .progress-bar-bg { background: var(--bg-main); height: 6px; border-radius: 3px; overflow: hidden; }
+  .progress-bar-fill { background: var(--accent-primary); height: 100%; border-radius: 3px; }
+
+  /* Grid Layout for Strengths & Interests split */
+  .resume-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  @media (max-width: 768px) {
+    .resume-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  }
+
+  /* Pill Badges for Strengths & Interests - Clean Vertical Alignment */
+  .badge-list { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 0.85rem; 
+    list-style: none; 
+    padding: 0; 
+    margin: 0;
+  }
+  .badge-item {
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    width: 100%; /* Ensures all items take up equal full width */
+    box-sizing: border-box;
+  }
+  .badge-item ion-icon { 
+    color: var(--accent-primary); 
+    font-size: 1.2rem;
+    flex-shrink: 0; /* Prevents the icon from shrinking on narrow screens */
+  }
+</style>
+
+<article class="resume active" data-page="resume">
+  <header><h2 class="h2 article-title">Resume</h2></header>
+  
+  <!-- 1. EDUCATION SECTION -->
+  <section class="resume-section">
+    <div class="section-heading">
+      <ion-icon name="school-outline"></ion-icon>
+      <h3>Education</h3>
+    </div>
+    <ul class="custom-timeline">
+      <li class="timeline-node">
+        <h4 class="node-title">Diploma in Computer Engineering</h4>
+        <span class="node-meta">Mahavir Polytechnic, Nashik • 2023 — 2026</span>
+        <p class="node-desc">Maintained a strong technical foundation in computational theory, data structures, software engineering, and application deployments. Secured an aggregate top-tier score of 95%.</p>
+      </li>
+
+      <li class="timeline-node">
+        <h4 class="node-title">Secondary School Certificate</h4>
+        <span class="node-meta">Janta Vidyalaya, Karanjwan • 2017 — 2023</span>
+        <p class="node-desc">Successfully completed SSC from Janta Vidyalaya, Karanjwan with strong foundation in science and mathematics.</p>
+      </li>
+    </ul>
+  </section>
+
+  <!-- 2. EXPERIENCE SECTION -->
+  <section class="resume-section">
+    <div class="section-heading">
+      <ion-icon name="briefcase-outline"></ion-icon>
+      <h3>Experience</h3>
+    </div>
+    <ul class="custom-timeline">
+      <li class="timeline-node">
+        <h4 class="node-title">Intern at Grapes Cloud Host</h4>
+        <span class="node-meta">Jun 2026 — Present • Ongoing</span>
+        <p class="node-desc">Developed full-stack web applications using Django, Python, and Bootstrap alongside interactive native mobile deployments engineered with Java and XML.</p>
+      </li>
+      <li class="timeline-node">
+        <h4 class="node-title">Intern at Sumago Infotech Pvt. Ltd.</h4>
+        <span class="node-meta">Jun 2025 — Aug 2025 • 3 months</span>
+        <p class="node-desc">Engineered robust full-stack solutions under the Django MVC architectural framework. Honored as the **Star Performer** of the internship cohort for contributions toward database optimization and backend logic pipelines.</p>
+      </li>
+    </ul>
+  </section>
+
+  <!-- 3. CERTIFICATIONS & TRAINING SECTION -->
+  <section class="resume-section">
+    <div class="section-heading">
+      <ion-icon name="ribbon-outline"></ion-icon>
+      <h3>Certifications & Training</h3>
+    </div>
+    <ul class="custom-timeline">
+      <li class="timeline-node">
+        <h4 class="node-title">Certified Android Developer Trainee</h4>
+        <span class="node-meta">UEF EdTech Pvt. Ltd.  • August 2025</span>
+        <p class="node-desc">Completed intensive technical training focusing on native Android component lifecycles, user interface configurations using Java/XML, API parsing, and structured local database systems.</p>
+      </li>
+
+      <li class="timeline-node">
+        <h4 class="node-title">Software Traning</h4>
+        <span class="node-meta">Learnomate Technologies. • July 2024</span>
+        <p class="node-desc">Completed comprehensive software training in SQL, Linux, Data Analytics, and DevOps from Learnomate Technologies in July 2024.</p>
+      </li>
+
+      <li class="timeline-node">
+        <h4 class="node-title">Course on Computer Concepts (CCC) — 'A' Grade</h4>
+        <span class="node-meta">Netweb Computer Education & Navnirman Education • May 2023</span>
+        <p class="node-desc">Acquired a strong foundation in IT fundamentals, operating systems, hardware networking and Microsoft Office through CCC certificate.</p>
+      </li>
+
+    </ul>
+  </section>
+
+  <!-- 4. COMPETITIONS & AWARDS SECTION -->
+  <section class="resume-section">
+    <div class="section-heading">
+      <ion-icon name="trophy-outline"></ion-icon>
+      <h3>Awards & Achievements</h3>
+    </div>
+    <ul class="custom-timeline">
+      <li class="timeline-node">
+        <h4 class="node-title">Runner-Up — Logmieer Techfest</h4>
+        <span class="node-meta">K.V.N. Naik Polytechnic, Nashik. • March 2026</span>
+        <p class="node-desc">Achieved the Runner-Up title in the state-level project development and presentation competition, defending system architectures against strict institutional peer panels.</p>
+      </li>
+
+      <li class="timeline-node">
+        <h4 class="node-title">Star Performer — Batch 2025</h4>
+        <span class="node-meta">Sumago Infotech Pvt. Lmt. • Augest 2025</span>
+        <p class="node-desc">Honored to be recognized as the Star Performer at Sumago Infotech - Batch 2025, for incredible journey of growth, innovation, and learning.</p>
+      </li>
+
+      <li class="timeline-node">
+        <h4 class="node-title">Winner of State Level Technical Quiz Competition — Technovation 2K25</h4>
+        <span class="node-meta">MVPS'S RSM Polytechnic, Nashik. • March 2025</span>
+        <p class="node-desc">Secured Winner Position in State Level Technical Quiz Competition in Technovation 2K25 events organized by Department of Information Technology in MVPS'S RSM Polytechnic, Nashik.</p>
+      </li>
+
+    </ul>
+  </section>
+
+  <!-- 5. PUBLICATIONS SECTION -->
+  <section class="resume-section">
+    <div class="section-heading">
+      <ion-icon name="newspaper-outline"></ion-icon>
+      <h3>Publications</h3>
+    </div>
+    <ul class="custom-timeline">
+      <li class="timeline-node">
+        <h4 class="node-title">Onion Pulse AI: Solving Onion Market Instability by Forecasting Onion Price Using ML Approach</h4>
+        <span class="node-meta">Published: Mar 11, 2026</span>
+        <p class="node-desc">
+          International Journal of Advanced Research in Science, Communication and Technology (IJARSCT). 
+          Published original peer-reviewed research exploring ensemble machine learning architectures (LSTM, XGBoost, Prophet, and ARIMA) to handle unstable market behaviors.
+          <br>
+          <a href="https://ijarsct.co.in/Paper31525.pdf" class="node-link" target="_blank"><mark>View Research Paper</mark></a>
+        </p>
+      </li>
+    </ul>
+  </section>
+
+  <!-- 6. SKILLS MATRIX SECTION -->
+  <section class="resume-section">
+    <div class="section-heading">
+      <ion-icon name="code-working-outline"></ion-icon>
+      <h3>My Skills</h3>
+    </div>
+    <div class="skills-wrapper">
+      <div class="skill-container">
+        <div class="skill-info"><span>Python & Django Framework</span><span>80%</span></div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 80%;"></div></div>
+      </div>
+      <div class="skill-container">
+        <div class="skill-info"><span>Mobile App Development (Android Native / React Native)</span><span>75%</span></div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 75%;"></div></div>
+      </div>
+      <div class="skill-container">
+        <div class="skill-info"><span>Machine Learning Models (LSTM, XGBoost, Prophet)</span><span>70%</span></div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 70%;"></div></div>
+      </div>
+      <div class="skill-container">
+        <div class="skill-info"><span>HTML & CSS Frontend Interfaces</span><span>90%</span></div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 90%;"></div></div>
+      </div>
+      <div class="skill-container">
+        <div class="skill-info"><span>JavaScript / Web Development Scripting</span><span>60%</span></div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 60%;"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. STRENGTHS & INTERESTS SPLIT GRID -->
+  <div class="resume-grid">
+    <!-- Professional Strengths Column -->
+    <section class="resume-section">
+      <div class="section-heading">
+        <ion-icon name="checkmark-done-circle-outline"></ion-icon>
+        <h3>Core Strengths</h3>
+      </div>
+      <ul class="badge-list">
+        <li class="badge-item"><ion-icon name="git-branch-outline"></ion-icon> Agile Full-Stack Engineering</li>
+        <li class="badge-item"><ion-icon name="analytics-outline"></ion-icon> Predictive Data Modeling</li>
+        <li class="badge-item"><ion-icon name="search-outline"></ion-icon> Database Optimization & Query Tuning</li>
+        <li class="badge-item"><ion-icon name="people-outline"></ion-icon> Technical Collaboration & Leadership</li>
+        <li class="badge-item"><ion-icon name="construct-outline"></ion-icon> Structural System Design</li>
+      </ul>
+    </section>
+
+    <!-- Personal Interests Column -->
+    <section class="resume-section">
+      <div class="section-heading">
+        <ion-icon name="heart-outline"></ion-icon>
+        <h3>Interests & Hobbies</h3>
+      </div>
+      <ul class="badge-list">
+        <li class="badge-item"><ion-icon name="trending-up-outline"></ion-icon> Agritech Innovation Platforms</li>
+        <li class="badge-item"><ion-icon name="logo-android"></ion-icon> Native Mobile Ecosystems</li>
+        <li class="badge-item"><ion-icon name="logo-github"></ion-icon> Open Source Engineering Contributions</li>
+        <li class="badge-item"><ion-icon name="musical-notes-outline"></ion-icon> Music Exploration (Arijit Singh, Acoustic Sessions)</li>
+        <li class="badge-item"><ion-icon name="trophy-outline"></ion-icon> Sports Analytics & Indian Cricket</li>
+      </ul>
+    </section>
+  </div>
+</article>
+{% endblock %}
