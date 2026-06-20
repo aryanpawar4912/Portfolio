@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Portfolio Django Project
 
 This is a personal portfolio built with Django. It includes a `projects` app for showcasing work.
@@ -32,3 +33,6 @@ python manage.py runserver
 ```
 
 5. Open `http://127.0.0.1:8000/` to view the portfolio. Upload project images via admin.
+=======
+# Portfolio
+>>>>>>> c5a7f58536538808b782c20ff465432332f1cac2
