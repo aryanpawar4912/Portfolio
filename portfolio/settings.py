@@ -21,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-tg%$9b-$y+@l3m#@m+0g_+g_jw==6m71&0(tq^33=j51=0@21c'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')  # Use environment variable for secret key
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -143,5 +143,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'aryanpawar04120@gmail.com'
 # Use App Password if you have 2FA enabled on Gmail
 # Go to: https://myaccount.google.com/apppasswords
-EMAIL_HOST_PASSWORD = 'bcotcvkjcwdmhgws'  # Change this to your actual app password
+EMAIL_HOST_PASSWORD = os.getenv('HOST_PASSWORD')  # Change this to your actual app password
 DEFAULT_FROM_EMAIL = 'aryanpawar04120@gmail.com'
