@@ -97,6 +97,12 @@ class Post(models.Model):
         ('published', 'Published'),
     ]
 
+    CATEGORY_CHOICES = [
+        ("updates", "Updates"),
+        ("projects", "Projects"),
+        ("blogs", "Blogs"),
+    ]
+
     title = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(max_length=200, unique=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
@@ -105,6 +111,9 @@ class Post(models.Model):
 
     featured_image = models.ImageField(upload_to='blog/', blank=True, null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default="updates")
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
