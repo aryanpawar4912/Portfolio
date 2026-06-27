@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf.urls.static import static
+from portfolio import settings
 from . import views
 
 urlpatterns = [
@@ -32,3 +34,8 @@ urlpatterns = [
     path('dashboard/project/edit/<int:project_id>/', views.admin_save_project, name='admin_edit_project'),
     path('dashboard/project/delete/<int:project_id>/', views.admin_delete_project, name='admin_delete_project'),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# If serving local media files directly on your server without an external cloud bucket:
+else:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
