@@ -17,7 +17,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-fallback-key-for-lo
 DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
 # Allow Render's internal host and your custom subdomains
-ALLOWED_HOSTS = [os.getenv('HOST')]
+ALLOWED_HOSTS = os.getenv('HOST', 'localhost').split(',')
 
 
 # --- APPLICATION DEFINITION ---
