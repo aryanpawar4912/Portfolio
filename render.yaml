@@ -6,18 +6,20 @@ services:
     startCommand: gunicorn portfolio.wsgi:application
     envVars:
       - key: PYTHON_VERSION
-        value: "3.10.16" # Matched perfectly with your Django 5.2.0 choice
+        value: "3.10.16"
       - key: DJANGO_DEBUG
         value: "False"
       - key: DJANGO_SECRET_KEY
-        sync: false # You will enter this value manually in the Render UI
+        sync: false 
       - key: DATABASE_URL
-        sync: false # You will enter this value manually in the Render UI
+        sync: false 
+      - key: DJANGO_EMAIL_USER
+        sync: false # You will enter 'aryanpawar04120@gmail.com' safely in the Render UI
       - key: HOST_PASSWORD
-        sync: false # You will enter this value manually in the Render UI
+        sync: false 
       - key: DJANGO_SUPERUSER_USERNAME
         value: "aryanpawar4912"
       - key: DJANGO_SUPERUSER_EMAIL
         value: "aryanpawar04120@gmail.com"
       - key: DJANGO_SUPERUSER_PASSWORD
-        sync: false # You will enter 'Aryan@123' safely in the Render UI
+        sync: false
