@@ -6,7 +6,7 @@ services:
     startCommand: gunicorn portfolio.wsgi:application
     envVars:
       - key: PYTHON_VERSION
-        value: "3.10.16"
+        value: "3.10.16" # Forces the exact Python 3.10 runtime engine
       - key: DJANGO_DEBUG
         value: "False"
       - key: DJANGO_SECRET_KEY
@@ -14,7 +14,7 @@ services:
       - key: DATABASE_URL
         sync: false 
       - key: DJANGO_EMAIL_USER
-        sync: false # You will enter 'aryanpawar04120@gmail.com' safely in the Render UI
+        sync: false
       - key: HOST_PASSWORD
         sync: false 
       - key: DJANGO_SUPERUSER_USERNAME
