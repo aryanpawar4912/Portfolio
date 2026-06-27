@@ -17,7 +17,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-fallback-key-for-lo
 DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
 # Allow Render's internal host and your custom subdomains
-ALLOWED_HOSTS = os.getenv['HOST'] 
+ALLOWED_HOSTS = [os.getenv('HOST', 'localhost')]
 
 
 # --- APPLICATION DEFINITION ---
@@ -123,7 +123,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') 
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = os.getenv('DJANGO_EMAIL_USER') 
+HOST_PASSWORD = os.getenv('HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
