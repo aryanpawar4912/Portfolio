@@ -317,7 +317,7 @@ def admin_save_post(request, post_id=None):
                 messages.error(request, f"Database processing failure: {e}")
 
     # FIX: Fetch the database post logs so they can be rendered in the template workspace
-    posts_history = Post.objects.all().order_by('-created_at')
+    posts_history = Post.objects.all().order_by('-id')
 
     context = {
         'post': post_instance,
