@@ -59,8 +59,9 @@ def contact(request):
                 conf_message = f"Hello {contact_instance.name},\n\nThank you for reaching out! I have received your message and will get back to you shortly.\n\nBest regards,\nAryan Pawar"
                 send_mail(
                     'Thank you for contacting me!', conf_message, settings.EMAIL_HOST_USER,
-                    [contact_instance.email], fail_silently=True
+                    [contact_instance.email], fail_silently=False
                 )
+
                 
                 messages.success(request, 'Message sent successfully! I will get back to you soon.')
             except Exception as e:
