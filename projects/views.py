@@ -84,7 +84,7 @@ def admin_dashboard(request):
     """Admin dashboard with high-performance metrics along with content management lists"""
     
     # --- Content Logic for Active Workspace ---
-    posts = Post.objects.all().order_by('-created_at')[:5] # Limit to top 5 recent posts for neat space handling
+    posts = Post.objects.all().order_by('-id')[:5]
     
     # --- Analytics & Monitoring Metric Aggregations ---
     total_contacts = Contact.objects.count()
