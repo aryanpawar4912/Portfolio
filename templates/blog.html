@@ -36,7 +36,7 @@
 
           <div class="card-body">
             <div class="card-metadata">
-              <time>{{ post.created_at|date:"M d, Y" }}</time>
+              <time>Post #{{ post.id }}</time>
               <span class="metadata-dot"></span>
               <span>By {{ post.author.username }}</span>
             </div>
@@ -53,7 +53,7 @@
                       data-id="{{ post.id }}"
                       data-title="{{ post.title }}"
                       data-category="{{ post.get_category_display|default:'Development' }}"
-                      data-date="{{ post.created_at|date:'M d, Y' }}"
+                      data-date="Published"
                       data-image="{% if post.featured_image %}{{ post.featured_image.url }}{% endif %}">
                 Read full article 
                 <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>

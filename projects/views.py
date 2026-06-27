@@ -34,7 +34,7 @@ def portfolio(request):
 
 
 def blog(request):
-    posts = Post.objects.filter(status='published').order_by('-created_at')
+    posts = Post.objects.filter(status='published').order_by('-id')
     return render(request, 'blog.html', {'posts': posts})
 
 
