@@ -1,5 +1,5 @@
 # Core Framework & Server
-Django==6.0.6
+Django==5.2.0
 gunicorn==23.0.0
 
 # Database Support for Neon PostgreSQL
