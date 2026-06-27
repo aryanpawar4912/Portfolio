@@ -1,0 +1,28 @@
+# Django / Python Environment Secrets
+.env
+*.env
+.env.local
+
+# Database
+db.sqlite3
+db.sqlite3-journal
+
+# Python files and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# Static and Media folders (Render handles these in production, keep local copies clean)
+staticfiles/
+media/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
