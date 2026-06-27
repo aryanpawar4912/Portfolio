@@ -1,2 +1,13 @@
-Django>=4.2
-Pillow
+# Core Framework & Server
+Django==6.0.6
+gunicorn==23.0.0
+
+# Database Support for Neon PostgreSQL
+dj-database-url==2.3.0
+psycopg[binary]==3.2.1
+
+# Production Static Files Handling
+whitenoise==6.12.0
+
+# Username : aryanpawar4912
+# Password : Aryan@123
