@@ -19,9 +19,6 @@ class Project(models.Model):
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default="web_application")
     description = models.TextField(blank=True)
     
-    # This will save to: images/portfolio/projects/ in Cloudinary
-    image = models.ImageField(upload_to='projects/', blank=True, null=True)
-    
     # New Fields requested by you
     github_url = models.URLField(max_length=300, blank=True, help_text="GitHub Repository Link")
     
