@@ -17,26 +17,20 @@
         <article class="blog-card">
           
           <div class="card-image-wrapper">
-            {% if post.featured_image %}
-              <!-- Safe fallback: if media routing fails, standard image broken styling won't wreck the badge -->
-              <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-              <div class="card-image-fallback" style="display: none; height: 100%;">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-              </div>
-            {% else %}
-              <div class="card-image-fallback">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-              </div>
-            {% endif %}
+            <div class="card-image-fallback" style="background: linear-gradient(135deg, #16222f 0%, #0f172a 100%); display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;">
+              <span style="font-size: 5.5rem; font-weight: 800; color: rgba(255, 255, 255, 0.06); user-select: none; font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -2px;">
+                {{ post.initial_letter }}
+              </span>
+            </div>
             
             <span class="badge">
-              {{ post.get_category_display|default:"Development" }}
+              {{ post.category|default:"Development" }}
             </span>
           </div>
 
           <div class="card-body">
             <div class="card-metadata">
-              <time>Post #{{ post.id }}</time>
+              <time>{{ post.created_at|date:"M d, Y" }}</time>
               <span class="metadata-dot"></span>
               <span>By {{ post.author.username }}</span>
             </div>
@@ -48,23 +42,15 @@
             </p>
 
             <div class="card-footer">
-              <!-- FIXED: Removed data-content attribute entirely to avoid unicode/escape encryption text -->
               <button class="open-modal-btn" 
-                      data-id="{{ post.id }}"
                       data-title="{{ post.title }}"
-                      data-category="{{ post.get_category_display|default:'Development' }}"
-                      data-date="Published"
-                      data-image="{% if post.featured_image %}{{ post.featured_image.url }}{% endif %}">
+                      data-category="{{ post.category|default:'Development' }}"
+                      data-date="{{ post.created_at|date:'M d, Y' }}"
+                      data-content="{{ post.content|linebreaksbr|escapejs }}">
                 Read full article 
                 <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
               </button>
             </div>
-            
-            <!-- FIXED: The HTML context content is safely stored here instead of inside Javascript attributes -->
-            <div id="post-content-raw-{{ post.id }}" style="display: none;">
-              {{ post.content|linebreaksbr }}
-            </div>
-
           </div>
         </article>
       {% endfor %}
@@ -89,9 +75,6 @@
     </div>
 
     <div id="modalScrollableArea">
-      <div id="modalImageContainer">
-        <img id="modalFeaturedImage" src="" alt="" onerror="this.parentNode.style.display='none';">
-      </div>
       <div id="modalBody">
       </div>
     </div>
@@ -118,13 +101,13 @@
   .blog-main-title {
     font-size: 2.25rem;
     font-weight: 700;
-    color: #38bdf8;
+    color: var(--accent-primary, #38bdf8);
     margin-bottom: 0.5rem;
     letter-spacing: -0.5px;
   }
 
   .blog-subtitle {
-    color: #94a3b8;
+    color: var(--text-muted, #94a3b8);
     font-size: 1.05rem;
     max-width: 600px;
     margin: 0 auto;
@@ -140,9 +123,9 @@
      BLOG CARD ARCHITECTURE
      ========================================================================== */
   .blog-card {
-    background: #131c2e;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
+    background: var(--bg-surface, #131c2e);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+    border-radius: var(--radius-md, 12px);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -154,25 +137,12 @@
     position: relative;
     width: 100%;
     height: 200px;
-    background: #1c2942;
+    background: var(--bg-surface-elevated, #1c2942);
     overflow: hidden;
   }
 
-  .card-image-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-  }
-
-  .card-image-fallback {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
-    color: #4b5563;
+  .card-image-fallback span {
+    transition: transform 0.5s ease, color 0.3s ease;
   }
 
   .badge {
@@ -185,14 +155,12 @@
     font-size: 0.75rem;
     font-weight: 600;
     color: #bae6fd;
-    display: inline-block;
   }
 
   .card-image-wrapper .badge {
     position: absolute;
     top: 1rem;
     left: 1rem;
-    z-index: 2;
   }
 
   .card-body {
@@ -207,14 +175,14 @@
     align-items: center;
     gap: 0.75rem;
     font-size: 0.8rem;
-    color: #94a3b8;
+    color: var(--text-muted, #94a3b8);
     margin-bottom: 0.75rem;
   }
 
   .metadata-dot {
     width: 3px;
     height: 3px;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--border-color, rgba(255, 255, 255, 0.08));
     border-radius: 50%;
   }
 
@@ -223,11 +191,11 @@
     font-weight: 600;
     line-height: 1.4;
     margin: 0 0 0.75rem 0;
-    color: #f8fafc;
+    color: var(--text-main, #f8fafc);
   }
 
   .card-summary {
-    color: #94a3b8;
+    color: var(--text-muted, #94a3b8);
     font-size: 0.95rem;
     line-height: 1.6;
     margin: 0 0 1.5rem 0;
@@ -237,7 +205,7 @@
   .card-footer {
     margin-top: auto;
     padding-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
   }
 
   .open-modal-btn {
@@ -247,7 +215,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: #38bdf8;
+    color: var(--accent-primary, #38bdf8);
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
@@ -259,9 +227,9 @@
   }
 
   .no-data {
-    background: #131c2e;
-    border: 1px dashed rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
+    background: var(--bg-surface, #131c2e);
+    border: 1px dashed var(--border-color, rgba(255, 255, 255, 0.08));
+    border-radius: var(--radius-md, 12px);
     max-width: 500px;
     margin: 0 auto;
     text-align: center;
@@ -269,12 +237,12 @@
   }
 
   .no-data h3 {
-    color: #94a3b8;
+    color: var(--text-muted, #94a3b8);
     margin: 0;
   }
 
   /* ==========================================================================
-     MODAL WINDOW COMPONENT
+     RESPONSIVE MODAL COMPONENT
      ========================================================================== */
   .modal-overlay {
     display: none;
@@ -293,12 +261,12 @@
   }
 
   .modal-content {
-    background: #131c2e;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bg-surface, #131c2e);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
     width: 100%;
     max-width: 780px;
     max-height: 85vh;
-    border-radius: 16px;
+    border-radius: var(--radius-lg, 16px);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -308,12 +276,12 @@
 
   .modal-header {
     padding: 1.25rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 1rem;
-    background: #1c2942;
+    background: var(--bg-surface-elevated, #1c2942);
   }
 
   .modal-header-text {
@@ -321,7 +289,7 @@
   }
 
   #modalTitle {
-    color: #f8fafc;
+    color: var(--text-main, #f8fafc);
     font-size: 1.15rem;
     font-weight: 700;
     margin: 0;
@@ -330,19 +298,19 @@
   }
 
   #modalDate {
-    color: #94a3b8;
+    color: var(--text-muted, #94a3b8);
     display: block;
     margin-top: 6px;
     font-weight: 500;
   }
 
   #closeModalBtn {
-    background: #131c2e;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #94a3b8;
+    background: var(--bg-surface, #131c2e);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+    color: var(--text-muted, #94a3b8);
     width: 36px;
     height: 36px;
-    border-radius: 12px;
+    border-radius: var(--radius-md, 12px);
     font-size: 20px;
     cursor: pointer;
     display: flex;
@@ -355,21 +323,8 @@
   #modalScrollableArea {
     overflow-y: auto;
     flex-grow: 1;
-    background: #131c2e;
+    background: var(--bg-surface, #131c2e);
     -webkit-overflow-scrolling: touch;
-  }
-
-  #modalImageContainer {
-    width: 100%;
-    display: none;
-    background: #1c2942;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  #modalFeaturedImage {
-    width: 100%;
-    max-height: 350px;
-    object-fit: cover;
   }
 
   #modalBody {
@@ -380,31 +335,119 @@
     word-wrap: break-word;
   }
 
-  /* Hover and Animations */
-  @media (hover: hover) {
-    .blog-card:hover {
-      transform: translateY(-4px);
-      border-color: #38bdf8 !important;
-      box-shadow: 0 10px 25px rgba(56, 189, 248, 0.08) !important;
-    }
-    .blog-card:hover img { transform: scale(1.03); }
-    .open-modal-btn:hover { color: #0ea5e9 !important; }
-    .open-modal-btn:hover .arrow-icon { transform: translateX(4px); }
-    #closeModalBtn:hover { background: #ef4444 !important; color: #fff !important; border-color: #ef4444 !important; }
-  }
-
+  /* ==========================================================================
+     HOVER STYLES & INTERACTION ANIMATIONS
+     ========================================================================== */
   @keyframes modalTechIn {
     from { opacity: 0; transform: translateY(10px) scale(0.98); }
     to { opacity: 1; transform: translateY(0) scale(1); }
   }
+  
+  .blog-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent-primary, #38bdf8) !important;
+    box-shadow: 0 10px 25px rgba(56, 189, 248, 0.08) !important;
+  }
+  
+  .blog-card:hover .card-image-fallback span { 
+    transform: scale(1.08); 
+    color: rgba(56, 189, 248, 0.12) !important;
+  }
+  
+  .open-modal-btn:hover { 
+    color: var(--accent-secondary, #0ea5e9) !important; 
+  }
+  
+  .open-modal-btn:hover .arrow-icon { 
+    transform: translateX(4px); 
+  }
+  
+  #closeModalBtn:hover { 
+    background: #ef4444 !important; 
+    color: #fff !important; 
+    border-color: #ef4444 !important; 
+  }
 
+  /* ==========================================================================
+     TABLET & DESKTOP SCALE RESPONSIVE MODIFICATIONS
+     ========================================================================== */
   @media (min-width: 768px) {
-    .blog-container { padding: 3rem 2rem 5rem 2rem; }
-    .blog-main-title { font-size: 2.5rem; }
-    .modal-overlay { padding: 2rem; }
-    .modal-header { padding: 24px 32px; }
-    #modalTitle { font-size: 1.5rem; }
-    #modalBody { padding: 32px; font-size: 15px; }
+    .blog-container {
+      padding: 3rem 2rem 5rem 2rem;
+    }
+    
+    .blog-main-title {
+      font-size: 2.5rem;
+    }
+
+    .modal-overlay {
+      padding: 2rem;
+    }
+
+    .modal-header {
+      padding: 24px 32px;
+    }
+
+    #modalTitle {
+      font-size: 1.5rem;
+    }
+
+    #modalBody {
+      padding: 32px;
+      font-size: 15px;
+    }
+  }
+
+  /* ==========================================================================
+     ULTRA-COMPACT DEVICES CRITICAL OPTIMIZATION (Width <= 360px)
+     ========================================================================== */
+  @media (max-width: 360px) {
+    .blog-container {
+      padding: 1rem 0.5rem 3rem 0.5rem;
+    }
+
+    .blog-main-title {
+      font-size: 1.75rem;
+    }
+
+    .blog-subtitle {
+      font-size: 0.95rem;
+    }
+
+    .blog-grid {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+
+    .card-body {
+      padding: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+    }
+
+    .modal-overlay {
+      padding: 0.25rem;
+    }
+
+    .modal-content {
+      max-height: 95vh;
+      border-radius: var(--radius-md, 12px);
+    }
+
+    .modal-header {
+      padding: 1rem 0.75rem;
+    }
+
+    #modalTitle {
+      font-size: 1.05rem;
+    }
+
+    #modalBody {
+      padding: 1rem 0.75rem;
+      font-size: 0.85rem;
+    }
   }
 </style>
 
@@ -416,8 +459,6 @@
     const modalCategory = document.getElementById('modalCategory');
     const modalDate = document.getElementById('modalDate');
     const modalBody = document.getElementById('modalBody');
-    const modalImageContainer = document.getElementById('modalImageContainer');
-    const modalFeaturedImage = document.getElementById('modalFeaturedImage');
     const modalScrollableArea = document.getElementById('modalScrollableArea');
 
     document.querySelectorAll('.open-modal-btn').forEach(btn => {
@@ -425,31 +466,11 @@
         modalTitle.textContent = this.getAttribute('data-title');
         modalCategory.textContent = this.getAttribute('data-category');
         modalDate.textContent = "Logged: " + this.getAttribute('data-date');
-        
-        // Extract content straight out of the document's hidden DOM layout element
-        const postId = this.getAttribute('data-id');
-        const hiddenVault = document.getElementById('post-content-raw-' + postId);
-        
-        if (hiddenVault) {
-          modalBody.innerHTML = hiddenVault.innerHTML;
-        } else {
-          modalBody.innerHTML = '';
-        }
-        
-        // Verify Image URL before opening
-        const imageUrl = this.getAttribute('data-image');
-        if (imageUrl && imageUrl.trim() !== '') {
-          modalFeaturedImage.src = imageUrl;
-          modalFeaturedImage.alt = this.getAttribute('data-title');
-          modalImageContainer.style.display = 'block';
-        } else {
-          modalFeaturedImage.src = '';
-          modalImageContainer.style.display = 'none';
-        }
+        modalBody.innerHTML = this.getAttribute('data-content');
         
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
-        modalScrollableArea.scrollTop = 0;
+        modalScrollableArea.scrollTop = 0; 
       });
     });
 

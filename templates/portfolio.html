@@ -97,6 +97,29 @@
   .portfolio-card:hover .card-banner img {
     transform: scale(1.08);
   }
+
+  /* ── NEW DYNAMIC LETTER FALLBACK BANNER BACKGROUND ── */
+  .card-banner.letter-fallback {
+    background: linear-gradient(135deg, #102a43 0%, #1c2942 50%, #243b53 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+  }
+
+  .card-banner.letter-fallback .fallback-text {
+    font-size: 6rem;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.07);
+    font-family: var(--font-primary), sans-serif;
+    transform: translateY(-5px);
+    transition: transform 0.4s ease, color 0.4s ease;
+  }
+
+  .portfolio-card:hover .card-banner.letter-fallback .fallback-text {
+    transform: scale(1.08) translateY(-5px);
+    color: rgba(56, 189, 248, 0.12); /* Subtle accent color glow track on hover */
+  }
   
   /* The Glassmorphism Content Box */
   .card-details { 
@@ -251,7 +274,6 @@
   </header>
 
   <section class="projects">
-    <!-- Redesigned Centered Pill Filters -->
     <div class="filter-container">
       <div class="filter-controls">
         <button class="filter-btn active" onclick="filterCategory(event, 'all')">All</button>
@@ -260,20 +282,20 @@
       </div>
     </div>
 
-    <!-- Active Modular Output Components Grid Track -->
     <div class="portfolio-grid" id="projectContainer">
       {% for project in projects %}
         <div class="portfolio-card" data-category="{{ project.category|lower|slugify|cut:"- "}}">
           
-          <div class="card-banner">
-            {% if project.image %}
+          {% if project.image %}
+            <div class="card-banner">
               <img src="{{ project.image.url }}" alt="{{ project.title }}" loading="lazy">
-            {% else %}
-              <img src="{% static 'images/' %}{{ project.title|lower }}.png" alt="{{ project.title }}" loading="lazy" onerror="this.src='{% static 'images/project-3.png' %}';">
-            {% endif %}
-          </div>
+            </div>
+          {% else %}
+            <div class="card-banner letter-fallback">
+              <span class="fallback-text">{{ project.initial_letter }}</span>
+            </div>
+          {% endif %}
           
-          <!-- New Floating Content Box -->
           <div class="card-details">
             <div class="card-header">
               <h3 class="card-title">{{ project.title }}</h3>
@@ -300,7 +322,6 @@
               </div>
             {% endif %}
 
-            <!-- Redesigned Action Row -->
             <div class="card-actions">
               {% if project.url %}
                 <a href="{{ project.url }}" target="_blank" rel="noopener noreferrer" class="action-primary-btn">
@@ -345,7 +366,6 @@
       const cardCategory = (card.getAttribute('data-category') || '').toLowerCase().replace(/[^a-z0-9]/g, '');
       const match = targetCategory === 'all' || cardCategory === targetCategory;
       
-      // Changed to handle smooth opacity/display toggling
       if (match) {
         card.style.display = 'flex';
         setTimeout(() => { card.style.opacity = '1'; card.style.transform = 'scale(1)'; }, 10);

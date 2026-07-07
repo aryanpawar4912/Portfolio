@@ -34,7 +34,10 @@ def portfolio(request):
 
 
 def blog(request):
-    posts = Post.objects.filter(status='published').order_by('-id')
+    # Fetch your published entries sorted by date
+    posts = Post.objects.filter(status='published').order_by('-created_at')
+    
+    # No loop needed! The template will automatically read the property from your model.
     return render(request, 'blog.html', {'posts': posts})
 
 
@@ -59,9 +62,8 @@ def contact(request):
                 conf_message = f"Hello {contact_instance.name},\n\nThank you for reaching out! I have received your message and will get back to you shortly.\n\nBest regards,\nAryan Pawar"
                 send_mail(
                     'Thank you for contacting me!', conf_message, settings.EMAIL_HOST_USER,
-                    [contact_instance.email], fail_silently=False
+                    [contact_instance.email], fail_silently=True
                 )
-
                 
                 messages.success(request, 'Message sent successfully! I will get back to you soon.')
             except Exception as e:
@@ -84,7 +86,7 @@ def admin_dashboard(request):
     """Admin dashboard with high-performance metrics along with content management lists"""
     
     # --- Content Logic for Active Workspace ---
-    posts = Post.objects.all().order_by('-id')[:5]
+    posts = Post.objects.all().order_by('-created_at')[:5] # Limit to top 5 recent posts for neat space handling
     
     # --- Analytics & Monitoring Metric Aggregations ---
     total_contacts = Contact.objects.count()
@@ -266,11 +268,10 @@ def admin_analytics(request):
 
 @login_required(login_url='admin_login')
 def admin_save_post(request, post_id=None):
-    """Handles both creating a fresh post or saving edits to an existing one inside create_post.html"""
+    """Handles creating a fresh post or saving edits without file uploads"""
     post_instance = None
     is_edit = False
 
-    # Check if we are updating an existing entry
     if post_id:
         try:
             post_instance = Post.objects.get(id=post_id)
@@ -283,9 +284,8 @@ def admin_save_post(request, post_id=None):
         title = request.POST.get('title')
         content = request.POST.get('content')
         summary = request.POST.get('summary', '')
-        category = request.POST.get('category')  # Captured missing category input field
-        status = 'published'  # Forces immediate visibility on portfolio feed
-        featured_image = request.FILES.get('cover_image')  # Matches template input exactly
+        category = request.POST.get('category')
+        status = 'published'
 
         if not title or not content:
             messages.error(request, "Title and Content body fields are required.")
@@ -294,20 +294,17 @@ def admin_save_post(request, post_id=None):
                 if is_edit:
                     post_instance.title = title
                     post_instance.content = content
-                    post_instance.category = category  # Added category save for edits
+                    post_instance.category = category
                     post_instance.summary = summary if summary else content[:150]
-                    if featured_image:
-                        post_instance.featured_image = featured_image
                     post_instance.save()
                     messages.success(request, f'Blog post "{title}" updated successfully!')
                 else:
                     Post.objects.create(
                         title=title,
                         content=content,
-                        category=category,  # Added category allocation for new posts
+                        category=category,
                         summary=summary if summary else content[:150],
                         status=status,
-                        featured_image=featured_image,
                         author=request.user
                     )
                     messages.success(request, f'Blog post "{title}" created successfully!')
@@ -316,15 +313,15 @@ def admin_save_post(request, post_id=None):
             except Exception as e:
                 messages.error(request, f"Database processing failure: {e}")
 
-    # FIX: Fetch the database post logs so they can be rendered in the template workspace
-    posts_history = Post.objects.all().order_by('-id')
+    posts_history = Post.objects.all().order_by('-created_at')
 
     context = {
         'post': post_instance,
         'is_edit': is_edit,
-        'posts': posts_history  # This populates your lower workspace table loops
+        'posts': posts_history
     }
     return render(request, 'admin/create_post.html', context)
+
 
 # ==========================================
 #          Delete Post/ Blog by Admin
@@ -350,9 +347,9 @@ def admin_delete_post(request, post_id):
 #          ADMIN PROJECT MANAGEMENT (CRUD)
 # ==========================================
 
-@login_required (login_url='admin_login')
+@login_required(login_url='admin_login')
 def admin_project(request):
-    # Fetch all project records sorted by featured status first, then newest creation dates
+    """Fetch all project records sorted by featured status first, then newest creation dates"""
     projects = Project.objects.all().order_by('-featured', '-id')
     
     context = {
@@ -361,6 +358,7 @@ def admin_project(request):
         'featured_count': projects.filter(featured=True).count(),
     }
     return render(request, 'admin/projects.html', context)
+
 
 @login_required(login_url='admin_login')
 def admin_save_project(request, project_id=None):
@@ -374,7 +372,7 @@ def admin_save_project(request, project_id=None):
             is_edit = True
         except Project.DoesNotExist:
             messages.error(request, "The specified project could not be located.")
-            return redirect('admin_dashboard')
+            return redirect('admin_project')
 
     if request.method == 'POST':
         title = request.POST.get('title')
@@ -423,7 +421,7 @@ def admin_save_project(request, project_id=None):
                     )
                     messages.success(request, f'Project "{title}" created successfully!')
                 
-                return redirect('admin_dashboard')
+                return redirect('admin_project')
             except Exception as e:
                 messages.error(request, f"Database processing failure: {e}")
 
@@ -436,27 +434,23 @@ def admin_save_project(request, project_id=None):
     return render(request, 'admin/create_project.html', context)
 
 
-@login_required
+@login_required(login_url='admin_login')
 def admin_delete_project(request, project_id):
-    # Fetch the project instance or return 404
+    """Safely deletes project database rows and clean storage items"""
     project = get_object_or_404(Project, id=project_id)
     
     if request.method == 'POST':
-        # Safely delete the media file assets using the database storage API
         if project.image:
             project.image.delete(save=False)
         if project.documentation:
             project.documentation.delete(save=False)
             
-        # Delete the data row from the database table
         project.delete()
-        
-        messages.success(request, "Project record and its cloud/database file entries were permanently removed.")
+        messages.success(request, "Project record was permanently removed.")
         return redirect('admin_project')
         
     messages.error(request, "Invalid request method for record removal.")
     return redirect('admin_project')
-
 
 # ==========================================
 #          AUTHENTICATION CONTROL

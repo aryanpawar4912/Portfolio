@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils import timezone
-from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
 
@@ -19,26 +18,44 @@ class Project(models.Model):
     title = models.CharField(max_length=200)
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default="web_application")
     description = models.TextField(blank=True)
+    
+    # This will save to: images/portfolio/projects/ in Cloudinary
     image = models.ImageField(upload_to='projects/', blank=True, null=True)
     
     # New Fields requested by you
     github_url = models.URLField(max_length=300, blank=True, help_text="GitHub Repository Link")
+    
+    # This will save to: images/portfolio/projects/docs/ in Cloudinary
     documentation = models.FileField(upload_to='projects/docs/', blank=True, null=True, help_text="Project Report / Documentation PDF")
     project_type = models.CharField(max_length=20, choices=PROJECT_TYPE_CHOICES, default="individual")
     team_members = models.TextField(blank=True, help_text="Comma-separated names of team members (leave blank if Individual)")
     
     url = models.URLField(blank=True, help_text="Live Demo Link (Optional)")
     featured = models.BooleanField(default=False)
+    
+    # Missing field added to safely support your save method slugification
+    slug = models.SlugField(max_length=250, unique=True, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
+
+    # Fallback property asset for the banner layout
+    @property
+    def initial_letter(self):
+        """Returns the first uppercase letter of the project title for the fallback asset background."""
+        return self.title[0].upper() if self.title else "P"
 
     # Simple helper method to return team members as a clean list in templates
     def get_team_members_list(self):
         if self.team_members:
             return [name.strip() for name in self.team_members.split(',') if name.strip()]
         return []
+
+    def save(self, *args, **kwargs):
+        if not self.slug and self.title:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
 
 class Contact(models.Model):
@@ -92,27 +109,27 @@ class SiteStatistic(models.Model):
     
 
 class Post(models.Model):
-    STATUS_CHOICES = [
-        ('draft', 'Draft'),
-        ('published', 'Published'),
-    ]
-
-    title = models.CharField(max_length=200, unique=True)
-    slug = models.SlugField(max_length=200, unique=True, blank=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
+    # Fixed fields to use max_length instead of max_value
+    title = models.CharField(max_length=200)
     content = models.TextField()
-    summary = models.TextField(max_length=500, blank=True, help_text="Short excerpt for blog card listings")
-
-    featured_image = models.ImageField(upload_to='blog/', blank=True, null=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+    summary = models.CharField(max_length=255, blank=True, null=True)
+    status = models.CharField(max_length=20, default='published')
+    category = models.CharField(max_length=100, default="Updates & Logs")
+    
+    # Added missing slug field required by your save method
+    slug = models.SlugField(max_length=250, unique=True, blank=True, null=True)
+    
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        ordering = ['-created_at']
+    @property
+    def initial_letter(self):
+        """Returns the first uppercase letter of the title for the fallback card asset."""
+        return self.title[0].upper() if self.title else "B"
 
     def save(self, *args, **kwargs):
-        if not self.slug:
+        if not self.slug and self.title:
+            from django.utils.text import slugify
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
