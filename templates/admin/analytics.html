@@ -1,101 +1,380 @@
 {% extends 'admin/admin_base.html' %}
-{% block title %}Analytics Summary - Admin Dashboard{% endblock %}
+{% load static %}
+
+{% block title %}Telemetry Analytics - Admin Dashboard{% endblock %}
 
 {% block extra_head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    /* =========================================================
+       CYBER-MINIMALIST TELEMETRY ANALYTICS ARCHITECTURE
+       =========================================================
+    */
+    :root {
+        --bg-card: #131826;
+        --border-subtle: rgba(255, 255, 255, 0.08);
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --accent-glow: #6366f1; /* Indigo */
+        --accent-info: #38bdf8;  /* Cyan */
+        --accent-success: #10b981; /* Emerald */
+        --accent-orange: #f97316;
+        --input-focus-bg: #1a2236;
+    }
+
+    .analytics-workspace-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        animation: interfaceFadeIn 0.4s ease-out;
+    }
+
+    /* Shared Cyber Card Model */
+    .cyber-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: 12px;
+        position: relative;
+        overflow: hidden;
+        padding: 1.5rem 1.75rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        margin-bottom: 1.5rem;
+    }
+
+    .cyber-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, rgba(99,102,241,0) 0%, var(--accent-info) 50%, rgba(99,102,241,0) 100%);
+        opacity: 0.3;
+    }
+
+    /* Top Boundary Panel Control-Bar */
+    .telemetry-filter-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: 10px;
+        padding: 0.85rem 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .filter-label {
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .cyber-select {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        padding: 0.45rem 2rem 0.45rem 1rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        outline: none;
+        transition: all 0.2s;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+        background-repeat: no-repeat;
+        background-position: right 12px top 50%;
+        background-size: 10px auto;
+    }
+
+    .cyber-select:focus {
+        border-color: var(--accent-info);
+        background-color: var(--input-focus-bg);
+    }
+
+    /* Metric Counters Matrix Grid */
+    .metrics-counter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .metric-node-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+    }
+
+    .metric-node-card::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: 0; top: 0;
+        width: 3px;
+        border-radius: 12px 0 0 12px;
+    }
+
+    .metric-card-blue::after { background: var(--accent-info); }
+    .metric-card-green::after { background: var(--accent-success); }
+    .metric-card-orange::after { background: var(--accent-orange); }
+
+    .metric-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-secondary);
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+    }
+
+    .metric-value {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        letter-spacing: -0.03em;
+        font-family: 'JetBrains Mono', monospace, system-ui;
+    }
+
+    /* Split Framework Section */
+    .analytics-double-deck {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 968px) {
+        .analytics-double-deck { grid-template-columns: 1fr; }
+    }
+
+    .section-headline {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.01em;
+        margin-top: 0;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        padding-bottom: 0.75rem;
+    }
+
+    /* Data List Component Structures */
+    .stream-node-row {
+        background: rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.02);
+        border-radius: 6px;
+        padding: 0.75rem 1.1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.65rem;
+        font-size: 0.88rem;
+    }
+
+    .path-text {
+        font-family: 'JetBrains Mono', monospace;
+        color: #cbd5e1;
+        font-weight: 500;
+    }
+
+    .referrer-text {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding-right: 1rem;
+    }
+
+    /* Token Badges Architecture */
+    .cyber-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        border-radius: 4px;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .badge-cyan {
+        background: rgba(56, 189, 248, 0.1);
+        color: var(--accent-info);
+        border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .badge-emerald {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--accent-success);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    /* Empty Vector Handler */
+    .empty-state-node {
+        text-align: center;
+        padding: 2rem 1rem;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="control-bar">
-    <span style="font-weight: 600; color: #334155; font-size: 15px;">Date Filtering Boundaries</span>
-    <form method="GET" id="periodForm">
-        <select name="period" onchange="document.getElementById('periodForm').submit();">
-            <option value="7" {% if period == '7' %}selected{% endif %}>Past 7 Days</option>
-            <option value="30" {% if period == '30' %}selected{% endif %}>Past 30 Days</option>
-            <option value="90" {% if period == '90' %}selected{% endif %}>Past 90 Days</option>
-            <option value="365" {% if period == '365' %}selected{% endif %}>Past Year</option>
-        </select>
-    </form>
-</div>
+<div class="analytics-workspace-container">
+    
+    <div class="telemetry-filter-bar">
+        <div class="filter-label">
+            <i class="bi bi-filter-square-fill" style="color: var(--accent-info);"></i> 
+            Date Filtering Boundaries
+        </div>
+        <form method="GET" id="periodForm">
+            <select name="period" class="cyber-select" onchange="document.getElementById('periodForm').submit();">
+                <option value="7" {% if period == '7' %}selected{% endif %}>Past 7 Days</option>
+                <option value="30" {% if period == '30' %}selected{% endif %}>Past 30 Days</option>
+                <option value="90" {% if period == '90' %}selected{% endif %}>Past 90 Days</option>
+                <option value="365" {% if period == '365' %}selected{% endif %}>Past Year</option>
+            </select>
+        </form>
+    </div>
 
-<div class="stats-grid">
-    <div class="stat-card blue">
-        <div class="stat-label">Interval Page Views</div>
-        <div class="stat-number">{{ total_views }}</div>
-    </div>
-    <div class="stat-card green">
-        <div class="stat-label">Interval Unique Visitors</div>
-        <div class="stat-number">{{ unique_visitors }}</div>
-    </div>
-    <div class="stat-card orange">
-        <div class="stat-label">New Messages Received</div>
-        <div class="stat-number">{{ new_contacts }}</div>
-    </div>
-</div>
-
-<div class="analytics-main-grid">
-    <div class="panel">
-        <h2>Traffic Trends Over Selected Interval</h2>
-        <div style="position: relative; width: 100%; height: 320px;">
-            <canvas id="timelineChart"></canvas>
+    <div class="metrics-counter-grid">
+        <div class="metric-node-card metric-card-blue">
+            <div class="metric-title">Interval Page Views</div>
+            <div class="metric-value">{{ total_views }}</div>
+        </div>
+        
+        <div class="metric-node-card metric-card-green">
+            <div class="metric-title">Interval Unique Visitors</div>
+            <div class="metric-value">{{ unique_visitors }}</div>
+        </div>
+        
+        <div class="metric-node-card metric-card-orange">
+            <div class="metric-title">New Messages Received</div>
+            <div class="metric-value">{{ new_contacts }}</div>
         </div>
     </div>
 
-    <div class="panel">
-        <h2>Most Visited Paths</h2>
-        {% if most_visited %}
-            {% for mv in most_visited %}
-            <div class="data-list-item">
-                <span style="text-transform: capitalize; font-weight:500; color: #334155;">/{{ mv.page }}</span>
-                <span class="badge">{{ mv.count }} views</span>
+    <div class="analytics-double-deck">
+        
+        <div class="cyber-card" style="margin-bottom: 0;">
+            <h3 class="section-headline"><i class="bi bi-graph-up-arrow" style="color: var(--accent-glow);"></i> Traffic Trends Over Selected Interval</h3>
+            <div style="position: relative; width: 100%; height: 290px;">
+                <canvas id="timelineChart"></canvas>
             </div>
-            {% endfor %}
+        </div>
+
+        <div class="cyber-card" style="margin-bottom: 0;">
+            <h3 class="section-headline"><i class="bi bi-compass" style="color: var(--accent-info);"></i> Most Visited Paths</h3>
+            <div style="max-height: 290px; overflow-y: auto; padding-right: 2px;">
+                {% if most_visited %}
+                    {% for mv in most_visited %}
+                        <div class="stream-node-row">
+                            <span class="path-text">/{{ mv.page }}</span>
+                            <span class="cyber-badge badge-cyan">{{ mv.count }} views</span>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state-node">No view logs record found.</div>
+                {% endif %}
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="cyber-card">
+        <h3 class="section-headline"><i class="bi bi-box-arrow-in-right" style="color: var(--accent-success);"></i> Top Referring URL Destinations (External Domains)</h3>
+        {% if top_referrers %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 0.5rem 1.5rem;">
+                {% for ref in top_referrers %}
+                    <div class="stream-node-row" style="margin-bottom: 0;">
+                        <span class="referrer-text" title="{{ ref.referrer }}">{{ ref.referrer }}</span>
+                        <span class="cyber-badge badge-emerald">{{ ref.count }} hits</span>
+                    </div>
+                {% endfor %}
+            </div>
         {% else %}
-            <div class="no-data">No view logs record found.</div>
+            <div class="empty-state-node" style="padding: 1rem 0;">No organic inbound referrer strings available.</div>
         {% endif %}
     </div>
-</div>
 
-<div class="panel" style="margin-bottom: 24px;">
-    <h2>Top Referring URL Destinations (External Domains)</h2>
-    {% if top_referrers %}
-        {% for ref in top_referrers %}
-        <div class="data-list-item">
-            <span class="url-text">{{ ref.referrer }}</span>
-            <span class="badge" style="background:#ecfdf5; color:#047857;">{{ ref.count }} hits</span>
-        </div>
-        {% endfor %}
-    {% else %}
-        <div class="no-data">No organic inbound referrer strings available.</div>
-    {% endif %}
 </div>
 
 <script>
-    const timelineCtx = document.getElementById('timelineChart').getContext('2d');
-    const labelsArray = JSON.parse('{{ chart_labels|safe }}');
-    const dataArray = JSON.parse('{{ chart_data|safe }}');
+    document.addEventListener("DOMContentLoaded", function() {
+        const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+        const labelsArray = JSON.parse('{{ chart_labels|safe }}');
+        const dataArray = JSON.parse('{{ chart_data|safe }}');
 
-    new Chart(timelineCtx, {
-        type: 'bar',
-        data: {
-            labels: labelsArray,
-            datasets: [{
-                label: 'Page Hits',
-                data: dataArray,
-                backgroundColor: '#1e3c72',
-                borderRadius: 6,
-                borderSkipped: false,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { beginAtZero: true, ticks: { precision: 0, color: '#64748b', font: { family: 'Inter' } }, grid: { color: '#f1f5f9' } },
-                x: { ticks: { color: '#64748b', font: { family: 'Inter' } }, grid: { display: false } }
+        // Create elegant gradient path for cyber-minimalism theme bars
+        const barGradient = timelineCtx.createLinearGradient(0, 0, 0, 300);
+        barGradient.addColorStop(0, 'rgba(99, 102, 241, 0.45)');  /* Glowing semi-transparent indigo top */
+        barGradient.addColorStop(1, 'rgba(99, 102, 241, 0.03)');  /* Dark bottom fade */
+
+        new Chart(timelineCtx, {
+            type: 'bar',
+            data: {
+                labels: labelsArray,
+                datasets: [{
+                    label: 'Page Hits',
+                    data: dataArray,
+                    backgroundColor: barGradient,
+                    borderColor: '#6366f1',
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    borderSkipped: false,
+                    hoverBackgroundColor: 'rgba(99, 102, 241, 0.75)',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1c2438',
+                        titleColor: '#f8fafc',
+                        bodyColor: '#38bdf8',
+                        borderColor: 'rgba(255,255,255,0.08)',
+                        borderWidth: 1,
+                        padding: 10,
+                        bodyFont: { family: 'JetBrains Mono, monospace' }
+                    }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { 
+                            precision: 0, 
+                            color: '#64748b', 
+                            font: { family: 'system-ui', size: 11 } 
+                        }, 
+                        grid: { color: 'rgba(255, 255, 255, 0.03)' } 
+                    },
+                    x: { 
+                        ticks: { 
+                            color: '#64748b', 
+                            font: { family: 'system-ui', size: 11 } 
+                        }, 
+                        grid: { display: false } 
+                    }
+                }
             }
-        }
+        });
     });
 </script>
 {% endblock %}

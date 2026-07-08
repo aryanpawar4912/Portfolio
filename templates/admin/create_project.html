@@ -1,350 +1,440 @@
 {% extends 'admin/admin_base.html' %}
 {% load static %}
 
-{% block title %}{% if is_edit %}Edit Project: {{ project.title }}{% else %}Add New Project{% endif %} - Admin Panel{% endblock %}
+{% block title %}{% if is_edit %}Reconfigure Node: {{ project.title }}{% else %}Initialize Project Node{% endif %} - Console{% endblock %}
 
 {% block content %}
 <style>
-    .admin-container {
+    /* =========================================================
+       CYBER-MINIMALIST FORM ARCHITECTURE
+       =========================================================
+    */
+    .form-workspace-container {
         width: 100%;
-        max-width: 960px;
-        margin: 1.5rem auto;
-        padding: 0 1rem;
-        box-sizing: border-box;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        max-width: 900px;
+        margin: 0 auto;
+        animation: interfaceFadeIn 0.4s ease-out;
     }
 
-    .form-card {
-        background: var(--bg-surface-elevated, #1c2942);
-        border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
-        border-radius: var(--radius-lg, 16px);
-        padding: 1.5rem; /* Mobile-first default */
+    .cyber-form-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: 14px;
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        position: relative;
+        overflow: hidden;
     }
 
-    .form-header {
-        margin-bottom: 2rem;
-        border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
-        padding-bottom: 1.25rem;
+    /* Ambient top glow */
+    .cyber-form-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, rgba(99,102,241,0) 0%, var(--accent-glow) 50%, rgba(99,102,241,0) 100%);
+        opacity: 0.5;
     }
 
-    .form-title {
-        font-size: 1.5rem;
+    .form-header-deck {
+        padding: 2rem 2.5rem;
+        border-bottom: 1px solid var(--border-subtle);
+        background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0) 100%);
+    }
+
+    .form-headline {
+        font-size: 1.4rem;
         font-weight: 700;
-        letter-spacing: -0.025em;
-        color: var(--text-main, #ffffff);
-        line-height: 1.2;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
     }
 
-    .form-subtitle {
+    .form-headline i {
+        color: var(--accent-glow);
+        font-size: 1.2rem;
+    }
+
+    .form-subtext {
         font-size: 0.85rem;
-        color: var(--text-muted, #94a3b8);
-        margin-top: 0.35rem;
+        color: var(--text-secondary);
+        margin-top: 0.4rem;
+        font-weight: 500;
     }
 
-    /* Core Responsive Grid */
-    .form-grid {
+    .form-body-matrix {
+        padding: 2rem 2.5rem;
+    }
+
+    /* Dynamic Grid Layout */
+    .input-grid-system {
         display: grid;
-        grid-template-columns: 1fr; /* Default mobile single-column */
-        gap: 1.25rem;
+        grid-template-columns: 1fr;
+        gap: 1.75rem 1.5rem;
     }
 
-    .form-group {
-        margin-bottom: 0.5rem;
+    @media (min-width: 768px) {
+        .input-grid-system {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .span-2-columns {
+            grid-column: span 2;
+        }
     }
 
-    .form-label {
-        display: block;
-        font-size: 0.8rem;
-        font-weight: 600;
+    .input-node-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .cyber-label {
+        font-size: 0.75rem;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--text-muted, #94a3b8);
-        margin-bottom: 0.5rem;
+        letter-spacing: 0.08em;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
-    .form-control {
+    .cyber-label i {
+        color: #475569;
+    }
+
+    /* Standardized Input Shells */
+    .cyber-input {
         width: 100%;
-        padding: 0.8rem 1rem;
-        background: var(--bg-main, #0b0f19);
-        border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
-        border-radius: var(--radius-md, 10px);
-        color: var(--text-main, #ffffff);
+        padding: 0.85rem 1.2rem;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        color: var(--text-primary);
         font-family: inherit;
-        font-size: 0.95rem;
-        box-sizing: border-box;
-        transition: all 0.2s ease;
+        font-size: 0.9rem;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .form-control::placeholder {
-        color: rgba(255, 255, 255, 0.25);
+    .cyber-input::placeholder {
+        color: rgba(148, 163, 184, 0.3);
     }
 
-    .form-control:focus {
+    .cyber-input:focus {
         outline: none;
-        border-color: var(--accent-primary, #38bdf8);
-        box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
-        background: rgba(11, 15, 25, 0.7);
+        border-color: var(--accent-glow);
+        background: rgba(99, 102, 241, 0.03);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
     }
 
-    select.form-control {
+    /* Specialized Input Overrides */
+    textarea.cyber-input {
+        resize: vertical;
+        min-height: 100px;
+        line-height: 1.6;
+    }
+
+    input[type="url"].cyber-input {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        color: #a5b4fc;
+    }
+
+    select.cyber-input {
         cursor: pointer;
         appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
-        background-position: right 1rem center;
-        background-size: 1.15rem;
+        background-position: right 1.2rem center;
+        background-size: 1rem;
         padding-right: 2.5rem;
     }
 
-    .form-help {
-        display: block;
-        font-size: 0.75rem;
-        color: rgba(148, 163, 184, 0.7);
-        margin-top: 0.4rem;
-        line-height: 1.4;
+    select.cyber-input option {
+        background: var(--bg-card);
+        color: var(--text-primary);
     }
 
-    /* Checkbox Interface Group */
-    .checkbox-card {
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        padding: 1rem;
-        border-radius: 12px;
-        display: flex;
-        align-items: flex-start;
-        gap: 0.75rem;
+    /* File Input Styling */
+    input[type="file"].cyber-input {
+        padding: 0.6rem;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        background: rgba(255, 255, 255, 0.01);
+        border: 1px dashed rgba(255, 255, 255, 0.15);
         cursor: pointer;
+    }
+
+    input[type="file"].cyber-input::file-selector-button {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-subtle);
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        color: var(--text-primary);
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-right: 1rem;
         transition: background 0.2s;
     }
 
-    .checkbox-card:hover {
-        background: rgba(255, 255, 255, 0.04);
+    input[type="file"].cyber-input::file-selector-button:hover {
+        background: rgba(255, 255, 255, 0.1);
     }
 
-    .checkbox-card input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        cursor: pointer;
-        accent-color: var(--accent-primary, #38bdf8);
-        margin-top: 2px;
-        flex-shrink: 0;
-    }
-
-    /* Dynamic File Badges */
-    .file-current {
-        font-size: 0.8rem;
-        color: var(--accent-primary, #38bdf8);
-        margin-top: 0.6rem;
-        background: rgba(56, 189, 248, 0.08);
-        border: 1px dashed rgba(56, 189, 248, 0.3);
-        padding: 0.6rem 0.8rem;
+    .existing-file-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-top: 0.75rem;
+        padding: 0.5rem 0.85rem;
+        background: rgba(99, 102, 241, 0.08);
+        border: 1px solid rgba(99, 102, 241, 0.2);
         border-radius: 8px;
+        font-size: 0.8rem;
+    }
+
+    .existing-file-badge a {
+        color: #a5b4fc;
+        text-decoration: none;
+        font-weight: 600;
+        font-family: 'JetBrains Mono', monospace;
+        transition: color 0.2s;
+    }
+
+    .existing-file-badge a:hover {
+        color: #ffffff;
+    }
+
+    .help-string {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-top: 0.25rem;
+    }
+
+    /* Interactive Checkbox Widget */
+    .boolean-toggle-card {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        padding: 1.2rem;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        word-break: break-all;
-    }
-
-    .file-current a {
-        color: #ffffff;
-        font-weight: 600;
-        text-decoration: underline;
-    }
-
-    /* Actions and Buttons */
-    .action-row {
-        display: flex;
-        flex-direction: column-reverse; /* Primary action is stacked layout on small screens */
-        gap: 0.75rem;
-        margin-top: 2.5rem;
-        border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
-        padding-top: 1.5rem;
-    }
-
-    .btn {
-        width: 100%;
-        padding: 0.85rem 1.5rem;
-        font-size: 0.95rem;
-        font-weight: 600;
-        border-radius: 10px;
+        gap: 1rem;
         cursor: pointer;
         transition: all 0.2s ease;
-        text-decoration: none;
+    }
+
+    .boolean-toggle-card:hover {
+        background: rgba(255, 255, 255, 0.02);
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .boolean-toggle-card:has(input:checked) {
+        border-color: var(--accent-glow);
+        background: rgba(99, 102, 241, 0.04);
+    }
+
+    .boolean-toggle-card input[type="checkbox"] {
+        width: 1.25rem;
+        height: 1.25rem;
+        accent-color: var(--accent-glow);
+        cursor: pointer;
+    }
+
+    .boolean-toggle-text {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .boolean-toggle-text .main-text {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .boolean-toggle-text .sub-text {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin-top: 0.15rem;
+    }
+
+    /* Action Deck */
+    .form-action-deck {
+        padding: 1.5rem 2.5rem;
+        background: rgba(0, 0, 0, 0.2);
+        border-top: 1px solid var(--border-subtle);
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .cyber-btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
         display: inline-flex;
-        justify-content: center;
         align-items: center;
         gap: 0.5rem;
-        box-sizing: border-box;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        text-decoration: none;
     }
 
-    .btn-secondary {
+    .cyber-btn-ghost {
         background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        color: var(--text-muted, #94a3b8);
+        color: var(--text-secondary);
+        border: 1px solid transparent;
     }
 
-    .btn-secondary:hover {
+    .cyber-btn-ghost:hover {
         background: rgba(255, 255, 255, 0.05);
-        color: var(--text-main, #ffffff);
+        color: var(--text-primary);
     }
 
-    .btn-primary {
-        background: var(--accent-primary, #38bdf8);
-        border: 1px solid var(--accent-primary, #38bdf8);
-        color: #0b0f19;
+    .cyber-btn-primary {
+        background: var(--accent-glow);
+        color: #ffffff;
+        border: 1px solid var(--accent-glow);
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
     }
 
-    .btn-primary:hover {
-        background: #7dd3fc;
-        border-color: #7dd3fc;
+    .cyber-btn-primary:hover {
+        background: #4f46e5;
+        border-color: #4f46e5;
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        transform: translateY(-1px);
     }
 
-    /* Responsive Breakdown Media Queries */
-    @media (min-width: 640px) {
-        .form-card {
-            padding: 2.5rem;
+    @media (max-width: 640px) {
+        .form-header-deck, .form-body-matrix, .form-action-deck {
+            padding: 1.5rem;
         }
-
-        .form-grid {
-            grid-template-columns: repeat(2, 1fr); /* Split to 2 columns on tablets/desktops */
-            gap: 1.5rem;
+        .form-action-deck {
+            flex-direction: column-reverse;
         }
-
-        .form-group.full-width {
-            grid-column: span 2;
-        }
-
-        .form-title {
-            font-size: 1.75rem;
-        }
-
-        .action-row {
-            flex-direction: row; /* Normal row alignment for wider views */
-            justify-content: flex-end;
-            gap: 1rem;
-        }
-
-        .btn {
-            width: auto; /* Shrink-to-fit button scaling */
+        .cyber-btn {
+            width: 100%;
+            justify-content: center;
         }
     }
 </style>
 
-<div class="admin-container">
-    <div class="form-card">
-        
-        <div class="form-header">
-            <h2 class="form-title">
-                {% if is_edit %}Edit Project Architecture{% else %}Deploy New Project Record{% endif %}
-            </h2>
-            <div class="form-subtitle">Configure system structures and portfolio indexing resources.</div>
-        </div>
+<div class="form-workspace-container">
 
-        {% if messages %}
+    {% if messages %}
+        <div style="margin-bottom: 1.5rem;">
             {% for message in messages %}
-                <div style="padding: 0.85rem 1rem; margin-bottom: 1.5rem; border-radius: 10px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); color: #f87171; font-size: 0.85rem; display: flex; align-items: flex-start; gap: 0.5rem;">
-                    <i class="bi bi-exclamation-triangle" style="margin-top:2px;"></i> 
+                <div style="padding: 1rem 1.25rem; border-radius: 10px; margin-bottom: 0.5rem; background: rgba(244,63,94,0.1); border: 1px solid rgba(244,63,94,0.2); color: #fecdd3; font-size: 0.85rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+                    <i class="bi bi-exclamation-triangle-fill" style="color: var(--accent-danger); margin-top: 2px;"></i>
                     <span>{{ message }}</span>
                 </div>
             {% endfor %}
-        {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="cyber-form-card">
+        <div class="form-header-deck">
+            <h2 class="form-headline">
+                <i class="bi {% if is_edit %}bi-gear-wide-connected{% else %}bi-plus-square-dotted{% endif %}"></i>
+                {% if is_edit %}Reconfigure Project Matrix{% else %}Initialize New Repository{% endif %}
+            </h2>
+            <div class="form-subtext">Establish system structures, attributes, and portfolio mapping data.</div>
+        </div>
 
         <form method="POST" enctype="multipart/form-data" action="{% if is_edit %}{% url 'admin_edit_project' project.id %}{% else %}{% url 'admin_add_project' %}{% endif %}">
             {% csrf_token %}
+            
+            <div class="form-body-matrix">
+                <div class="input-grid-system">
+                    
+                    <div class="input-node-group span-2-columns">
+                        <label class="cyber-label" for="title"><i class="bi bi-type"></i> Project Identifier (Title) *</label>
+                        <input type="text" id="title" name="title" class="cyber-input" required value="{% if project %}{{ project.title }}{% endif %}" placeholder="e.g., Nexus Data Core">
+                    </div>
 
-            <div class="form-grid">
-                
-                <!-- Project Title -->
-                <div class="form-group full-width">
-                    <label class="form-label" for="title">Project Title *</label>
-                    <input type="text" id="title" name="title" class="form-control" required value="{% if project %}{{ project.title }}{% endif %}" placeholder="e.g., Onion Pulse AI">
+                    <div class="input-node-group">
+                        <label class="cyber-label" for="category"><i class="bi bi-tags"></i> Domain Category *</label>
+                        <select id="category" name="category" class="cyber-input" required>
+                            {% for value, label in categories %}
+                                <option value="{{ value }}" {% if project and project.category == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="input-node-group">
+                        <label class="cyber-label" for="project_type"><i class="bi bi-layout-text-window"></i> Architecture Type</label>
+                        <select id="project_type" name="project_type" class="cyber-input" onchange="modulateTeamLayer(this.value)">
+                            {% for value, label in project_types %}
+                                <option value="{{ value }}" {% if project and project.project_type == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="input-node-group span-2-columns" id="collaboratorArrayNode" style="{% if project and project.project_type == 'team' %}display: flex;{% else %}display: none;{% endif %}">
+                        <label class="cyber-label" for="team_members"><i class="bi bi-people"></i> Collaborator Matrix</label>
+                        <textarea id="team_members" name="team_members" rows="2" class="cyber-input" placeholder="User A, User B, User C...">{% if project %}{{ project.team_members }}{% endif %}</textarea>
+                        <div class="help-string">Delimit system users precisely with commas.</div>
+                    </div>
+
+                    <div class="input-node-group span-2-columns">
+                        <label class="cyber-label" for="description"><i class="bi bi-body-text"></i> Functional Specification</label>
+                        <textarea id="description" name="description" rows="5" class="cyber-input" placeholder="Input structural details and technical summary...">{% if project %}{{ project.description }}{% endif %}</textarea>
+                    </div>
+
+                    <div class="input-node-group">
+                        <label class="cyber-label" for="image"><i class="bi bi-image"></i> Visual Banner Asset</label>
+                        <input type="file" id="image" name="image" class="cyber-input" accept="image/*">
+                        {% if project and project.image %}
+                            <div class="existing-file-badge">
+                                <i class="bi bi-check2-circle"></i> <span>Asset Mapped: <a href="{{ project.image.url }}" target="_blank">View Render</a></span>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="input-node-group">
+                        <label class="cyber-label" for="documentation"><i class="bi bi-file-earmark-pdf"></i> Technical Documentation</label>
+                        <input type="file" id="documentation" name="documentation" class="cyber-input" accept=".pdf,.doc,.docx">
+                        {% if project and project.documentation %}
+                            <div class="existing-file-badge">
+                                <i class="bi bi-check2-circle"></i> <span>Report Mapped: <a href="{{ project.documentation.url }}" target="_blank">View File</a></span>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="input-node-group">
+                        <label class="cyber-label" for="url"><i class="bi bi-globe2"></i> Production Deployment URL</label>
+                        <input type="url" id="url" name="url" class="cyber-input" value="{% if project %}{{ project.url }}{% endif %}" placeholder="https://...">
+                    </div>
+
+                    <div class="input-node-group">
+                        <label class="cyber-label" for="github_url"><i class="bi bi-github"></i> Open Source Repository</label>
+                        <input type="url" id="github_url" name="github_url" class="cyber-input" value="{% if project %}{{ project.github_url }}{% endif %}" placeholder="https://github.com/...">
+                    </div>
+
+                    <div class="input-node-group span-2-columns" style="margin-top: 0.5rem;">
+                        <label class="boolean-toggle-card" for="featured">
+                            <input type="checkbox" id="featured" name="featured" {% if project and project.featured %}checked{% endif %}>
+                            <div class="boolean-toggle-text">
+                                <span class="main-text">Promote to Featured Directory</span>
+                                <span class="sub-text">Pins this project to the primary highlights grid on the public interface.</span>
+                            </div>
+                        </label>
+                    </div>
+
                 </div>
-
-                <!-- Category Track -->
-                <div class="form-group">
-                    <label class="form-label" for="category">Category Track *</label>
-                    <select id="category" name="category" class="form-control" required>
-                        {% for value, label in categories %}
-                            <option value="{{ value }}" {% if project and project.category == value %}selected{% endif %}>{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Layout Type -->
-                <div class="form-group">
-                    <label class="form-label" for="project_type">Project Layout Type</label>
-                    <select id="project_type" name="project_type" class="form-control" onchange="toggleTeamSection(this.value)">
-                        {% for value, label in project_types %}
-                            <option value="{{ value }}" {% if project and project.project_type == value %}selected{% endif %}>{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Team Section (Dynamic) -->
-                <div class="form-group full-width" id="teamMembersGroup" style="{% if project and project.project_type == 'team' %}display: block;{% else %}display: none;{% endif %}">
-                    <label class="form-label" for="team_members">Collaborating Team Members</label>
-                    <textarea id="team_members" name="team_members" rows="2" class="form-control" placeholder="Aryan Pawar, Monali Phad, Harshada Tambe, Rohan Salve">{% if project %}{{ project.team_members }}{% endif %}</textarea>
-                    <small class="form-help"><i class="bi bi-info-circle"></i> Enter names separated strictly by commas.</small>
-                </div>
-
-                <!-- Description -->
-                <div class="form-group full-width">
-                    <label class="form-label" for="description">Detailed Specification / Summary</label>
-                    <textarea id="description" name="description" rows="5" class="form-control" placeholder="Provide a functional summary or structural abstract about your project...">{% if project %}{{ project.description }}{% endif %}</textarea>
-                </div>
-
-                <!-- Cover Image -->
-                <div class="form-group">
-                    <label class="form-label" for="image">Project Cover Banner Image</label>
-                    <input type="file" id="image" name="image" class="form-control" accept="image/*">
-                    <small class="form-help">Leave empty to use text fallback character setup.</small>
-                    {% if project and project.image %}
-                        <div class="file-current">
-                            <i class="bi bi-image"></i> <span>Current Cover Asset: <a href="{{ project.image.url }}" target="_blank">View Image</a></span>
-                        </div>
-                    {% endif %}
-                </div>
-
-                <!-- Documentation File -->
-                <div class="form-group">
-                    <label class="form-label" for="documentation">Project Documentation / PDF Report</label>
-                    <input type="file" id="documentation" name="documentation" class="form-control" accept=".pdf,.doc,.docx">
-                    <small class="form-help">Upload summaries, IEEE papers, or verification records.</small>
-                    {% if project and project.documentation %}
-                        <div class="file-current">
-                            <i class="bi bi-file-earmark-pdf"></i> <span>Active Report: <a href="{{ project.documentation.url }}" target="_blank">View Document</a></span>
-                        </div>
-                    {% endif %}
-                </div>
-
-                <!-- Live Url -->
-                <div class="form-group">
-                    <label class="form-label" for="url">Live Production Deployment URL</label>
-                    <input type="url" id="url" name="url" class="form-control" value="{% if project %}{{ project.url }}{% endif %}" placeholder="https://example.com">
-                </div>
-
-                <!-- GitHub Url -->
-                <div class="form-group">
-                    <label class="form-label" for="github_url">Open Source Code Repository (GitHub)</label>
-                    <input type="url" id="github_url" name="github_url" class="form-control" value="{% if project %}{{ project.github_url }}{% endif %}" placeholder="https://github.com/yourprofile/repo">
-                </div>
-
-                <!-- Feature Checkbox -->
-                <div class="form-group full-width">
-                    <label class="checkbox-card" for="featured">
-                        <input type="checkbox" id="featured" name="featured" {% if project and project.featured %}checked{% endif %}>
-                        <span style="font-size: 0.9rem; font-weight: 500; color: var(--text-main, #ffffff); line-height: 1.4;">Pin this asset to Featured Portfolio Grid</span>
-                    </label>
-                </div>
-
             </div>
 
-            <!-- Form Submissions Actions -->
-            <div class="action-row">
-                <a href="{% url 'admin_project' %}" class="btn btn-secondary">Discard Changes</a>
-                <button type="submit" class="btn btn-primary">
-                    {% if is_edit %}<i class="bi bi-check-circle"></i> Update Architecture{% else %}<i class="bi bi-cloud-arrow-up"></i> Deploy Project{% endif %}
+            <div class="form-action-deck">
+                <a href="{% url 'admin_project' %}" class="cyber-btn cyber-btn-ghost">Abort Sequence</a>
+                <button type="submit" class="cyber-btn cyber-btn-primary">
+                    {% if is_edit %}<i class="bi bi-arrow-repeat"></i> Execute Update{% else %}<i class="bi bi-rocket-takeoff"></i> Deploy Node{% endif %}
                 </button>
             </div>
         </form>
@@ -352,13 +442,21 @@
 </div>
 
 <script>
-    function toggleTeamSection(selectedValue) {
-        const teamGroup = document.getElementById('teamMembersGroup');
+    // System logic for conditional rendering
+    function modulateTeamLayer(selectedValue) {
+        const teamGroupNode = document.getElementById('collaboratorArrayNode');
+        const teamInput = document.getElementById('team_members');
+        
         if (selectedValue === 'team') {
-            teamGroup.style.display = 'block';
+            teamGroupNode.style.display = 'flex';
+            // Slight delay to allow display:flex to register before animating
+            setTimeout(() => {
+                teamGroupNode.style.opacity = '1';
+                teamGroupNode.style.transform = 'translateY(0)';
+            }, 10);
         } else {
-            teamGroup.style.display = 'none';
-            document.getElementById('team_members').value = '';
+            teamGroupNode.style.display = 'none';
+            teamInput.value = '';
         }
     }
 </script>

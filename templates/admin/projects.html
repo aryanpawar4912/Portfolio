@@ -1,330 +1,398 @@
 {% extends 'admin/admin_base.html' %}
 {% load static %}
 
-{% block title %}Active History Workspace Logs - Admin Dashboard{% endblock %}
+{% block title %}Active History Workspace Logs - Console{% endblock %}
 
 {% block content %}
 <style>
-  /* Unified Dashboard Color Tokens */
-  :root {
-    --bg-main-panel: #0b111e;
-    --bg-surface-card: #131c2e;
-    --border-ui-element: #22314d;
-    --text-primary-light: #ffffff;
-    --text-muted-gray: #7a8b9e;
-    --accent-action-blue: #0091ff;
-    --accent-hover-blue: #0077d6;
-    --bg-input-focus: #17243a;
-    --radius-workspace: 6px;
-    --color-danger: #ef4444;
-  }
+    /* =========================================================
+       CYBER-MINIMALIST DASHBOARD ARCHITECTURE
+       =========================================================
+    */
+    :root {
+        --bg-card: #131826;
+        --border-subtle: rgba(255, 255, 255, 0.08);
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --accent-glow: #6366f1; /* Indigo */
+        --accent-danger: #f43f5e;
+        --accent-success: #10b981;
+        --accent-info: #38bdf8;
+    }
 
-  .admin-container {
-    max-width: 1100px;
-    margin: 2rem auto;
-    padding: 0 1.5rem;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  }
-  
-  /* Panel Header Layout */
-  .admin-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border-ui-element);
-  }
-  
-  .panel-title {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: #38bdf8;
-    margin: 0;
-  }
+    .dashboard-workspace-container {
+        width: 100%;
+        max-width: 1100px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        animation: interfaceFadeIn 0.4s ease-out;
+    }
 
-  .panel-subtitle {
-    font-size: 0.88rem;
-    color: var(--text-muted-gray);
-    margin-top: 0.25rem;
-  }
-  
-  .btn-create {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--text-primary-light);
-    background: var(--accent-action-blue);
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 600;
-    padding: 0.6rem 1.2rem;
-    border-radius: var(--radius-workspace);
-    transition: background 0.15s ease-in-out;
-  }
-  .btn-create:hover {
-    background: var(--accent-hover-blue);
-  }
+    /* Shared Cyber Card Model */
+    .cyber-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: 12px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
 
-  /* Counter Grid Analytics Cards */
-  .metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
+    .cyber-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, rgba(99,102,241,0) 0%, var(--accent-glow) 50%, rgba(99,102,241,0) 100%);
+        opacity: 0.4;
+    }
 
-  .metric-card {
-    background: var(--bg-surface-card);
-    border: 1px solid var(--border-ui-element);
-    border-radius: var(--radius-workspace);
-    padding: 1rem 1.25rem;
-  }
+    /* Panel Header Layout */
+    .admin-header-deck {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-subtle);
+    }
 
-  .metric-label {
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--text-muted-gray);
-  }
+    .panel-headline {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .panel-headline i {
+        color: var(--accent-info);
+    }
 
-  .metric-value {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--text-primary-light);
-    margin-top: 0.25rem;
-  }
-  
-  /* Table View Framework */
-  .workspace-card {
-    background: var(--bg-surface-card);
-    border: 1px solid var(--border-ui-element);
-    border-radius: var(--radius-workspace);
-    padding: 1.5rem 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  }
+    .panel-subtitle {
+        font-size: 0.88rem;
+        color: var(--text-secondary);
+        margin-top: 0.4rem;
+        font-weight: 500;
+    }
 
-  .table-responsive {
-    overflow-x: auto;
-    margin-top: 1rem;
-  }
+    /* Action Buttons */
+    .cyber-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.7rem 1.25rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        text-decoration: none;
+    }
 
-  .log-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-  }
+    .cyber-btn-primary {
+        background: var(--accent-glow);
+        color: #ffffff;
+        border: 1px solid var(--accent-glow);
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
+    }
 
-  .log-table th {
-    padding: 1rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-muted-gray);
-    border-bottom: 2px solid var(--border-ui-element);
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-  }
+    .cyber-btn-primary:hover {
+        background: #4f46e5;
+        border-color: #4f46e5;
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        transform: translateY(-1px);
+    }
 
-  .log-table td {
-    padding: 1rem;
-    font-size: 0.92rem;
-    color: var(--text-primary-light);
-    border-bottom: 1px solid var(--border-ui-element);
-    vertical-align: middle;
-  }
+    /* Counter Grid Analytics Cards */
+    .metrics-matrix {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
 
-  .log-table tbody tr:hover {
-    background: rgba(255, 255, 255, 0.02);
-  }
+    .metric-node {
+        padding: 1.5rem;
+    }
 
-  /* Badges and Asset Indicators */
-  .badge {
-    display: inline-flex;
-    padding: 0.25rem 0.6rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    border-radius: 4px;
-    text-transform: capitalize;
-  }
+    .metric-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
 
-  .badge-featured {
-    background: rgba(56, 189, 248, 0.15);
-    color: #38bdf8;
-    border: 1px solid rgba(56, 189, 248, 0.3);
-  }
+    .metric-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-top: 0.5rem;
+        font-family: 'JetBrains Mono', monospace, system-ui;
+    }
 
-  .badge-standard {
-    background: rgba(122, 139, 158, 0.15);
-    color: var(--text-muted-gray);
-  }
+    /* Data Table Framework */
+    .data-grid-container {
+        padding: 1rem 0; /* Remove side padding for edge-to-edge table feel */
+    }
 
-  .asset-indicator {
-    display: inline-flex;
-    align-items: center;
-    color: #10b981;
-    font-size: 1.1rem;
-  }
+    .table-responsive {
+        overflow-x: auto;
+    }
 
-  .asset-missing {
-    color: #4b596c;
-  }
+    .cyber-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
 
-  /* Row Form Action Links */
-  .action-links {
-    display: flex;
-    gap: 0.85rem;
-    align-items: center;
-  }
+    .cyber-table th {
+        padding: 1rem 1.5rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--border-subtle);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: rgba(0,0,0,0.2);
+    }
 
-  .link-edit {
-    color: var(--accent-action-blue);
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.15s;
-  }
-  .link-edit:hover {
-    color: #60a5fa;
-    text-decoration: underline;
-  }
+    .cyber-table td {
+        padding: 1.1rem 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+        vertical-align: middle;
+        transition: all 0.2s ease;
+    }
 
-  .btn-link-delete {
-    background: none;
-    border: none;
-    padding: 0;
-    color: var(--color-danger);
-    font-family: inherit;
-    font-size: inherit;
-    font-weight: 500;
-    cursor: pointer;
-    transition: color 0.15s;
-  }
-  .btn-link-delete:hover {
-    color: #f87171;
-    text-decoration: underline;
-  }
+    .cyber-table tbody tr:hover {
+        background: rgba(99, 102, 241, 0.04);
+        box-shadow: inset 3px 0 0 var(--accent-glow);
+    }
 
-  .empty-log-state {
-    text-align: center;
-    padding: 4rem 2rem;
-    color: var(--text-muted-gray);
-    font-size: 0.95rem;
-    border: 1px dashed var(--border-ui-element);
-    border-radius: var(--radius-workspace);
-    margin-top: 1rem;
-  }
+    /* Badges & Indicators */
+    .cyber-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border-radius: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
 
-  .empty-icon {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-    display: block;
-  }
+    .badge-featured {
+        background: rgba(56, 189, 248, 0.1);
+        color: var(--accent-info);
+        border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .badge-standard {
+        background: rgba(148, 163, 184, 0.1);
+        color: var(--text-secondary);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .asset-status {
+        font-size: 1.1rem;
+    }
+    
+    .asset-active { color: var(--accent-success); }
+    .asset-inactive { color: rgba(255,255,255,0.15); }
+
+    /* Action Links within Row */
+    .row-actions {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .action-icon-btn {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-subtle);
+        padding: 0.4rem 0.6rem;
+        border-radius: 6px;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .action-edit:hover {
+        background: rgba(99, 102, 241, 0.15);
+        border-color: var(--accent-glow);
+        color: #a5b4fc;
+    }
+
+    .action-delete {
+        font-family: inherit;
+    }
+
+    .action-delete:hover {
+        background: rgba(244, 63, 94, 0.15);
+        border-color: var(--accent-danger);
+        color: #fda4af;
+    }
+
+    /* Empty State Matrix */
+    .empty-state-node {
+        text-align: center;
+        padding: 4rem 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .empty-icon {
+        font-size: 2.5rem;
+        color: rgba(148, 163, 184, 0.3);
+    }
+    
+    .empty-text {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        max-width: 300px;
+        line-height: 1.5;
+    }
+
 </style>
 
-<div class="admin-container">
-  <div class="admin-header">
-    <div>
-      <h2 class="panel-title">Active History Workspace Logs</h2>
-      <div class="panel-subtitle">Review, modify, or delete your most recent posts instantly</div>
+<div class="dashboard-workspace-container">
+    
+    <div class="admin-header-deck">
+        <div>
+            <h2 class="panel-headline"><i class="bi bi-terminal-split"></i> Deployment Logs</h2>
+            <div class="panel-subtitle">Review, modify, or terminate recent project nodes in your system</div>
+        </div>
+        <a href="{% url 'admin_add_project' %}" class="cyber-btn cyber-btn-primary">
+            <i class="bi bi-plus-lg"></i> Deploy Node
+        </a>
     </div>
-    <a href="{% url 'admin_add_project' %}" class="btn-create">
-      + Add Project
-    </a>
-  </div>
 
-  {% if messages %}
-    {% for message in messages %}
-      <div style="padding: 1rem; margin-bottom: 1.5rem; border-radius: var(--radius-workspace); background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #ffffff; font-size: 0.95rem;">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
-
-  <div class="metrics-grid">
-    <div class="metric-card">
-      <div class="metric-label">Total Logs Found</div>
-      <div class="metric-value">{{ project_count }}</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Featured Showcases</div>
-      <div class="metric-value" style="color: #38bdf8;">{{ featured_count }}</div>
-    </div>
-  </div>
-
-  <div class="workspace-card">
-    {% if projects %}
-      <div class="table-responsive">
-        <table class="log-table">
-          <thead>
-            <tr>
-              <th>Project Title</th>
-              <th>Category Tag</th>
-              <th>Setup Type</th>
-              <th style="text-align: center;">Mockup Image</th>
-              <th style="text-align: center;">Docs File</th>
-              <th style="text-align: center;">Priority Visibility</th>
-              <th style="text-align: right;">Workspace Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for project in projects %}
-              <tr>
-                <td style="font-weight: 600; max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                  {{ project.title }}
-                </td>
-                
-                <td>
-                  <span style="color: #94a3b8; font-size: 0.88rem;">{{ project.get_category_display|default:project.category }}</span>
-                </td>
-                
-                <td style="text-transform: capitalize; color: var(--text-muted-gray);">
-                  {{ project.project_type|default:"Individual" }}
-                </td>
-                
-                <td style="text-align: center;">
-                  {% if project.image %}
-                    <span class="asset-indicator">●</span>
-                  {% else %}
-                    <span class="asset-missing">✕</span>
-                  {% endif %}
-                </td>
-                
-                <td style="text-align: center;">
-                  {% if project.documentation %}
-                    <span class="asset-indicator">●</span>
-                  {% else %}
-                    <span class="asset-missing">✕</span>
-                  {% endif %}
-                </td>
-
-                <td style="text-align: center;">
-                  {% if project.featured %}
-                    <span class="badge badge-featured">Featured</span>
-                  {% else %}
-                    <span class="badge badge-standard">Standard</span>
-                  {% endif %}
-                </td>
-                
-                <td style="text-align: right;">
-                  <div class="action-links" style="justify-content: flex-end;">
-                    <a href="{% url 'admin_edit_project' project.id %}" class="link-edit">Modify</a>
-                    
-                    <form method="POST" action="{% url 'admin_delete_project' project.id %}" style="margin: 0; display: inline;" onsubmit="return confirm('Are you sure you want to completely erase this project record?');">
-                      {% csrf_token %}
-                      <button type="submit" class="btn-link-delete">Remove</button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
+    {% if messages %}
+        <div style="margin-bottom: 1.5rem;">
+            {% for message in messages %}
+                <div style="padding: 1rem 1.25rem; border-radius: 8px; margin-bottom: 0.5rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); color: #a7f3d0; font-size: 0.85rem; display: flex; align-items: center; gap: 0.75rem;">
+                    <i class="bi bi-check2-square text-success"></i>
+                    <span>{{ message }}</span>
+                </div>
             {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% else %}
-      <div class="empty-log-state">
-        <span class="empty-icon">📂</span>
-        No active dashboard entries are registered in your workspace yet.
-      </div>
+        </div>
     {% endif %}
-  </div>
+
+    <div class="metrics-matrix">
+        <div class="cyber-card metric-node">
+            <div class="metric-label"><i class="bi bi-server"></i> Total Nodes Indexed</div>
+            <div class="metric-value">{{ project_count }}</div>
+        </div>
+        <div class="cyber-card metric-node">
+            <div class="metric-label"><i class="bi bi-star"></i> Featured Showcases</div>
+            <div class="metric-value" style="color: var(--accent-info);">{{ featured_count }}</div>
+        </div>
+    </div>
+
+    <div class="cyber-card data-grid-container">
+        {% if projects %}
+            <div class="table-responsive">
+                <table class="cyber-table">
+                    <thead>
+                        <tr>
+                            <th>Project Identifier</th>
+                            <th>Domain Tag</th>
+                            <th>Architecture</th>
+                            <th style="text-align: center;">Visual</th>
+                            <th style="text-align: center;">Docs</th>
+                            <th style="text-align: center;">Visibility</th>
+                            <th style="text-align: right;">Operations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for project in projects %}
+                            <tr>
+                                <td style="font-weight: 600; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    {{ project.title }}
+                                </td>
+                                
+                                <td>
+                                    <span style="color: var(--text-secondary); font-size: 0.85rem;">
+                                        <i class="bi bi-hash"></i>{{ project.get_category_display|default:project.category }}
+                                    </span>
+                                </td>
+                                
+                                <td>
+                                    <span style="color: #cbd5e1; font-size: 0.85rem; text-transform: capitalize;">
+                                        {{ project.project_type|default:"Individual" }}
+                                    </span>
+                                </td>
+                                
+                                <td style="text-align: center;">
+                                    {% if project.image %}
+                                        <i class="bi bi-image asset-status asset-active" title="Image Mapped"></i>
+                                    {% else %}
+                                        <i class="bi bi-dash-circle asset-status asset-inactive" title="No Image"></i>
+                                    {% endif %}
+                                </td>
+                                
+                                <td style="text-align: center;">
+                                    {% if project.documentation %}
+                                        <i class="bi bi-file-earmark-pdf-fill asset-status asset-active" title="Docs Mapped"></i>
+                                    {% else %}
+                                        <i class="bi bi-dash-circle asset-status asset-inactive" title="No Docs"></i>
+                                    {% endif %}
+                                </td>
+
+                                <td style="text-align: center;">
+                                    {% if project.featured %}
+                                        <span class="cyber-badge badge-featured"><i class="bi bi-star-fill"></i> Promoted</span>
+                                    {% else %}
+                                        <span class="cyber-badge badge-standard">Base</span>
+                                    {% endif %}
+                                </td>
+                                
+                                <td>
+                                    <div class="row-actions">
+                                        <a href="{% url 'admin_edit_project' project.id %}" class="action-icon-btn action-edit" title="Modify Node">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        
+                                        <form method="POST" action="{% url 'admin_delete_project' project.id %}" style="margin: 0; display: inline;" onsubmit="return confirm('WARNING: Are you sure you want to completely eradicate this deployment log? This action is irreversible.');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="action-icon-btn action-delete" title="Purge Node">
+                                                <i class="bi bi-trash3"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state-node">
+                <i class="bi bi-hdd-network empty-icon"></i>
+                <div class="empty-text">No active nodes registered in the primary workspace cluster. Click "Deploy Node" to initialize.</div>
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
