@@ -4,8 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Gateway - Admin Access</title>
+    <!-- Premium Font Matrix & Icon Engine -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
     <style>
+        /* =========================================================
+           CYBER-MINIMALIST AUTH HUB ARCHITECTURE (ALL DEVICES)
+           =========================================================
+        */
+        :root {
+            --bg-matrix: radial-gradient(circle at 50% 30%, #161c2d 0%, #0b0f19 100%);
+            --bg-card: #131826;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-glow: #6366f1; /* Indigo */
+            --accent-info: #38bdf8;  /* Cyan */
+            --accent-danger: #f43f5e; /* Rose Alert */
+            --input-focus-bg: #1a2236;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -14,181 +33,283 @@
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 100%);
-            color: #f3f4f6;
+            background: var(--bg-matrix);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 1rem;
+            overflow-x: hidden;
         }
 
+        /* Fluid Responsive Login Card Container */
         .login-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 40px;
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 130, 246, 0.1);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            padding: 2.5rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(99, 102, 241, 0.05);
             width: 100%;
             max-width: 420px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: interfaceFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .brand-icon {
-            font-size: 40px;
-            margin-bottom: 20px;
+        /* Top Accent Vector Frame */
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, rgba(99,102,241,0) 0%, var(--accent-glow) 50%, rgba(99,102,241,0) 100%);
+            opacity: 0.6;
+        }
+
+        /* Brand Node Ring */
+        .brand-icon-shield {
+            font-size: 1.8rem;
+            margin: 0 auto 1.5rem auto;
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            width: 80px;
-            height: 80px;
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+            width: 70px;
+            height: 70px;
+            background: rgba(99, 102, 241, 0.06);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            color: var(--accent-info);
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.15);
+            animation: pulseGlow 3s infinite ease-in-out;
         }
 
         .login-card h2 {
-            color: #ffffff;
-            font-size: 24px;
-            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 1.35rem;
+            margin-bottom: 0.35rem;
             font-weight: 700;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.02em;
         }
 
         .login-card p {
-            color: #9ca3af;
-            font-size: 14px;
-            margin-bottom: 32px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 2.25rem;
+            font-weight: 500;
         }
 
+        /* Cybernetic Threat/Alert Banner */
         .alert-box {
-            background: rgba(239, 68, 68, 0.1);
-            color: #f87171;
-            padding: 14px 16px;
-            border-radius: 12px;
-            font-size: 13px;
-            margin-bottom: 24px;
-            border: 1px solid rgba(239, 68, 68, 0.2);
+            background: rgba(244, 63, 94, 0.08);
+            color: #fda4af;
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(244, 63, 94, 0.2);
             text-align: left;
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.65rem;
         }
 
+        .alert-box i {
+            color: var(--accent-danger);
+            font-size: 1rem;
+        }
+
+        /* Fields & System Input Infrastructure */
         .form-group {
-            margin-bottom: 24px;
+            margin-bottom: 1.5rem;
             text-align: left;
         }
 
         .form-group label {
             display: block;
-            font-size: 12px;
+            font-size: 0.72rem;
             text-transform: uppercase;
-            color: #9ca3af;
-            margin-bottom: 8px;
-            font-weight: 600;
-            letter-spacing: 0.75px;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            color: rgba(148, 163, 184, 0.4);
+            font-size: 0.95rem;
+            transition: color 0.2s;
+            pointer-events: none;
         }
 
         .form-control {
             width: 100%;
-            padding: 14px 18px;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            font-size: 15px;
-            color: #ffffff;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            font-size: 0.92rem;
+            color: var(--text-primary);
             outline: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .form-control:focus {
-            border-color: #3b82f6;
-            background: rgba(15, 23, 42, 0.8);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            border-color: var(--accent-glow);
+            background: var(--input-focus-bg);
+            box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
+        }
+
+        .form-control:focus + i {
+            color: var(--accent-info);
         }
 
         .form-control::placeholder {
-            color: #4b5563;
+            color: rgba(148, 163, 184, 0.3);
         }
 
+        /* Monospace Tweaks for Masked Field */
+        #id_password {
+            font-family: 'JetBrains Mono', monospace, system-ui;
+            letter-spacing: 0.15em;
+        }
+        #id_password::placeholder {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            letter-spacing: normal;
+        }
+
+        /* Action Authentication Button */
         .btn-login {
-            background: #3b82f6;
+            background: var(--accent-glow);
             color: white;
             border: none;
             width: 100%;
-            padding: 16px;
-            border-radius: 12px;
+            padding: 0.85rem;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 15px;
-            transition: all 0.2s ease;
-            margin-top: 8px;
-            letter-spacing: 0.3px;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            font-size: 0.88rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .btn-login:hover {
-            background: #2563eb;
+            background: #4f46e5;
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
             transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
         }
 
         .btn-login:active {
             transform: translateY(0);
         }
 
+        /* External Platform Exit Link */
         .back-home {
-            display: inline-block;
-            margin-top: 32px;
-            color: #6b7280;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 2.25rem;
+            color: var(--text-secondary);
             text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
+            font-size: 0.8rem;
+            font-weight: 600;
             transition: color 0.2s ease;
         }
 
         .back-home:hover {
-            color: #3b82f6;
+            color: var(--accent-info);
+        }
+
+        /* Universal Responsive Optimization Nodes */
+        @media (max-width: 480px) {
+            body { padding: 0.5rem; }
+            .login-card {
+                padding: 2rem 1.25rem;
+                border-radius: 12px;
+                border-left: none;
+                border-right: none;
+            }
+        }
+
+        @keyframes interfaceFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 25px rgba(99, 102, 241, 0.15); border-color: rgba(99, 102, 241, 0.2); }
+            50% { box-shadow: 0 0 35px rgba(56, 189, 248, 0.25); border-color: rgba(56, 189, 248, 0.4); }
+            100% { box-shadow: 0 0 25px rgba(99, 102, 241, 0.15); border-color: rgba(99, 102, 241, 0.2); }
         }
     </style>
 </head>
 <body>
 
     <div class="login-card">
-        <div class="brand-icon">🔐</div>
+        <!-- Structural Identity Node -->
+        <div class="brand-icon-shield">
+            <i class="bi bi-shield-lock"></i>
+        </div>
         <h2>Terminal Registry</h2>
         <p>Administrative Access Gateway</p>
 
+        <!-- Threat & Alert Matrix Diagnostics -->
         {% if messages %}
             {% for message in messages %}
                 <div class="alert-box">
-                    <span>⚠️</span> {{ message }}
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span>{{ message }}</span>
                 </div>
             {% endfor %}
         {% endif %}
 
+        <!-- Secure Form Entry System -->
         <form method="POST">
             {% csrf_token %}
             
             <div class="form-group">
-                <label for="id_username">Username</label>
-                <input type="text" name="username" id="id_username" class="form-control" placeholder="Identity handles" autocomplete="username" required autofocus>
+                <label for="id_username">Username Identifier</label>
+                <div class="input-wrapper">
+                    <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter identity handle..." autocomplete="username" required autofocus>
+                    <i class="bi bi-person-fill"></i>
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="id_password">Security Key</label>
-                <input type="password" name="password" id="id_password" class="form-control" placeholder="••••••••" autocomplete="current-password" required>
+                <label for="id_password">Security Keyphrase</label>
+                <div class="input-wrapper">
+                    <input type="password" name="password" id="id_password" class="form-control" placeholder="••••••••" autocomplete="current-password" required>
+                    <i class="bi bi-key-fill"></i>
+                </div>
             </div>
 
-            <button type="submit" class="btn-login">Authenticate Gateway</button>
+            <button type="submit" class="btn-login">
+                Authenticate Gateway <i class="bi bi-arrow-right-short"></i>
+            </button>
         </form>
 
-        <a href="{% url 'home' %}" class="back-home">← Return to Public Portfolio Website</a>
+        <!-- Exit Node Router link -->
+        <a href="{% url 'home' %}" class="back-home">
+            <i class="bi bi-arrow-left"></i> Return to Public Portfolio Website
+        </a>
     </div>
 
 </body>

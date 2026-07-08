@@ -1,0 +1,220 @@
+{% extends 'admin/admin_base.html' %}
+{% load static %}
+
+{% block title %}Modify Entry - Admin Panel{% endblock %}
+
+{% block content %}
+<style>
+    /* =========================================================
+       CYBER-MINIMALIST EDIT FRAME ENGINE
+       =========================================================
+    */
+    :root {
+        --bg-panel: #131826;
+        --bg-field: rgba(0, 0, 0, 0.25);
+        --bg-field-focus: #1a2236;
+        --border-subtle: rgba(255, 255, 255, 0.08);
+        --text-bright: #f8fafc;
+        --text-dim: #94a3b8;
+        --accent-core: #6366f1; /* Indigo */
+        --accent-neon: #38bdf8; /* Cyan Glow */
+        --accent-danger: #f43f5e; /* Rose Alert */
+        --accent-warning: #fbbf24; /* Amber Warning */
+        --radius-standard: 12px;
+        --radius-inner: 8px;
+    }
+
+    .editor-wrapper {
+        animation: interfaceFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        max-width: 800px;
+        margin: 2rem auto;
+    }
+
+    .editor-card {
+        background: var(--bg-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-standard);
+        padding: 2.5rem;
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+    }
+
+    .editor-header {
+        border-bottom: 1px solid var(--border-subtle);
+        padding-bottom: 1.25rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .editor-header h3 {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: var(--text-bright);
+        letter-spacing: -0.02em;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .editor-header h3 span {
+        color: var(--accent-neon);
+        display: flex;
+        align-items: center;
+    }
+
+    .badge-context {
+        background: rgba(99, 102, 241, 0.08);
+        color: var(--accent-neon);
+        padding: 0.35rem 0.85rem;
+        border-radius: var(--radius-inner);
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+    
+    /* Cyber-Mesh Form Modules Override */
+    .edit-form .form-field-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .edit-form label {
+        color: var(--text-dim);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .edit-form input, 
+    .edit-form textarea, 
+    .edit-form select {
+        width: 100%;
+        background: var(--bg-field);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-bright);
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-inner);
+        font-size: 0.92rem;
+        outline: none;
+        font-family: inherit;
+        box-sizing: border-box;
+        transition: all 0.2s ease;
+    }
+
+    .edit-form input:focus, 
+    .edit-form textarea:focus, 
+    .edit-form select:focus {
+        border-color: var(--accent-core);
+        background: var(--bg-field-focus);
+        box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
+    }
+
+    .edit-form textarea {
+        min-height: 140px;
+        resize: vertical;
+    }
+
+    /* Action Trigger Components Footer */
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2.5rem;
+        border-top: 1px solid var(--border-subtle);
+        padding-top: 1.5rem;
+    }
+
+    .btn-save {
+        background: var(--accent-core);
+        color: white;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.85rem 2rem;
+        border: none;
+        border-radius: var(--radius-inner);
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-save:hover {
+        background: #4f46e5;
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+        transform: translateY(-1px);
+    }
+    
+    .btn-cancel {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-dim);
+        font-weight: 500;
+        font-size: 0.85rem;
+        padding: 0.85rem 1.5rem;
+        border-radius: var(--radius-inner);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn-cancel:hover {
+        background: rgba(244, 63, 94, 0.1);
+        border-color: var(--accent-danger);
+        color: var(--accent-danger);
+    }
+
+    @keyframes interfaceFadeIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="editor-wrapper">
+    <div class="editor-card">
+        <div class="editor-header">
+            <h3><span><ion-icon name="create-outline"></ion-icon></span> Modify Record Artifact</h3>
+            <span class="badge-context">{{ item_type }}</span>
+        </div>
+
+        <form method="POST" class="edit-form">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="form-field-wrapper">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small style="color: var(--text-dim); font-size: 0.8rem; margin-top: 0.25rem; opacity: 0.6;">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <span style="color: var(--accent-danger); font-size: 0.85rem; margin-top: 0.25rem; font-weight: 500;">
+                            <ion-icon name="alert-circle-outline" style="vertical-align: middle; margin-right: 2px;"></ion-icon>{{ error }}
+                        </span>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <div class="form-actions">
+                <a href="{% url 'admin_resume' %}" class="btn-cancel">
+                    <ion-icon name="close-circle-outline"></ion-icon> Cancel Changes
+                </a>
+                <button type="submit" class="btn-save">
+                    <ion-icon name="checkmark-circle-outline"></ion-icon> Commit Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

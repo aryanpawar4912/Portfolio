@@ -72,3 +72,45 @@ class SiteStatisticAdmin(admin.ModelAdmin):
     
     def has_delete_permission(self, request, obj=None):
         return False
+
+from django.contrib import admin
+from .models import (Education, Experience, Certification, Award, Publication, Skill, CoreStrength, Interest)
+
+@admin.register(Education)
+class EducationAdmin(admin.ModelAdmin):
+    list_display = ('title', 'institution', 'duration', 'order')
+    list_editable = ('order',)
+
+@admin.register(Experience)
+class ExperienceAdmin(admin.ModelAdmin):
+    list_display = ('title', 'company', 'duration', 'order')
+    list_editable = ('order',)
+
+@admin.register(Certification)
+class CertificationAdmin(admin.ModelAdmin):
+    list_display = ('title', 'issuer', 'date', 'order')
+    list_editable = ('order',)
+
+@admin.register(Award)
+class AwardAdmin(admin.ModelAdmin):
+    list_display = ('title', 'event_organizer', 'date', 'order')
+    list_editable = ('order',)
+
+@admin.register(Publication)
+class PublicationAdmin(admin.ModelAdmin):
+    list_display = ('title', 'publish_date')
+
+@admin.register(Skill)
+class SkillAdmin(admin.ModelAdmin):
+    list_display = ('name', 'percentage', 'order')
+    list_editable = ('percentage', 'order')
+
+@admin.register(CoreStrength)
+class CoreStrengthAdmin(admin.ModelAdmin):
+    list_display = ('name', 'icon_name', 'order')
+    list_editable = ('order',)
+
+@admin.register(Interest)
+class InterestAdmin(admin.ModelAdmin):
+    list_display = ('name', 'icon_name', 'order')
+    list_editable = ('order',)

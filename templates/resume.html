@@ -69,197 +69,164 @@
     display: flex;
     align-items: center;
     gap: 0.85rem;
-    width: 100%; /* Ensures all items take up equal full width */
+    width: 100%;
     box-sizing: border-box;
   }
   .badge-item ion-icon { 
     color: var(--accent-primary); 
     font-size: 1.2rem;
-    flex-shrink: 0; /* Prevents the icon from shrinking on narrow screens */
+    flex-shrink: 0;
   }
 </style>
 
 <article class="resume active" data-page="resume">
   <header><h2 class="h2 article-title">Resume</h2></header>
   
-  <!-- 1. EDUCATION SECTION -->
+  {% if educations %}
   <section class="resume-section">
     <div class="section-heading">
       <ion-icon name="school-outline"></ion-icon>
       <h3>Education</h3>
     </div>
     <ul class="custom-timeline">
+      {% for edu in educations %}
       <li class="timeline-node">
-        <h4 class="node-title">Diploma in Computer Engineering</h4>
-        <span class="node-meta">Mahavir Polytechnic, Nashik • Sep 2023 - May 2026 • 3 Years</span>
-        <p class="node-desc">Maintained a strong technical foundation in computational theory, data structures, software engineering, and application deployments. Secured an aggregate top-tier score of 95%.</p>
+        <h4 class="node-title">{{ edu.title }}</h4>
+        <span class="node-meta">{{ edu.institution }} • {{ edu.duration }}</span>
+        <p class="node-desc">{{ edu.description }}</p>
       </li>
-
-      <li class="timeline-node">
-        <h4 class="node-title">Secondary School Certificate</h4>
-        <span class="node-meta">Janta Vidyalaya, Karanjwan • Jun 2017 - Mar 2023 • 5 Years</span>
-        <p class="node-desc">Successfully completed SSC from Janta Vidyalaya, Karanjwan with strong foundation in science and mathematics.</p>
-      </li>
+      {% endfor %}
     </ul>
   </section>
+  {% endif %}
 
-  <!-- 2. EXPERIENCE SECTION -->
+  {% if experiences %}
   <section class="resume-section">
     <div class="section-heading">
       <ion-icon name="briefcase-outline"></ion-icon>
       <h3>Experience</h3>
     </div>
     <ul class="custom-timeline">
+      {% for exp in experiences %}
       <li class="timeline-node">
-        <h4 class="node-title">Intern at Grapes Cloud Host</h4>
-        <span class="node-meta">Jun 2026 - Present • Ongoing</span>
-        <p class="node-desc">Developed full-stack web applications using Django, Python, and Bootstrap alongside interactive native mobile deployments engineered with Java and XML.</p>
+        <h4 class="node-title">{{ exp.title }}</h4>
+        <span class="node-meta">{{ exp.company }} • {{ exp.duration }}</span>
+        <p class="node-desc">{{ exp.description|safe }}</p>
       </li>
-      <li class="timeline-node">
-        <h4 class="node-title">Intern at Sumago Infotech Pvt. Ltd.</h4>
-        <span class="node-meta">Jun 2025 - Aug 2025 • 3 months</span>
-        <p class="node-desc">Engineered robust full-stack solutions under the Django MVC architectural framework. Honored as the **Star Performer** of the internship cohort for contributions toward database optimization and backend logic pipelines.</p>
-      </li>
+      {% endfor %}
     </ul>
   </section>
+  {% endif %}
 
-  <!-- 3. CERTIFICATIONS & TRAINING SECTION -->
+  {% if certifications %}
   <section class="resume-section">
     <div class="section-heading">
       <ion-icon name="ribbon-outline"></ion-icon>
       <h3>Certifications & Training</h3>
     </div>
     <ul class="custom-timeline">
+      {% for cert in certifications %}
       <li class="timeline-node">
-        <h4 class="node-title">Certified Android Developer Trainee</h4>
-        <span class="node-meta">UEF EdTech Pvt. Ltd.  • Aug 2025</span>
-        <p class="node-desc">Completed intensive technical training focusing on native Android component lifecycles, user interface configurations using Java/XML, API parsing, and structured local database systems.</p>
+        <h4 class="node-title">{{ cert.title }}</h4>
+        <span class="node-meta">{{ cert.issuer }} • {{ cert.date }}</span>
+        <p class="node-desc">{{ cert.description }}</p>
       </li>
-
-      <li class="timeline-node">
-        <h4 class="node-title">Software Traning</h4>
-        <span class="node-meta">Learnomate Technologies. • Jul 2024</span>
-        <p class="node-desc">Completed comprehensive software training in SQL, Linux, Data Analytics, and DevOps from Learnomate Technologies in July 2024.</p>
-      </li>
-
-      <li class="timeline-node">
-        <h4 class="node-title">Course on Computer Concepts (CCC) — 'A' Grade</h4>
-        <span class="node-meta">Netweb Computer Education & Navnirman Education • May 2023</span>
-        <p class="node-desc">Acquired a strong foundation in IT fundamentals, operating systems, hardware networking and Microsoft Office through CCC certificate.</p>
-      </li>
-
+      {% endfor %}
     </ul>
   </section>
+  {% endif %}
 
-  <!-- 4. COMPETITIONS & AWARDS SECTION -->
+  {% if awards %}
   <section class="resume-section">
     <div class="section-heading">
       <ion-icon name="trophy-outline"></ion-icon>
       <h3>Awards & Achievements</h3>
     </div>
     <ul class="custom-timeline">
+      {% for award in awards %}
       <li class="timeline-node">
-        <h4 class="node-title">Runner-Up — Logmieer Techfest</h4>
-        <span class="node-meta">K.V.N. Naik Polytechnic, Nashik. • Mar 2026</span>
-        <p class="node-desc">Achieved the Runner-Up title in the state-level project development and presentation competition, defending system architectures against strict institutional peer panels.</p>
+        <h4 class="node-title">{{ award.title }}</h4>
+        <span class="node-meta">{{ award.event_organizer }} • {{ award.date }}</span>
+        <p class="node-desc">{{ award.description }}</p>
       </li>
-
-      <li class="timeline-node">
-        <h4 class="node-title">Star Performer — Batch 2025</h4>
-        <span class="node-meta">Sumago Infotech Pvt. Lmt. • Aug 2025</span>
-        <p class="node-desc">Honored to be recognized as the Star Performer at Sumago Infotech - Batch 2025, for incredible journey of growth, innovation, and learning.</p>
-      </li>
-
-      <li class="timeline-node">
-        <h4 class="node-title">Winner of State Level Technical Quiz Competition — Technovation 2K25</h4>
-        <span class="node-meta">MVPS'S RSM Polytechnic, Nashik. • Mar 2025</span>
-        <p class="node-desc">Secured Winner Position in State Level Technical Quiz Competition in Technovation 2K25 events organized by Department of Information Technology in MVPS'S RSM Polytechnic, Nashik.</p>
-      </li>
-
+      {% endfor %}
     </ul>
   </section>
+  {% endif %}
 
-  <!-- 5. PUBLICATIONS SECTION -->
+  {% if publications %}
   <section class="resume-section">
     <div class="section-heading">
       <ion-icon name="newspaper-outline"></ion-icon>
       <h3>Publications</h3>
     </div>
     <ul class="custom-timeline">
+      {% for pub in publications %}
       <li class="timeline-node">
-        <h4 class="node-title">Onion Pulse AI: Solving Onion Market Instability by Forecasting Onion Price Using ML Approach</h4>
-        <span class="node-meta">Published: Mar 11, 2026</span>
+        <h4 class="node-title">{{ pub.title }}</h4>
+        <span class="node-meta">{{ pub.journal }} • {{ pub.publish_date }}</span>
         <p class="node-desc">
-          International Journal of Advanced Research in Science, Communication and Technology (IJARSCT). 
-          Published original peer-reviewed research exploring ensemble machine learning architectures (LSTM, XGBoost, Prophet, and ARIMA) to handle unstable market behaviors.
+          {{ pub.description }}
+          {% if pub.paper_link %}
           <br>
-          <a href="https://ijarsct.co.in/Paper31525.pdf" class="node-link" target="_blank"><mark>View Research Paper</mark></a>
+          <a href="{{ pub.paper_link }}" class="node-link" target="_blank"><mark>View Research Paper</mark></a>
+          {% endif %}
         </p>
       </li>
+      {% endfor %}
     </ul>
   </section>
+  {% endif %}
 
-  <!-- 6. SKILLS MATRIX SECTION -->
+  {% if skills %}
   <section class="resume-section">
     <div class="section-heading">
       <ion-icon name="code-working-outline"></ion-icon>
       <h3>My Skills</h3>
     </div>
     <div class="skills-wrapper">
+      {% for skill in skills %}
       <div class="skill-container">
-        <div class="skill-info"><span>Python & Django Framework</span><span>80%</span></div>
-        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 80%;"></div></div>
+        <div class="skill-info"><span>{{ skill.name }}</span><span>{{ skill.percentage }}%</span></div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: {{ skill.percentage }}%;"></div></div>
       </div>
-      <div class="skill-container">
-        <div class="skill-info"><span>Mobile App Development (Android Native / React Native)</span><span>75%</span></div>
-        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 75%;"></div></div>
-      </div>
-      <div class="skill-container">
-        <div class="skill-info"><span>Machine Learning Models (LSTM, XGBoost, Prophet)</span><span>70%</span></div>
-        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 70%;"></div></div>
-      </div>
-      <div class="skill-container">
-        <div class="skill-info"><span>HTML & CSS Frontend Interfaces</span><span>90%</span></div>
-        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 90%;"></div></div>
-      </div>
-      <div class="skill-container">
-        <div class="skill-info"><span>JavaScript / Web Development Scripting</span><span>60%</span></div>
-        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 60%;"></div></div>
-      </div>
+      {% endfor %}
     </div>
   </section>
+  {% endif %}
 
-  <!-- 7. STRENGTHS & INTERESTS SPLIT GRID -->
   <div class="resume-grid">
-    <!-- Professional Strengths Column -->
+    {% if strengths %}
     <section class="resume-section">
       <div class="section-heading">
         <ion-icon name="checkmark-done-circle-outline"></ion-icon>
         <h3>Core Strengths</h3>
       </div>
       <ul class="badge-list">
-        <li class="badge-item"><ion-icon name="git-branch-outline"></ion-icon> Agile Full-Stack Engineering</li>
-        <li class="badge-item"><ion-icon name="analytics-outline"></ion-icon> Predictive Data Modeling</li>
-        <li class="badge-item"><ion-icon name="search-outline"></ion-icon> Database Optimization & Query Tuning</li>
-        <li class="badge-item"><ion-icon name="people-outline"></ion-icon> Technical Collaboration & Leadership</li>
-        <li class="badge-item"><ion-icon name="construct-outline"></ion-icon> Structural System Design</li>
+        {% for strength in strengths %}
+        <li class="badge-item">
+          <ion-icon name="{{ strength.icon_name }}"></ion-icon> {{ strength.name }}
+        </li>
+        {% endfor %}
       </ul>
     </section>
+    {% endif %}
 
-    <!-- Personal Interests Column -->
+    {% if interests %}
     <section class="resume-section">
       <div class="section-heading">
         <ion-icon name="heart-outline"></ion-icon>
         <h3>Interests & Hobbies</h3>
       </div>
       <ul class="badge-list">
-        <li class="badge-item"><ion-icon name="trending-up-outline"></ion-icon> Agritech Innovation Platforms</li>
-        <li class="badge-item"><ion-icon name="logo-android"></ion-icon> Native Mobile Ecosystems</li>
-        <li class="badge-item"><ion-icon name="logo-github"></ion-icon> Open Source Engineering Contributions</li>
-        <li class="badge-item"><ion-icon name="musical-notes-outline"></ion-icon> Music Exploration (Arijit Singh, Acoustic Sessions)</li>
-        <li class="badge-item"><ion-icon name="trophy-outline"></ion-icon> Sports Analytics & Indian Cricket</li>
+        {% for interest in interests %}
+        <li class="badge-item">
+          <ion-icon name="{{ interest.icon_name }}"></ion-icon> {{ interest.name }}
+        </li>
+        {% endfor %}
       </ul>
     </section>
+    {% endif %}
   </div>
 </article>
 {% endblock %}

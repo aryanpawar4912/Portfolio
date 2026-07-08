@@ -24,8 +24,21 @@ def home(request):
     return render(request, 'home.html')
 
 
+from django.shortcuts import render
+from .models import (Education, Experience, Certification, Award, Publication, Skill, CoreStrength, Interest)
+
 def resume(request):
-    return render(request, 'resume.html')
+    context = {
+        'educations': Education.objects.all(),
+        'experiences': Experience.objects.all(),
+        'certifications': Certification.objects.all(),
+        'awards': Award.objects.all(),
+        'publications': Publication.objects.all(),
+        'skills': Skill.objects.all(),
+        'strengths': CoreStrength.objects.all(),
+        'interests': Interest.objects.all(),
+    }
+    return render(request, 'resume.html', context)
 
 
 def portfolio(request):
@@ -452,6 +465,112 @@ def admin_delete_project(request, project_id):
     messages.error(request, "Invalid request method for record removal.")
     return redirect('admin_project')
 
+
+from django.shortcuts import render, redirect
+from django.contrib.admin.views.decorators import staff_member_required
+from .models import (Education, Experience, Certification, Award, 
+                     Publication, Skill, CoreStrength, Interest)
+from .forms import (EducationForm, ExperienceForm, CertificationForm, AwardForm,
+                    PublicationForm, SkillForm, CoreStrengthForm, InterestForm)
+
+@staff_member_required  # Ensures only logged-in admin users can view/edit
+def admin_resume(request):
+    if request.method == 'POST':
+        form_type = request.POST.get('form_type')
+        
+        # Route to corresponding form processor dynamically
+        if form_type == 'education':
+            form = EducationForm(request.POST)
+        elif form_type == 'experience':
+            form = ExperienceForm(request.POST)
+        elif form_type == 'certification':
+            form = CertificationForm(request.POST)
+        elif form_type == 'award':
+            form = AwardForm(request.POST)
+        elif form_type == 'publication':
+            form = PublicationForm(request.POST)
+        elif form_type == 'skill':
+            form = SkillForm(request.POST)
+        elif form_type == 'strength':
+            form = CoreStrengthForm(request.POST)
+        elif form_type == 'interest':
+            form = InterestForm(request.POST)
+            
+        if form.is_valid():
+            form.save()
+            return redirect('admin_resume')
+
+    context = {
+        'educations': Education.objects.all(),
+        'experiences': Experience.objects.all(),
+        'certifications': Certification.objects.all(),
+        'awards': Award.objects.all(),
+        'publications': Publication.objects.all(),
+        'skills': Skill.objects.all(),
+        'strengths': CoreStrength.objects.all(),
+        'interests': Interest.objects.all(),
+        # Pass blank initialized forms to the template for object addition:
+        'edu_form': EducationForm(),
+        'exp_form': ExperienceForm(),
+        'cert_form': CertificationForm(),
+        'award_form': AwardForm(),
+        'pub_form': PublicationForm(),
+        'skill_form': SkillForm(),
+        'strength_form': CoreStrengthForm(),
+        'interest_form': InterestForm(),
+    }
+    return render(request, 'admin/admin_resume.html', context)
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import Experience, Education, Skill, Publication, Award
+from .forms import ExperienceForm, EducationForm, SkillForm, PublicationForm, AwardForm
+
+# Strategic Model Matrix Mapping
+# Update your Strategic Model Matrix Mapping in views.py
+MODEL_MATRIX = {
+    'experience': {'model': Experience, 'form': ExperienceForm},
+    'education': {'model': Education, 'form': EducationForm},
+    'skill': {'model': Skill, 'form': SkillForm},
+    'publication': {'model': Publication, 'form': PublicationForm},
+    'award': {'model': Award, 'form': AwardForm},
+    'certification': {'model': Certification, 'form': CertificationForm},
+    'strength': {'model': CoreStrength, 'form': CoreStrengthForm},
+    'interest': {'model': Interest, 'form': InterestForm},
+}
+
+def edit_resume_item(request, item_type, pk):
+    """Dynamic Editor View for all Resume Sub-models."""
+    if item_type not in MODEL_MATRIX:
+        return redirect('admin_resume')  # Invalid type, redirect to main resume admin page
+        
+    context = MODEL_MATRIX[item_type]
+    instance = get_object_or_404(context['model'], pk=pk)
+    
+    if request.method == 'POST':
+        form = context['form'](request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"{item_type.capitalize()} entry updated successfully.")
+            return redirect('admin_resume')
+    else:
+        form = context['form'](instance=instance)
+        
+    return render(request, 'admin/edit_resume_item.html', {
+        'form': form,
+        'item_type': item_type,
+        'instance': instance
+    })
+
+def delete_resume_item(request, item_type, pk):
+    """Destructive Database Eviction for all Resume Sub-models."""
+    if item_type in MODEL_MATRIX:
+        instance = get_object_or_404(MODEL_MATRIX[item_type]['model'], pk=pk)
+        instance.delete()
+        messages.success(request, f"{item_type.capitalize()} entry has been permanently purged.")
+    return redirect('admin_resume')
+
 # ==========================================
 #          AUTHENTICATION CONTROL
 # ==========================================
@@ -494,3 +613,4 @@ def admin_logout_view(request):
     logout(request)
     messages.info(request, "You have been logged out safely.")
     return redirect('home')
+

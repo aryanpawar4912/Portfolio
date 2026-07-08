@@ -1,0 +1,750 @@
+{% extends 'admin/admin_base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - Resume Custom Editor{% endblock %}
+
+{% block content %}
+<style>
+    /* =========================================================
+       CYBER-MINIMALIST RESUME WORKSPACE ENGINE (V2.1)
+       =========================================================
+    */
+    :root {
+        --bg-panel: #131826;
+        --bg-field: rgba(0, 0, 0, 0.25);
+        --bg-field-focus: #1a2236;
+        --border-subtle: rgba(255, 255, 255, 0.08);
+        --text-bright: #f8fafc;
+        --text-dim: #94a3b8;
+        --accent-core: #6366f1; /* Indigo */
+        --accent-neon: #38bdf8; /* Cyan Glow */
+        --accent-danger: #f43f5e; /* Rose Alert */
+        --accent-warning: #fbbf24; /* Amber Warning */
+        --radius-standard: 12px;
+        --radius-inner: 8px;
+    }
+
+    .resume-workspace-wrapper {
+        animation: interfaceFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        margin-top: 1.5rem;
+        padding: 0 1rem;
+    }
+
+    .article-title-node {
+        color: var(--text-bright);
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .article-title-node span {
+        color: var(--accent-neon);
+        display: inline-flex;
+    }
+
+    /* Core Workspace Layout Split */
+    .dashboard-container {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 2rem;
+        align-items: start;
+    }
+
+    /* Control Tower Sidebar Routing */
+    .dashboard-sidebar {
+        background: var(--bg-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-standard);
+        padding: 1rem;
+        position: sticky;
+        top: 20px;
+        z-index: 10;
+    }
+
+    .sidebar-menu { 
+        list-style: none; 
+        padding: 0; 
+        margin: 0; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 0.4rem; 
+    }
+
+    .menu-btn {
+        width: 100%;
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--text-dim);
+        padding: 0.85rem 1rem;
+        text-align: left;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        border-radius: var(--radius-inner);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .menu-btn ion-icon {
+        font-size: 1.2rem;
+        transition: transform 0.2s;
+    }
+
+    .menu-btn:hover {
+        color: var(--text-bright);
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .menu-btn.active {
+        background: rgba(99, 102, 241, 0.08);
+        border-color: rgba(99, 102, 241, 0.2);
+        color: var(--accent-neon);
+    }
+
+    .menu-btn.active ion-icon {
+        transform: scale(1.1);
+        color: var(--accent-core);
+    }
+
+    /* Dynamic Content Panels */
+    .dashboard-panel { display: none; }
+    .dashboard-panel.active { display: block; }
+    
+    .panel-header-node {
+        margin-bottom: 1.75rem;
+        border-bottom: 1px solid var(--border-subtle);
+        padding-bottom: 1rem;
+    }
+
+    .panel-header-node h3 {
+        color: var(--text-bright);
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+
+    /* Cyber-Mesh Form Modules */
+    .custom-form-grid {
+        background: var(--bg-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-standard);
+        padding: 2rem;
+        margin-bottom: 2.5rem;
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.3);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .form-group { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 0.5rem; 
+        margin-bottom: 1.5rem; 
+    }
+
+    .form-group.full-width { 
+        grid-column: span 2; 
+    }
+    
+    .form-group label { 
+        color: var(--text-dim); 
+        font-size: 0.72rem; 
+        font-weight: 700; 
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .form-group input, 
+    .form-group textarea, 
+    .form-group select {
+        width: 100%;
+        background: var(--bg-field);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-bright);
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-inner);
+        font-size: 0.92rem;
+        outline: none;
+        font-family: inherit;
+        transition: all 0.2s ease;
+    }
+
+    .form-group input:focus, 
+    .form-group textarea:focus,
+    .form-group select:focus { 
+        border-color: var(--accent-core); 
+        background: var(--bg-field-focus);
+        box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 110px;
+    }
+
+    /* Action Trigger Components */
+    .btn-primary { 
+        background: var(--accent-core); 
+        color: white; 
+        font-weight: 600; 
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.85rem 1.75rem; 
+        border: none; 
+        border-radius: var(--radius-inner); 
+        cursor: pointer; 
+        transition: all 0.2s; 
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary:hover { 
+        background: #4f46e5;
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+        transform: translateY(-1px);
+    }
+
+    /* Modern Matrix Data Cards */
+    .matrix-records-title {
+        color: var(--text-bright);
+        font-size: 0.95rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .matrix-records-title::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border-subtle);
+    }
+
+    .matrix-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .matrix-card {
+        background: var(--bg-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-standard);
+        padding: 1.25rem 1.5rem;
+        display: grid;
+        grid-template-columns: 2fr 1.5fr 1fr 0.5fr 1fr;
+        align-items: center;
+        gap: 1rem;
+        transition: border-color 0.2s;
+    }
+
+    .matrix-card:hover {
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .matrix-cell {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .matrix-cell.primary-title {
+        color: var(--text-bright);
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .matrix-cell.secondary-context {
+        color: var(--text-dim);
+        font-size: 0.9rem;
+    }
+
+    .matrix-cell.meta-timeline {
+        color: var(--accent-neon);
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .matrix-cell.index-badge {
+        justify-self: end;
+        background: rgba(255, 255, 255, 0.04);
+        padding: 0.25rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        font-family: monospace;
+    }
+
+    /* CRUD Control Cluster Components */
+    .matrix-actions-group {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+
+    .action-pill-btn {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-dim);
+        padding: 0.4rem 0.6rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .action-pill-btn.edit:hover {
+        background: rgba(251, 191, 36, 0.1);
+        border-color: var(--accent-warning);
+        color: var(--accent-warning);
+    }
+
+    .action-pill-btn.delete:hover {
+        background: rgba(244, 63, 94, 0.1);
+        border-color: var(--accent-danger);
+        color: var(--accent-danger);
+    }
+
+    .matrix-empty {
+        background: rgba(255, 255, 255, 0.01);
+        border: 1px dashed var(--border-subtle);
+        padding: 3rem;
+        text-align: center;
+        color: var(--text-dim);
+        border-radius: var(--radius-standard);
+        font-size: 0.9rem;
+    }
+
+    /* Responsive Engine Updates */
+    @media (max-width: 992px) {
+        .dashboard-container { grid-template-columns: 1fr; gap: 1.5rem; }
+        .dashboard-sidebar { position: relative; top: 0; }
+        .sidebar-menu { flex-direction: row; overflow-x: auto; padding-bottom: 0.5rem; -webkit-overflow-scrolling: touch; }
+        .menu-btn { white-space: nowrap; width: auto; }
+    }
+
+    @media (max-width: 768px) {
+        .custom-form-grid { padding: 1.25rem; }
+        .form-row { grid-template-columns: 1fr; gap: 0; }
+        .form-group.full-width { grid-column: span 1; }
+        .matrix-card {
+            grid-template-columns: 1fr !important;
+            gap: 0.5rem;
+            padding: 1.25rem;
+        }
+        .matrix-cell { white-space: normal; }
+        .matrix-cell.index-badge { justify-self: start; margin-top: 0.1rem; }
+        .matrix-actions-group { justify-content: flex-start; margin-top: 0.75rem; width: 100%; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; }
+    }
+
+    @keyframes interfaceFadeIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<article class="resume-workspace-wrapper active">
+    <header>
+        <h2 class="article-title-node">
+            <span><ion-icon name="options-outline"></ion-icon></span> Resume Custom Dashboard
+        </h2>
+    </header>
+
+    <div class="dashboard-container">
+        <aside class="dashboard-sidebar">
+            <ul class="sidebar-menu">
+                <li><button class="menu-btn active" data-tab="tab-experience" onclick="switchTab(event, 'tab-experience')"><ion-icon name="briefcase-outline"></ion-icon> Experience</button></li>
+                <li><button class="menu-btn" data-tab="tab-education" onclick="switchTab(event, 'tab-education')"><ion-icon name="school-outline"></ion-icon> Education</button></li>
+                <li><button class="menu-btn" data-tab="tab-certification" onclick="switchTab(event, 'tab-certification')"><ion-icon name="ribbon-outline"></ion-icon> Certifications</button></li>
+                <li><button class="menu-btn" data-tab="tab-skills" onclick="switchTab(event, 'tab-skills')"><ion-icon name="code-working-outline"></ion-icon> Skills Matrix</button></li>
+                <li><button class="menu-btn" data-tab="tab-publications" onclick="switchTab(event, 'tab-publications')"><ion-icon name="newspaper-outline"></ion-icon> Publications</button></li>
+                <li><button class="menu-btn" data-tab="tab-awards" onclick="switchTab(event, 'tab-awards')"><ion-icon name="trophy-outline"></ion-icon> Awards</button></li>
+                <li><button class="menu-btn" data-tab="tab-strength" onclick="switchTab(event, 'tab-strength')"><ion-icon name="shield-checkmark-outline"></ion-icon> Core Strengths</button></li>
+                <li><button class="menu-btn" data-tab="tab-interest" onclick="switchTab(event, 'tab-interest')"><ion-icon name="heart-outline"></ion-icon> Interests</button></li>
+            </ul>
+        </aside>
+
+        <main class="dashboard-content">
+            
+            <div id="tab-experience" class="dashboard-panel active">
+                <div class="panel-header-node"><h3>Manage Experience Data</h3></div>
+                <form method="POST" class="custom-form-grid">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="experience">
+                    <div class="form-row">
+                        <div class="form-group"><label>Job Title</label>{{ exp_form.title }}</div>
+                        <div class="form-group"><label>Company/Institution Name</label>{{ exp_form.company }}</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Duration Meta String</label>{{ exp_form.duration }}</div>
+                        <div class="form-group"><label>Rendering Order Block</label>{{ exp_form.order }}</div>
+                    </div>
+                    <div class="form-group full-width"><label>Technical Descriptions</label>{{ exp_form.description }}</div>
+                    <button type="submit" class="btn-primary"><ion-icon name="add-circle-outline"></ion-icon> Add Entry</button>
+                </form>
+
+                <h4 class="matrix-records-title">Active Experience Nodes</h4>
+                <div class="matrix-grid">
+                    {% for exp in experiences %}
+                    <div class="matrix-card">
+                        <div class="matrix-cell primary-title">{{ exp.title }}</div>
+                        <div class="matrix-cell secondary-context">{{ exp.company }}</div>
+                        <div class="matrix-cell meta-timeline">{{ exp.duration }}</div>
+                        <div class="matrix-cell index-badge">ORD-{{ exp.order }}</div>
+                        <div class="matrix-actions-group">
+                            <a href="{% url 'edit_resume_item' 'experience' exp.id %}" class="action-pill-btn edit"><ion-icon name="create-outline"></ion-icon> Edit</a>
+                            <a href="{% url 'delete_resume_item' 'experience' exp.id %}" class="action-pill-btn delete" onclick="return confirm('Purge this record completely?')"><ion-icon name="trash-outline"></ion-icon> Delete</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="matrix-empty">No workspace registry nodes tracked.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div id="tab-education" class="dashboard-panel">
+                <div class="panel-header-node"><h3>Manage Academic Records</h3></div>
+                <form method="POST" class="custom-form-grid">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="education">
+                    <div class="form-row">
+                        <div class="form-group"><label>Degree / Certificate Name</label>{{ edu_form.title }}</div>
+                        <div class="form-group"><label>School / University Board</label>{{ edu_form.institution }}</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Duration Meta Info</label>{{ edu_form.duration }}</div>
+                        <div class="form-group"><label>Sorting Layout Order</label>{{ edu_form.order }}</div>
+                    </div>
+                    <div class="form-group full-width"><label>Performance Summary & Core Domains</label>{{ edu_form.description }}</div>
+                    <button type="submit" class="btn-primary"><ion-icon name="add-circle-outline"></ion-icon> Add Entry</button>
+                </form>
+
+                <h4 class="matrix-records-title">Tracked Academic Records</h4>
+                <div class="matrix-grid">
+                    {% for edu in educations %}
+                    <div class="matrix-card">
+                        <div class="matrix-cell primary-title">{{ edu.title }}</div>
+                        <div class="matrix-cell secondary-context">{{ edu.institution }}</div>
+                        <div class="matrix-cell meta-timeline">{{ edu.duration }}</div>
+                        <div class="matrix-cell index-badge">POS-{{ edu.order }}</div>
+                        <div class="matrix-actions-group">
+                            <a href="{% url 'edit_resume_item' 'education' edu.id %}" class="action-pill-btn edit"><ion-icon name="create-outline"></ion-icon> Edit</a>
+                            <a href="{% url 'delete_resume_item' 'education' edu.id %}" class="action-pill-btn delete" onclick="return confirm('Purge this record completely?')"><ion-icon name="trash-outline"></ion-icon> Delete</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="matrix-empty">No academic credentials stored in database.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div id="tab-certification" class="dashboard-panel">
+                <div class="panel-header-node"><h3>Manage Industry Certifications</h3></div>
+                <form method="POST" class="custom-form-grid">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="certification">
+                    <div class="form-row">
+                        <div class="form-group"><label>Certification Title Name</label>{{ cert_form.title }}</div>
+                        <div class="form-group"><label>Issuing Organization Body</label>{{ cert_form.issuer }}</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Issue Date Context</label>{{ cert_form.date }}</div> 
+                        <div class="form-group"><label>Display Sorting Order</label>{{ cert_form.order }}</div> 
+                    </div>
+                    <div class="form-group full-width"><label>Verification Token ID / Link Description</label>{{ cert_form.description }}</div>
+                    <button type="submit" class="btn-primary"><ion-icon name="add-circle-outline"></ion-icon> Register Certificate</button>
+                </form>
+
+                <h4 class="matrix-records-title">Authenticated Credentials Stack</h4>
+                <div class="matrix-grid">
+                    {% for cert in certifications %}
+                    <div class="matrix-card">
+                        <div class="matrix-cell primary-title">{{ cert.title }}</div>
+                        <div class="matrix-cell secondary-context">{{ cert.issuer }}</div>
+                        <div class="matrix-cell meta-timeline">{{ cert.date }}</div>
+                        <div class="matrix-cell index-badge">ORD-{{ cert.order }}</div>
+                        <div class="matrix-actions-group">
+                            <a href="{% url 'edit_resume_item' 'certification' cert.id %}" class="action-pill-btn edit"><ion-icon name="create-outline"></ion-icon> Edit</a>
+                            <a href="{% url 'delete_resume_item' 'certification' cert.id %}" class="action-pill-btn delete" onclick="return confirm('Purge this record completely?')"><ion-icon name="trash-outline"></ion-icon> Delete</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="matrix-empty">No certifications tracked yet.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div id="tab-skills" class="dashboard-panel">
+                <div class="panel-header-node"><h3>Manage Competency Matrix</h3></div>
+                <form method="POST" class="custom-form-grid">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="skill">
+                    <div class="form-row">
+                        <div class="form-group"><label>Skill / Framework Name</label>{{ skill_form.name }}</div>
+                        <div class="form-group"><label>Proficiency Scale (0-100)</label>{{ skill_form.percentage }}</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Position / Weight Index</label>{{ skill_form.order }}</div>
+                        <div></div>
+                    </div>
+                    <button type="submit" class="btn-primary"><ion-icon name="save-outline"></ion-icon> Save Skill Metrics</button>
+                </form>
+
+                <h4 class="matrix-records-title">Current Core Matrix Data</h4>
+                <div class="matrix-grid">
+                    {% for skill in skills %}
+                    <div class="matrix-card">
+                        <div class="matrix-cell primary-title">{{ skill.name }}</div>
+                        <div class="matrix-cell secondary-context">Scale Level</div>
+                        <div class="matrix-cell meta-timeline">{{ skill.percentage }}%</div>
+                        <div class="matrix-cell index-badge">WGT-{{ skill.order }}</div>
+                        <div class="matrix-actions-group">
+                            <a href="{% url 'edit_resume_item' 'skill' skill.id %}" class="action-pill-btn edit"><ion-icon name="create-outline"></ion-icon> Edit</a>
+                            <a href="{% url 'delete_resume_item' 'skill' skill.id %}" class="action-pill-btn delete" onclick="return confirm('Purge this record completely?')"><ion-icon name="trash-outline"></ion-icon> Delete</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="matrix-empty">No dynamic metrics loaded.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div id="tab-publications" class="dashboard-panel">
+                <div class="panel-header-node"><h3>Manage Research Publications</h3></div>
+                <form method="POST" class="custom-form-grid">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="publication">
+                    <div class="form-row">
+                        <div class="form-group"><label>Paper Title</label>{{ pub_form.title }}</div>
+                        <div class="form-group"><label>Journal / Publisher Context</label>{{ pub_form.journal }}</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Publish Date Statement</label>{{ pub_form.publish_date }}</div>
+                        <div class="form-group"><label>Digital Repository URL</label>{{ pub_form.paper_link }}</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Display Order</label>{{ pub_form.order }}</div>
+                        <div></div>
+                    </div>
+                    <div class="form-group full-width"><label>Abstract / Key Methodology Summary</label>{{ pub_form.description }}</div>
+                    <button type="submit" class="btn-primary"><ion-icon name="cloud-upload-outline"></ion-icon> Publish Entry</button>
+                </form>
+
+                <h4 class="matrix-records-title">Scholarly Releases Inventory</h4>
+                <div class="matrix-grid">
+                    {% for pub in publications %}
+                    <div class="matrix-card">
+                        <div class="matrix-cell primary-title">{{ pub.title }}</div>
+                        <div class="matrix-cell secondary-context">{{ pub.journal }}</div>
+                        <div class="matrix-cell meta-timeline">{{ pub.publish_date }}</div>
+                        <div class="matrix-cell index-badge">PUB-{{ pub.order }}</div>
+                        <div class="matrix-actions-group">
+                            <a href="{% url 'edit_resume_item' 'publication' pub.id %}" class="action-pill-btn edit"><ion-icon name="create-outline"></ion-icon> Edit</a>
+                            <a href="{% url 'delete_resume_item' 'publication' pub.id %}" class="action-pill-btn delete" onclick="return confirm('Purge this record completely?')"><ion-icon name="trash-outline"></ion-icon> Delete</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="matrix-empty">No scholarly publications found in registry.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div id="tab-awards" class="dashboard-panel">
+                <div class="panel-header-node"><h3>Awards & Achievements</h3></div>
+                <form method="POST" class="custom-form-grid">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="award">
+                    <div class="form-row">
+                        <div class="form-group"><label>Honor Title</label>{{ award_form.title }}</div>
+                        <div class="form-group"><label>Event Organizer/Host Venue</label>{{ award_form.event_organizer }}</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Conferral Date</label>{{ award_form.date }}</div>
+                        <div class="form-group"><label>Display Rank Weight</label>{{ award_form.order }}</div>
+                    </div>
+                    <div class="form-group full-width"><label>Contribution & Verification Detail</label>{{ award_form.description }}</div>
+                    <button type="submit" class="btn-primary"><ion-icon name="trophy-outline"></ion-icon> Add Honor Record</button>
+                </form>
+
+                <h4 class="matrix-records-title">Populated Honors Matrix</h4>
+                <div class="matrix-grid">
+                    {% for award in awards %}
+                    <div class="matrix-card">
+                        <div class="matrix-cell primary-title">{{ award.title }}</div>
+                        <div class="matrix-cell secondary-context">{{ award.event_organizer }}</div>
+                        <div class="matrix-cell meta-timeline">{{ award.date }}</div>
+                        <div class="matrix-cell index-badge">RNK-{{ award.order }}</div>
+                        <div class="matrix-actions-group">
+                            <a href="{% url 'edit_resume_item' 'award' award.id %}" class="action-pill-btn edit"><ion-icon name="create-outline"></ion-icon> Edit</a>
+                            <a href="{% url 'delete_resume_item' 'award' award.id %}" class="action-pill-btn delete" onclick="return confirm('Purge this record completely?')"><ion-icon name="trash-outline"></ion-icon> Delete</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="matrix-empty">No achievements track nodes populated yet.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div id="tab-strength" class="dashboard-panel">
+                <div class="panel-header-node"><h3>Manage Core Strengths</h3></div>
+                <form method="POST" class="custom-form-grid">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="strength">
+                    <div class="form-row">
+                        <div class="form-group"><label>Core Strength Name Tag</label>{{ strength_form.name }}</div>
+                        <div class="form-group"><label>Ionicons Icon Name String</label>{{ strength_form.icon_name }}</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Layout Sorting Position</label>{{ strength_form.order }}</div>
+                        <div></div>
+                    </div>
+                    <button type="submit" class="btn-primary"><ion-icon name="shield-checkmark-outline"></ion-icon> Append Strength Pillar</button>
+                </form>
+
+                <h4 class="matrix-records-title">Active Strengths Index</h4>
+                <div class="matrix-grid">
+                    {% for strength in strengths %}
+                    <div class="matrix-card">
+                        <div class="matrix-cell primary-title">{{ strength.name }}</div>
+                        <div class="matrix-cell secondary-context"><ion-icon name="{{ strength.icon_name }}"></ion-icon> {{ strength.icon_name }}</div>
+                        <div class="matrix-cell meta-timeline">Pillar Node</div>
+                        <div class="matrix-cell index-badge">ORD-{{ strength.order }}</div>
+                        <div class="matrix-actions-group">
+                            <a href="{% url 'edit_resume_item' 'strength' strength.id %}" class="action-pill-btn edit"><ion-icon name="create-outline"></ion-icon> Edit</a>
+                            <a href="{% url 'delete_resume_item' 'strength' strength.id %}" class="action-pill-btn delete" onclick="return confirm('Remove strength focus?')"><ion-icon name="trash-outline"></ion-icon> Delete</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="matrix-empty">No core strengths stored.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div id="tab-interest" class="dashboard-panel">
+                <div class="panel-header-node"><h3>Manage Hobbies & Interests</h3></div>
+                <form method="POST" class="custom-form-grid">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="interest">
+                    <div class="form-row">
+                        <div class="form-group"><label>Interest Name</label>{{ interest_form.name }}</div>
+                        <div class="form-group"><label>Ionicons Icon Name String</label>{{ interest_form.icon_name }}</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Layout Sorting Position</label>{{ interest_form.order }}</div>
+                        <div></div>
+                    </div>
+                    <button type="submit" class="btn-primary"><ion-icon name="heart-outline"></ion-icon> Append Personal Focus</button>
+                </form>
+
+                <h4 class="matrix-records-title">Personal Interest Inventory</h4>
+                <div class="matrix-grid">
+                    {% for interest in interests %}
+                    <div class="matrix-card">
+                        <div class="matrix-cell primary-title">{{ interest.name }}</div>
+                        <div class="matrix-cell secondary-context"><ion-icon name="{{ interest.icon_name }}"></ion-icon> {{ interest.icon_name }}</div>
+                        <div class="matrix-cell meta-timeline">Interest Module</div>
+                        <div class="matrix-cell index-badge">ORD-{{ interest.order }}</div>
+                        <div class="matrix-actions-group">
+                            <a href="{% url 'edit_resume_item' 'interest' interest.id %}" class="action-pill-btn edit"><ion-icon name="create-outline"></ion-icon> Edit</a>
+                            <a href="{% url 'delete_resume_item' 'interest' interest.id %}" class="action-pill-btn delete" onclick="return confirm('Remove interest module?')"><ion-icon name="trash-outline"></ion-icon> Delete</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="matrix-empty">No interests initialized.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </main>
+    </div>
+</article>
+
+<script>
+    // System UI Tab State Router Engine
+    function switchTab(event, tabId) {
+        if(event) event.preventDefault();
+
+        document.querySelectorAll('.dashboard-panel').forEach(panel => panel.classList.remove('active'));
+        document.querySelectorAll('.menu-btn').forEach(btn => btn.classList.remove('active'));
+
+        const targetPanel = document.getElementById(tabId);
+        const targetButton = document.querySelector(`[data-tab="${tabId}"]`);
+
+        if(targetPanel && targetButton) {
+            targetPanel.classList.add('active');
+            targetButton.classList.add('active');
+            localStorage.setItem('active_resume_tab', tabId);
+        }
+    }
+
+    // Dynamic Context Formatting & Smart Placeholders Injector Engine
+    function setupFormPlaceholders() {
+        const rules = {
+            // Experience Block placeholders
+            'input[name="title"]': 'e.g., Software Development Engineering Intern / Cloud Computing Specialist',
+            'input[name="company"]': 'e.g., Sumago Infotech Pvt. Ltd.',
+            'input[name="duration"]': 'e.g., 06/2025 - 08/2025 or Jan 2026 - Present',
+            'textarea[name="description"]': 'Describe milestone completions, tech-stacks, or system architectures implemented...',
+            
+            // Education fields placeholders
+            'input[name="institution"]': 'e.g., Mahavir Polytechnic, Nashik',
+            
+            // Certification Block placeholders (Corrected to exact backend mappings)
+            'input[name="issuer"]': 'e.g., UEF EdTech Pvt. Ltd. / AWS Cloud Training',
+            'input[name="date"]': 'e.g., August 2025 / March 2026',
+
+            // Core Competencies Matrix placeholders
+            'input[name="name"]': 'e.g., Django Framework / React Native / Team Leadership',
+            'input[name="percentage"]': 'e.g., 94',
+            'input[name="order"]': 'e.g., 1 (Controls layout sort arrangement prioritizations)',
+            
+            // Scholarly Releases placeholders
+            'input[name="journal"]': 'e.g., IJARSCT (Volume 6, Issue 2, March 2026)',
+            'input[name="publish_date"]': 'e.g., March 2026',
+            'input[name="paper_link"]': 'https://doi.org/... or abstract repository link',
+
+            // Strengths and Interests Icons
+            'input[name="icon_name"]': 'e.g., briefcase-outline, logo-react, heart-outline'
+        };
+
+        Object.keys(rules).forEach(selector => {
+            document.querySelectorAll(selector).forEach(element => {
+                if(!element.getAttribute('placeholder')) {
+                    element.setAttribute('placeholder', rules[selector]);
+                }
+            });
+        });
+    }
+
+    // Diagnostics Execution Frame on Window Complete
+    window.addEventListener('DOMContentLoaded', () => {
+        const activeTabCache = localStorage.getItem('active_resume_tab');
+        if (activeTabCache && document.getElementById(activeTabCache)) {
+            switchTab(null, activeTabCache);
+        }
+        setupFormPlaceholders();
+    });
+</script>
+{% endblock %}
