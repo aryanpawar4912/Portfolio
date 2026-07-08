@@ -2,9 +2,9 @@ from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
 from django.contrib.auth.models import User
+from django.core.validators import FileExtensionValidator # Optional: for image validation
 
 class Project(models.Model):
-    # Updated to match the frontend javascript data-category filter values exactly
     CATEGORY_CHOICES = [
         ("web_application", "Web Application"),
         ("mobile_application", "Mobile Application"),
@@ -19,31 +19,26 @@ class Project(models.Model):
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default="web_application")
     description = models.TextField(blank=True)
     
-    # New Fields requested by you
-    github_url = models.URLField(max_length=300, blank=True, help_text="GitHub Repository Link")
+    # ✅ ADD THIS LINE (The missing field)
+    image = models.ImageField(upload_to='projects/', blank=True, null=True, help_text="Project Banner Image")
     
-    # This will save to: images/portfolio/projects/docs/ in Cloudinary
+    github_url = models.URLField(max_length=300, blank=True, help_text="GitHub Repository Link")
     documentation = models.FileField(upload_to='projects/docs/', blank=True, null=True, help_text="Project Report / Documentation PDF")
     project_type = models.CharField(max_length=20, choices=PROJECT_TYPE_CHOICES, default="individual")
-    team_members = models.TextField(blank=True, help_text="Comma-separated names of team members (leave blank if Individual)")
-    
+    team_members = models.TextField(blank=True, help_text="Comma-separated names of team members")
     url = models.URLField(blank=True, help_text="Live Demo Link (Optional)")
     featured = models.BooleanField(default=False)
     
-    # Missing field added to safely support your save method slugification
     slug = models.SlugField(max_length=250, unique=True, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
 
-    # Fallback property asset for the banner layout
     @property
     def initial_letter(self):
-        """Returns the first uppercase letter of the project title for the fallback asset background."""
         return self.title[0].upper() if self.title else "P"
 
-    # Simple helper method to return team members as a clean list in templates
     def get_team_members_list(self):
         if self.team_members:
             return [name.strip() for name in self.team_members.split(',') if name.strip()]
