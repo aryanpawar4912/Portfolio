@@ -3,7 +3,28 @@
 
 {% block content %}
 <style>
-    /* High-Performance Flexible Dashboard Layout Grid Configuration */
+    /* =========================================================
+       CYBER-MINIMALIST DASHBOARD ENGINE
+       ========================================================= */
+    :root {
+        --bg-panel: #131826;
+        --bg-field: rgba(0, 0, 0, 0.25);
+        --border-subtle: rgba(255, 255, 255, 0.08);
+        --text-bright: #f8fafc;
+        --text-dim: #94a3b8;
+        --accent-core: #6366f1; /* Indigo */
+        --accent-neon: #38bdf8; /* Cyan Glow */
+        --accent-danger: #f43f5e; /* Rose Alert */
+        --accent-success: #10b981; /* Emerald */
+        --radius-standard: 12px;
+        --radius-inner: 8px;
+    }
+
+    /* Core Layout */
+    .dashboard-wrapper {
+        animation: interfaceFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
     .cyber-layout-grid {
         display: grid;
         grid-template-columns: 1fr;
@@ -22,20 +43,21 @@
         }
     }
 
-    /* Architectural Workspace Card Design System Components */
+    /* Architectural Workspace Card */
     .cyber-card {
-        background: var(--bg-card);
+        background: var(--bg-panel);
         border: 1px solid var(--border-subtle);
-        border-radius: 14px;
+        border-radius: var(--radius-standard);
         overflow: hidden;
         display: flex;
         flex-direction: column;
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
         transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
     }
 
     .cyber-card:hover {
-        border-color: var(--border-glow);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     }
 
     .card-header-deck {
@@ -44,28 +66,29 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: linear-gradient(180deg, rgba(255,255,255,0.01) 0%, rgba(255,255,255,0) 100%);
+        background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%);
     }
 
     .card-header-title {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        color: var(--text-secondary);
+        color: var(--text-dim);
         display: flex;
         align-items: center;
         gap: 0.65rem;
     }
 
-    .card-header-title i {
-        color: var(--accent-glow);
-        font-size: 1rem;
+    .card-header-title ion-icon {
+        color: var(--accent-neon);
+        font-size: 1.1rem;
     }
 
     .card-header-utility-icon {
-        color: #334155;
-        font-size: 0.9rem;
+        color: var(--text-dim);
+        font-size: 1rem;
+        opacity: 0.5;
     }
 
     .card-body-container {
@@ -73,7 +96,7 @@
         flex: 1;
     }
 
-    /* Polished Telemetry Counter Metrics Grid Layout Blocks */
+    /* Telemetry Blocks */
     .telemetry-row-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -81,23 +104,24 @@
     }
 
     .telemetry-node-block {
-        background: rgba(255, 255, 255, 0.02);
+        background: var(--bg-field);
         border: 1px solid var(--border-subtle);
         padding: 1.25rem 0.75rem;
-        border-radius: 10px;
+        border-radius: var(--radius-inner);
         text-align: center;
-        transition: background 0.2s ease;
+        transition: background 0.2s ease, border-color 0.2s ease;
     }
 
     .telemetry-node-block:hover {
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(99, 102, 241, 0.05);
+        border-color: rgba(99, 102, 241, 0.2);
     }
 
     .telemetry-node-value {
         font-size: 1.75rem;
         font-weight: 700;
-        color: var(--text-primary);
-        font-family: 'JetBrains Mono', monospace;
+        color: var(--text-bright);
+        font-family: 'JetBrains Mono', monospace, sans-serif;
         letter-spacing: -0.03em;
     }
 
@@ -105,12 +129,12 @@
         font-size: 0.65rem;
         text-transform: uppercase;
         letter-spacing: 0.06em;
-        color: var(--text-secondary);
+        color: var(--text-dim);
         margin-top: 0.5rem;
         font-weight: 600;
     }
 
-    /* Styled High-Density System Content Data Tables */
+    /* Data Tables */
     .dense-data-matrix {
         width: 100%;
         border-collapse: collapse;
@@ -120,8 +144,8 @@
         text-align: left;
         background: rgba(0, 0, 0, 0.2);
         padding: 0.85rem 1rem;
-        color: #64748b;
-        font-weight: 600;
+        color: var(--text-dim);
+        font-weight: 700;
         text-transform: uppercase;
         font-size: 0.65rem;
         letter-spacing: 0.08em;
@@ -131,7 +155,7 @@
     .dense-data-matrix td {
         padding: 0.9rem 1rem;
         border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-        color: #e2e8f0;
+        color: var(--text-bright);
         font-size: 0.85rem;
     }
 
@@ -139,18 +163,18 @@
         border-bottom: none;
     }
 
-    /* App Workspace Modular Item Feed Rows Setup */
+    /* Feed Layouts */
     .feed-group-wrapper {
         display: flex;
         flex-direction: column;
     }
 
     .feed-section-divider {
-        background: rgba(255, 255, 255, 0.01);
-        font-size: 0.7rem;
+        background: rgba(0, 0, 0, 0.2);
+        font-size: 0.68rem;
         font-weight: 700;
         padding: 0.6rem 1.5rem;
-        color: #475569;
+        color: var(--text-dim);
         text-transform: uppercase;
         letter-spacing: 0.08em;
         border-bottom: 1px solid var(--border-subtle);
@@ -171,7 +195,7 @@
     }
 
     .feed-row-element:hover {
-        background: rgba(255, 255, 255, 0.01);
+        background: rgba(255, 255, 255, 0.02);
     }
 
     .feed-row-element:last-child {
@@ -179,7 +203,7 @@
     }
 
     .feed-row-element a.entry-headline-link {
-        color: #f8fafc;
+        color: var(--text-bright);
         text-decoration: none;
         font-size: 0.88rem;
         font-weight: 600;
@@ -187,55 +211,62 @@
     }
 
     .feed-row-element a.entry-headline-link:hover {
-        color: var(--accent-glow);
+        color: var(--accent-neon);
     }
 
+    /* Badges & Actions */
     .badge-status-node {
         display: inline-block;
         padding: 0.15rem 0.5rem;
-        border-radius: 6px;
+        border-radius: 4px;
         font-size: 0.68rem;
-        font-weight: 600;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.02em;
+        letter-spacing: 0.05em;
         background: rgba(255,255,255,0.05);
-        color: var(--text-secondary);
+        color: var(--text-dim);
+        border: 1px solid rgba(255,255,255,0.1);
     }
 
     .badge-status-node.status-published {
         background: rgba(16, 185, 129, 0.1);
-        color: #34d399;
+        color: var(--accent-success);
+        border-color: rgba(16, 185, 129, 0.2);
     }
 
     .action-button-group {
         display: flex;
         gap: 0.85rem;
+        align-items: center;
     }
 
     .action-button-group a {
-        color: var(--text-secondary);
-        transition: color 0.15s ease;
+        color: var(--text-dim);
+        font-size: 1.1rem;
+        transition: all 0.15s ease;
     }
 
     .action-button-group a:hover {
-        color: var(--accent-glow);
+        color: var(--accent-neon);
+        transform: scale(1.1);
     }
 
     .action-button-group button.delete-btn-node {
         background: none;
         border: none;
-        color: #64748b;
+        color: var(--text-dim);
         cursor: pointer;
         padding: 0;
-        font-size: 0.9rem;
-        transition: color 0.15s ease;
+        font-size: 1.1rem;
+        transition: all 0.15s ease;
     }
 
     .action-button-group button.delete-btn-node:hover {
         color: var(--accent-danger);
+        transform: scale(1.1);
     }
 
-    /* Functional Action Utility Row Components */
+    /* Utility Links */
     .utility-stack-vertical {
         display: flex;
         flex-direction: column;
@@ -251,228 +282,225 @@
     }
 
     .utility-link-row a {
-        color: #cbd5e1;
+        color: var(--text-bright);
         text-decoration: none;
+        font-weight: 500;
         transition: color 0.15s ease, transform 0.15s ease;
     }
 
     .utility-link-row a:hover {
-        color: #ffffff;
-        transform: translateX(2px);
+        color: var(--accent-neon);
+        transform: translateX(4px);
+    }
+
+    .utility-link-row ion-icon {
+        color: var(--accent-core);
+        font-size: 1.2rem;
     }
 
     .empty-state-placeholder {
         padding: 2.5rem 1rem;
         text-align: center;
-        color: #475569;
+        color: var(--text-dim);
         font-size: 0.85rem;
         font-style: italic;
     }
+
+    @keyframes interfaceFadeIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 </style>
 
-<!-- Operational Response Toast Feedback Banners -->
-{% if messages %}
-<div style="margin-bottom: 1.75rem; width: 100%;">
-    {% for message in messages %}
-    <div style="padding: 1rem 1.5rem; border-radius: 10px; margin-bottom: 0.5rem; background: {% if message.tags == 'error' %}rgba(244,63,94,0.1){% else %}rgba(99,102,241,0.1){% endif %}; border: 1px solid {% if message.tags == 'error' %}rgba(244,63,94,0.2){% else %}rgba(99,102,241,0.2){% endif %}; color: #ffffff; font-size: 0.88rem; display: flex; align-items: center; gap: 0.75rem;">
-        <i class="bi {% if message.tags == 'error' %}bi-exclamation-octagon-fill{% else %}bi-info-circle-fill{% endif %}" style="color: {% if message.tags == 'error' %}var(--accent-danger){% else %}var(--accent-glow){% endif %};"></i>
-        <span>{{ message }}</span>
+<div class="dashboard-wrapper">
+    {% if messages %}
+    <div style="margin-bottom: 1.75rem; width: 100%;">
+        {% for message in messages %}
+        <div style="padding: 1rem 1.5rem; border-radius: var(--radius-inner); margin-bottom: 0.5rem; background: {% if message.tags == 'error' %}rgba(244,63,94,0.1){% else %}rgba(99,102,241,0.1){% endif %}; border: 1px solid {% if message.tags == 'error' %}rgba(244,63,94,0.2){% else %}rgba(99,102,241,0.2){% endif %}; color: var(--text-bright); font-size: 0.88rem; display: flex; align-items: center; gap: 0.75rem;">
+            <ion-icon name="{% if message.tags == 'error' %}alert-circle-outline{% else %}information-circle-outline{% endif %}" style="font-size: 1.2rem; color: {% if message.tags == 'error' %}var(--accent-danger){% else %}var(--accent-neon){% endif %};"></ion-icon>
+            <span>{{ message }}</span>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
-{% endif %}
+    {% endif %}
 
-<!-- Cyber Grid Architecture Element Base -->
-<div class="cyber-layout-grid">
-    
-    <!-- ==================== LEFT TELEMETRY STREAM COLUMN ==================== -->
-    <div style="display: flex; flex-direction: column; gap: 1.75rem;">
+    <div class="cyber-layout-grid">
         
-        <!-- Widget 1: Vector Line Realtime Sparkline Simulation Component -->
-        <div class="cyber-card">
-            <div class="card-header-deck">
-                <span class="card-header-title"><i class="bi bi-activity"></i> Telemetry Traffic Waveform</span>
-                <i class="bi bi-box-arrow-in-up card-header-utility-icon"></i>
+        <div style="display: flex; flex-direction: column; gap: 1.75rem;">
+            
+            <div class="cyber-card">
+                <div class="card-header-deck">
+                    <span class="card-header-title"><ion-icon name="pulse-outline"></ion-icon> Telemetry Waveform</span>
+                    <ion-icon name="open-outline" class="card-header-utility-icon"></ion-icon>
+                </div>
+                <div class="card-body-container" style="padding-bottom: 1rem;">
+                    <div style="height: 150px; width: 100%; display: flex; align-items: flex-end; justify-content: space-between; padding-top: 15px;" id="cyberAnalyticsChartNode">
+                        </div>
+                </div>
             </div>
-            <div class="card-body-container" style="padding-bottom: 1rem;">
-                <div style="height: 150px; width: 100%; display: flex; align-items: flex-end; justify-content: space-between; padding-top: 15px;" id="cyberAnalyticsChartNode">
-                    <!-- Dynamic Document Node Fragment injection target -->
+
+            <div class="cyber-card">
+                <div class="card-header-deck">
+                    <span class="card-header-title"><ion-icon name="git-network-outline"></ion-icon> Directory Vectors</span>
+                    <ion-icon name="hardware-chip-outline" class="card-header-utility-icon"></ion-icon>
+                </div>
+                <div style="overflow-x: auto;">
+                    {% if page_views %}
+                    <table class="dense-data-matrix">
+                        <thead>
+                            <tr>
+                                <th>Resource Path Identifier</th>
+                                <th style="text-align: right; padding-right: 1.5rem;">System Load Hits</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for page in page_views|slice:":6" %}
+                            <tr>
+                                <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent-neon); font-size: 0.8rem;">/{{ page.page }}</td>
+                                <td style="text-align: right; font-weight: 600; padding-right: 1.5rem; font-family: 'JetBrains Mono', monospace; color: var(--text-bright);">{{ page.count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state-placeholder">No analytical data streams processing at present.</div>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-        <!-- Widget 2: Route Performance Mapping Matrices Logs -->
-        <div class="cyber-card">
-            <div class="card-header-deck">
-                <span class="card-header-title"><i class="bi bi-terminal-split"></i> Directory Traffic Vectors</span>
-                <i class="bi bi-cpu-fill card-header-utility-icon"></i>
-            </div>
-            <div style="overflow-x: auto;">
-                {% if page_views %}
-                <table class="dense-data-matrix">
-                    <thead>
-                        <tr>
-                            <th>Resource Path Identifier</th>
-                            <th style="text-align: right; padding-right: 1.5rem;">System Load Hits</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for page in page_views|slice:":6" %}
-                        <tr>
-                            <td style="font-family: 'JetBrains Mono', monospace; color: #a5b4fc; font-size: 0.8rem;">/{{ page.page }}</td>
-                            <td style="text-align: right; font-weight: 600; padding-right: 1.5rem; font-family: 'JetBrains Mono', monospace; color: #f8fafc;">{{ page.count }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <div class="empty-state-placeholder">No analytical data streams processing at present.</div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== CORE DATABASE ENGINE MATRIX MIDDLE COLUMN ==================== -->
-    <div style="display: flex; flex-direction: column; gap: 1.75rem;">
-        
-        <!-- Widget 3: Multi-counter System Aggregator Block Nodes -->
-        <div class="cyber-card">
-            <div class="card-header-deck">
-                <span class="card-header-title"><i class="bi bi-pie-chart-fill"></i> Data Infrastructure Metrics</span>
-                <i class="bi bi-shield-check card-header-utility-icon" style="color: var(--accent-success);"></i>
-            </div>
-            <div class="card-body-container">
-                <div class="telemetry-row-grid">
-                    <div class="telemetry-node-block">
-                        <div class="telemetry-node-value">{{ total_views|default:"0" }}</div>
-                        <div class="telemetry-node-label">Page Loads</div>
-                    </div>
-                    <div class="telemetry-node-block">
-                        <div class="telemetry-node-value">{{ unique_visitors_30d|default:"0" }}</div>
-                        <div class="telemetry-node-label">30d Matrix</div>
-                    </div>
-                    <div class="telemetry-node-block">
-                        <div class="telemetry-node-value" style="color: #f43f5e;">{{ unread_contacts|default:"0" }}</div>
-                        <div class="telemetry-node-label">Unread</div>
+        <div style="display: flex; flex-direction: column; gap: 1.75rem;">
+            
+            <div class="cyber-card">
+                <div class="card-header-deck">
+                    <span class="card-header-title"><ion-icon name="pie-chart-outline"></ion-icon> Data Infrastructure</span>
+                    <ion-icon name="shield-checkmark-outline" class="card-header-utility-icon" style="color: var(--accent-success); opacity: 1;"></ion-icon>
+                </div>
+                <div class="card-body-container">
+                    <div class="telemetry-row-grid">
+                        <div class="telemetry-node-block">
+                            <div class="telemetry-node-value">{{ total_views|default:"0" }}</div>
+                            <div class="telemetry-node-label">Page Loads</div>
+                        </div>
+                        <div class="telemetry-node-block">
+                            <div class="telemetry-node-value">{{ unique_visitors_30d|default:"0" }}</div>
+                            <div class="telemetry-node-label">30d Matrix</div>
+                        </div>
+                        <div class="telemetry-node-block">
+                            <div class="telemetry-node-value" style="color: var(--accent-danger);">{{ unread_contacts|default:"0" }}</div>
+                            <div class="telemetry-node-label">Unread</div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Widget 4: Application Pipeline Modulator Rows Entry Point -->
-        <div class="cyber-card">
-            <div class="card-header-deck">
-                <span class="card-header-title"><i class="bi bi-database-fill-gear"></i> Ecosystem Workspace Aggregator</span>
-            </div>
-            <div class="feed-group-wrapper">
-                
-                <!-- Editorial Engine Fragment Layer Mapping -->
-                <div class="feed-section-divider">Active Content Nodes</div>
-                {% if posts %}
-                    {% for post in posts|slice:":4" %}
-                    <div class="feed-row-element">
-                        <div style="max-width: 75%;">
-                            <a href="{% url 'admin_edit_post' post.id %}" class="entry-headline-link">{{ post.title|slice:":36" }}{% if post.title|length > 36 %}...{% endif %}</a>
-                            <div style="margin-top: 4px; display: flex; align-items: center; gap: 0.5rem;">
-                                <span class="badge-status-node {% if post.status == 'published' %}status-published{% endif %}">{{ post.status }}</span>
+            <div class="cyber-card">
+                <div class="card-header-deck">
+                    <span class="card-header-title"><ion-icon name="server-outline"></ion-icon> Workspace Aggregator</span>
+                </div>
+                <div class="feed-group-wrapper">
+                    
+                    <div class="feed-section-divider">Active Content Nodes</div>
+                    {% if posts %}
+                        {% for post in posts|slice:":4" %}
+                        <div class="feed-row-element">
+                            <div style="max-width: 75%;">
+                                <a href="{% url 'admin_edit_post' post.id %}" class="entry-headline-link">{{ post.title|slice:":36" }}{% if post.title|length > 36 %}...{% endif %}</a>
+                                <div style="margin-top: 6px; display: flex; align-items: center; gap: 0.5rem;">
+                                    <span class="badge-status-node {% if post.status == 'published' %}status-published{% endif %}">{{ post.status }}</span>
+                                </div>
+                            </div>
+                            <div class="action-button-group">
+                                <a href="{% url 'admin_edit_post' post.id %}" title="Modify System Record"><ion-icon name="create-outline"></ion-icon></a>
+                                <form method="POST" action="{% url 'admin_delete_post' post.id %}" style="display: inline; margin: 0;" onsubmit="return confirm('Execute permanent removal sequence on this content entity node?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="delete-btn-node" title="Purge Record"><ion-icon name="trash-outline"></ion-icon></button>
+                                </form>
                             </div>
                         </div>
-                        <div class="action-button-group">
-                            <a href="{% url 'admin_edit_post' post.id %}" title="Modify System Record"><i class="bi bi-pencil-square"></i></a>
-                            <form method="POST" action="{% url 'admin_delete_post' post.id %}" style="display: inline; margin: 0;" onsubmit="return confirm('Execute permanent removal sequence on this content entity node?');">
-                                {% csrf_token %}
-                                <button type="submit" class="delete-btn-node" title="Purge Record"><i class="bi bi-trash3-fill"></i></button>
-                            </form>
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="empty-state-placeholder" style="padding: 1.5rem 0;">No active layout text nodes mapped.</div>
-                {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state-placeholder" style="padding: 1.5rem 0;">No active layout text nodes mapped.</div>
+                    {% endif %}
 
-                <!-- Customer Inbox Telemetry Node Fragment Layer -->
-                <div class="feed-section-divider">Inbound Transmission Handlers</div>
-                {% if recent_contacts %}
-                    {% for message in recent_contacts|slice:":3" %}
-                    <div class="feed-row-element">
-                        <div style="max-width: 75%;">
-                            <span style="font-weight: 600; color: #f1f5f9; font-size: 0.85rem; display: block;">{{ message.name }}</span>
-                            <span style="color: var(--text-secondary); font-size: 0.78rem; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px;">{{ message.message }}</span>
+                    <div class="feed-section-divider">Inbound Transmissions</div>
+                    {% if recent_contacts %}
+                        {% for message in recent_contacts|slice:":3" %}
+                        <div class="feed-row-element">
+                            <div style="max-width: 75%;">
+                                <span style="font-weight: 600; color: var(--text-bright); font-size: 0.85rem; display: block;">{{ message.name }}</span>
+                                <span style="color: var(--text-dim); font-size: 0.78rem; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px;">{{ message.message }}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.65rem;">
+                                <span style="font-size: 0.7rem; color: var(--text-dim); font-weight: 600; font-family: monospace;">{{ message.created_at|date:"M d" }}</span>
+                                {% if not message.is_read %}
+                                <span style="height: 6px; width: 6px; background-color: var(--accent-danger); border-radius: 50%; box-shadow: 0 0 8px var(--accent-danger);"></span>
+                                {% endif %}
+                            </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 0.65rem;">
-                            <span style="font-size: 0.7rem; color: #475569; font-weight: 600; font-family: monospace;">{{ message.created_at|date:"M d" }}</span>
-                            {% if not message.is_read %}
-                            <span style="height: 6px; width: 6px; background-color: var(--accent-danger); border-radius: 50%; box-shadow: 0 0 8px var(--accent-danger);"></span>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="empty-state-placeholder" style="padding: 1.5rem 0;">No inbound packets logged.</div>
-                {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state-placeholder" style="padding: 1.5rem 0;">No inbound packets logged.</div>
+                    {% endif %}
 
+                </div>
             </div>
         </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1.75rem;">
+            
+            <div class="cyber-card">
+                <div class="card-header-deck">
+                    <span class="card-header-title"><ion-icon name="flash-outline"></ion-icon> Direct Routing System</span>
+                </div>
+                <div class="card-body-container">
+                    <div class="utility-stack-vertical">
+                        <div class="utility-link-row">
+                            <ion-icon name="arrow-forward-outline"></ion-icon>
+                            <a href="/" target="_blank">View Public Environment</a>
+                        </div>
+                        <div class="utility-link-row">
+                            <ion-icon name="arrow-forward-outline"></ion-icon>
+                            <a href="{% url 'admin_create_post' %}">Instantiate Publication Node</a>
+                        </div>
+                        <div class="utility-link-row">
+                            <ion-icon name="arrow-forward-outline"></ion-icon>
+                            <a href="{% url 'admin_contacts' %}">Access Communications Trunk ({{ total_contacts|default:"0" }})</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cyber-card">
+                <div class="card-header-deck">
+                    <span class="card-header-title"><ion-icon name="hardware-chip-outline"></ion-icon> Architectural Diagnostics</span>
+                </div>
+                <div class="card-body-container">
+                    <div style="font-size: 0.85rem; line-height: 1.5;">
+                        <span style="color: var(--accent-success); font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+                            <span style="height: 8px; width: 8px; background: var(--accent-success); border-radius: 50%; display: inline-block; box-shadow: 0 0 10px var(--accent-success);"></span>
+                            All Operational Channels Active
+                        </span>
+                        <span style="color: var(--text-dim); font-size: 0.78rem; display: block;">Machine layout matrices rendering cleanly. Database latency verification parameters testing optimal.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cyber-card">
+                <div class="card-header-deck">
+                    <span class="card-header-title"><ion-icon name="time-outline"></ion-icon> Modifications History</span>
+                </div>
+                <div class="card-body-container" style="padding: 0;">
+                    <div class="empty-state-placeholder" style="padding: 1.75rem 1rem; font-size: 0.78rem;">
+                        No operational transactions registered within this dynamic interaction state.
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
-
-    <!-- ==================== RIGHT COLUMN: UTILITY CONTROL PIPELINES ==================== -->
-    <div style="display: flex; flex-direction: column; gap: 1.75rem;">
-        
-        <!-- Widget 5: Fast Path Access Hub Nodes -->
-        <div class="cyber-card">
-            <div class="card-header-deck">
-                <span class="card-header-title"><i class="bi bi-lightning-charge-fill"></i> Direct Routing System</span>
-            </div>
-            <div class="card-body-container">
-                <div class="utility-stack-vertical">
-                    <div class="utility-link-row">
-                        <i class="bi bi-arrow-right-short" style="color: var(--accent-glow);"></i>
-                        <a href="/" target="_blank">View Public Environment</a>
-                    </div>
-                    <div class="utility-link-row">
-                        <i class="bi bi-arrow-right-short" style="color: var(--accent-glow);"></i>
-                        <a href="{% url 'admin_create_post' %}">Instantiate Publication Node</a>
-                    </div>
-                    <div class="utility-link-row">
-                        <i class="bi bi-arrow-right-short" style="color: var(--accent-glow);"></i>
-                        <a href="{% url 'admin_contacts' %}">Access Communications Trunk ({{ total_contacts|default:"0" }})</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Widget 6: Status Engine Core Heartbeat -->
-        <div class="cyber-card">
-            <div class="card-header-deck">
-                <span class="card-header-title"><i class="bi bi-cpu-fill"></i> Architectural Diagnostics Feed</span>
-            </div>
-            <div class="card-body-container">
-                <div style="font-size: 0.85rem; line-height: 1.5;">
-                    <span style="color: #34d399; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
-                        <span style="height: 8px; width: 8px; background: #10b981; border-radius: 50%; display: inline-block; box-shadow: 0 0 10px #10b981;"></span>
-                        All Operational Channels Active
-                    </span>
-                    <span style="color: var(--text-secondary); font-size: 0.78rem; display: block;">Machine layout matrices rendering cleanly. Database latency verification parameters testing optimal.</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Widget 7: Revision Audits History System Node Tracker -->
-        <div class="cyber-card">
-            <div class="card-header-deck">
-                <span class="card-header-title"><i class="bi bi-hourglass-split"></i> Modifications History</span>
-            </div>
-            <div class="card-body-container" style="padding: 0;">
-                <div class="empty-state-placeholder" style="padding: 1.75rem 1rem; font-size: 0.78rem;">
-                    No operational transactions registered within this dynamic interaction state.
-                </div>
-            </div>
-        </div>
-    </div>
-
 </div>
 
-<!-- Realtime Visual Telemetry Render Script Execution -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const structuralLabels = JSON.parse('{{ chart_labels|safe }}' || '[]');
@@ -491,9 +519,11 @@
             const geometricColumnNode = document.createElement('div');
             
             geometricColumnNode.style = "display: flex; flex-direction: column; align-items: center; flex: 1; gap: 8px; height: 100%; justify-content: flex-end;";
+            
+            // Updated inline styling to use the CSS custom properties
             geometricColumnNode.innerHTML = `
-                <div style="width: 40%; max-width: 14px; background: linear-gradient(180deg, var(--accent-glow) 0%, rgba(99,102,241,0.05) 100%); height: ${calculatedPercentage ? (calculatedPercentage * 0.8) + 6 : 4}px; border-radius: 4px; transition: all 0.2s;" title="${value} operations logged" onmouseover="this.style.filter='brightness(1.3)'" onmouseout="this.style.filter='none'"></div>
-                <span style="font-size: 0.62rem; color: var(--text-secondary); font-weight: 600; font-family: 'JetBrains Mono', monospace;">${structuralLabels[index] || ''}</span>
+                <div style="width: 40%; max-width: 14px; background: linear-gradient(180deg, var(--accent-neon) 0%, rgba(99,102,241,0.05) 100%); height: ${calculatedPercentage ? (calculatedPercentage * 0.8) + 6 : 4}px; border-radius: 4px; transition: all 0.2s;" title="${value} operations logged" onmouseover="this.style.filter='brightness(1.3)'" onmouseout="this.style.filter='none'"></div>
+                <span style="font-size: 0.62rem; color: var(--text-dim); font-weight: 600; font-family: 'JetBrains Mono', monospace;">${structuralLabels[index] || ''}</span>
             `;
             graphicContainer.appendChild(geometricColumnNode);
         });
