@@ -614,3 +614,11 @@ def admin_logout_view(request):
     messages.info(request, "You have been logged out safely.")
     return redirect('home')
 
+# ====================================
+# Send request to render server
+# ====================================
+
+from django.http import JsonResponse
+
+def health_check(request):
+    return JsonResponse({"status": "alive"}, status=200)
