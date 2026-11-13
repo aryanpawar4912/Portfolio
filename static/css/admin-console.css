@@ -1,0 +1,1790 @@
+.admin-terminal {
+    --terminal-bg: #080b0f;
+    --terminal-panel: #0e1318;
+    --terminal-panel-raised: #131a20;
+    --terminal-line: rgba(165, 190, 199, 0.13);
+    --terminal-muted: #82919a;
+    --terminal-text: #e6edf0;
+    --terminal-accent: #65e6b2;
+    --terminal-accent-soft: rgba(101, 230, 178, 0.12);
+    --terminal-warn: #f0bf6b;
+    --terminal-danger: #ff7b78;
+    --sidebar-width: 244px;
+    --bg-card: var(--terminal-panel);
+    --bg-card-hover: var(--terminal-panel-raised);
+    --border-subtle: var(--terminal-line);
+    --text-primary: var(--terminal-text);
+    --text-secondary: var(--terminal-muted);
+    --accent-glow: var(--terminal-accent);
+    --accent-info: var(--terminal-accent);
+    --accent-success: var(--terminal-accent);
+    --accent-danger: var(--terminal-danger);
+    --input-focus-bg: #0b1413;
+    background-color: var(--terminal-bg);
+    background-image:
+        radial-gradient(ellipse at 75% -15%, rgba(32, 87, 72, 0.16), transparent 42%),
+        linear-gradient(rgba(141, 175, 181, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(141, 175, 181, 0.025) 1px, transparent 1px);
+    background-size: auto, 38px 38px, 38px 38px;
+    color: var(--terminal-text);
+    font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+    letter-spacing: 0;
+}
+
+.admin-terminal *,
+.admin-terminal *::before,
+.admin-terminal *::after {
+    box-sizing: border-box;
+}
+
+.admin-terminal .glass-header {
+    height: 64px;
+    padding: 0 1.5rem;
+    background: rgba(8, 11, 15, 0.88);
+    border-bottom: 1px solid var(--terminal-line);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.24);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.admin-terminal .brand-wrapper {
+    gap: 0.75rem;
+}
+
+.admin-terminal .brand-mark {
+    width: 31px;
+    height: 31px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(101, 230, 178, 0.48);
+    border-radius: 6px;
+    color: var(--terminal-accent);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: -0.06em;
+}
+
+.admin-terminal .brand-logo-text {
+    background: none;
+    color: var(--terminal-text);
+    -webkit-text-fill-color: currentColor;
+    font: 600 0.76rem/1.2 "JetBrains Mono", Consolas, monospace;
+    letter-spacing: 0.04em;
+}
+
+.admin-terminal .brand-logo-text span {
+    color: var(--terminal-accent);
+}
+
+.admin-terminal .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.admin-terminal .command-trigger,
+.admin-terminal .console-search-shortcut {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.48rem;
+    min-height: 34px;
+    padding: 0.4rem 0.55rem;
+    border: 1px solid var(--terminal-line);
+    border-radius: 4px;
+    color: #a9b5b8;
+    background: rgba(255, 255, 255, 0.018);
+    font: 500 0.6rem "JetBrains Mono", Consolas, monospace;
+    cursor: pointer;
+    transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.admin-terminal .command-trigger:hover,
+.admin-terminal .console-search-shortcut:hover {
+    border-color: rgba(101, 230, 178, 0.4);
+    color: var(--terminal-accent);
+    background: var(--terminal-accent-soft);
+}
+
+.admin-terminal .command-trigger kbd,
+.admin-terminal .console-search-shortcut kbd,
+.admin-terminal .command-palette kbd {
+    padding: 0.2rem 0.3rem;
+    border: 1px solid var(--terminal-line);
+    border-radius: 3px;
+    color: #718187;
+    background: rgba(0, 0, 0, 0.2);
+    font: 500 0.52rem "JetBrains Mono", Consolas, monospace;
+}
+
+.admin-terminal .command-palette {
+    position: fixed;
+    top: min(16vh, 130px);
+    left: 50%;
+    translate: -50% 0;
+    margin: 0;
+    width: min(610px, calc(100vw - 28px));
+    max-width: none;
+    max-height: min(76vh, 680px);
+    overflow: hidden;
+    padding: 0;
+    border: 1px solid rgba(101, 230, 178, 0.24);
+    border-radius: 8px;
+    color: var(--terminal-text);
+    background: #0c1116;
+    box-shadow: 0 32px 100px rgba(0, 0, 0, 0.72), 0 0 50px rgba(101, 230, 178, 0.04);
+}
+
+.admin-terminal .command-palette[open] {
+    display: block;
+    animation: palette-enter 180ms ease-out both;
+}
+
+.admin-terminal .command-palette::backdrop {
+    background: rgba(2, 5, 7, 0.72);
+    backdrop-filter: blur(7px);
+}
+
+.admin-terminal .command-palette-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.15rem 1.2rem 0.95rem;
+    border-bottom: 1px solid var(--terminal-line);
+}
+
+.admin-terminal .command-palette-head h2 {
+    margin: 0.42rem 0 0;
+    color: var(--terminal-text);
+    font: 500 0.88rem "JetBrains Mono", Consolas, monospace;
+    letter-spacing: -0.035em;
+}
+
+.admin-terminal .command-close {
+    width: 31px;
+    height: 31px;
+    border: 1px solid var(--terminal-line);
+    border-radius: 4px;
+    color: var(--terminal-muted);
+    background: transparent;
+    cursor: pointer;
+}
+
+.admin-terminal .command-close:hover {
+    border-color: rgba(101, 230, 178, 0.4);
+    color: var(--terminal-accent);
+}
+
+.admin-terminal .command-search-field {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin: 0.8rem 1rem;
+    padding: 0.75rem 0.8rem;
+    border: 1px solid rgba(101, 230, 178, 0.3);
+    border-radius: 5px;
+    color: var(--terminal-accent);
+    background: #080d11;
+}
+
+.admin-terminal .command-search-field input {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0 !important;
+    outline: 0;
+    color: var(--terminal-text) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    font: 400 0.7rem "JetBrains Mono", Consolas, monospace;
+}
+
+.admin-terminal .command-search-field input::placeholder {
+    color: #64737b !important;
+}
+
+.admin-terminal .command-quick-links,
+.admin-terminal .command-results {
+    display: grid;
+    gap: 0.15rem;
+    max-height: min(42vh, 375px);
+    overflow-y: auto;
+    padding: 0.4rem 0.75rem 0.75rem;
+}
+
+.admin-terminal .command-quick-links[hidden] {
+    display: none;
+}
+
+.admin-terminal .command-section-label {
+    padding: 0.45rem 0.35rem;
+    color: #64737b;
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+}
+
+.admin-terminal .command-quick-links a,
+.admin-terminal .command-result-link {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-height: 39px;
+    padding: 0.5rem 0.55rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #acb8bb;
+    font-size: 0.65rem;
+    text-decoration: none;
+    transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.admin-terminal .command-quick-links a > i,
+.admin-terminal .command-result-link > i:first-child {
+    width: 16px;
+    color: var(--terminal-accent);
+}
+
+.admin-terminal .command-quick-links a span {
+    flex: 1;
+}
+
+.admin-terminal .command-quick-links a kbd {
+    margin-left: auto;
+}
+
+.admin-terminal .command-quick-links a:hover,
+.admin-terminal .command-result-link:hover,
+.admin-terminal .command-result-link:focus-visible {
+    border-color: rgba(101, 230, 178, 0.18);
+    color: var(--terminal-text);
+    background: rgba(101, 230, 178, 0.06);
+    outline-offset: -2px;
+}
+
+.admin-terminal .command-results:empty {
+    display: none;
+}
+
+.admin-terminal .command-result-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.admin-terminal .command-result-link {
+    flex: 1;
+    min-width: 0;
+}
+
+.admin-terminal .command-result-title {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-terminal .command-result-kind {
+    margin-left: auto;
+    color: #77868b;
+    font-size: 0.55rem;
+}
+
+.admin-terminal .command-result-link > i:last-child {
+    color: #607078;
+    font-size: 0.6rem;
+}
+
+.admin-terminal .command-result-preview {
+    flex: 0 0 auto;
+    padding: 0.4rem;
+    color: var(--terminal-accent);
+    font-size: 0.53rem;
+    text-decoration: none;
+}
+
+.admin-terminal .command-result-preview:hover {
+    text-decoration: underline;
+}
+
+.admin-terminal .command-search-message {
+    margin: 0;
+    padding: 0.8rem 0.35rem;
+    color: var(--terminal-muted);
+    font-size: 0.65rem;
+}
+
+.admin-terminal .command-palette-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 0.65rem 1rem;
+    border-top: 1px solid var(--terminal-line);
+    color: #6e7c81;
+    font-size: 0.5rem;
+    letter-spacing: 0.04em;
+}
+
+.admin-terminal .admin-welcome {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    overflow: hidden;
+    padding: 0;
+    border: 0;
+    color: var(--terminal-text);
+    background:
+        radial-gradient(ellipse at 70% 53%, rgba(37, 115, 91, 0.18), transparent 39%),
+        repeating-linear-gradient(0deg, transparent 0 37px, rgba(143, 184, 176, 0.035) 38px),
+        #080c10;
+    font-family: "JetBrains Mono", Consolas, monospace;
+}
+
+.admin-terminal .admin-welcome[open] {
+    display: grid;
+    place-items: center;
+    animation: welcome-terminal-in 500ms ease-out both;
+}
+
+.admin-terminal .admin-welcome::backdrop {
+    background: #080c10;
+}
+
+.admin-terminal .admin-welcome.is-leaving {
+    animation: welcome-terminal-out 320ms ease-in both;
+}
+
+.admin-terminal .admin-welcome-scan {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 48%, rgba(101, 230, 178, 0.045) 50%, transparent 52%);
+    background-size: 100% 7px;
+    opacity: 0.27;
+    pointer-events: none;
+}
+
+.admin-terminal .admin-welcome-content {
+    position: relative;
+    z-index: 1;
+    width: min(560px, calc(100% - 38px));
+    padding: 40px 0;
+    text-align: center;
+}
+
+.admin-terminal .admin-welcome-kicker,
+.admin-terminal .admin-welcome-path,
+.admin-terminal .admin-welcome-footer {
+    color: #81928f;
+    font-size: 0.58rem;
+    letter-spacing: 0.13em;
+}
+
+.admin-terminal .admin-welcome-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.admin-terminal .admin-welcome-emblem {
+    margin: 38px 0 25px;
+    color: #e4eee9;
+    font: 500 clamp(4rem, 11vw, 7rem)/.9 "JetBrains Mono", Consolas, monospace;
+    letter-spacing: -0.13em;
+    animation: welcome-terminal-mark 650ms 80ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+.admin-terminal .admin-welcome-emblem span {
+    color: var(--terminal-accent);
+    animation: terminal-cursor 850ms steps(2, end) infinite;
+}
+
+.admin-terminal .admin-welcome-path {
+    color: var(--terminal-accent);
+}
+
+.admin-terminal .admin-welcome-content h1 {
+    margin: 0;
+    color: #e8efeb;
+    font: 500 clamp(2.1rem, 6vw, 3.75rem)/1.13 "JetBrains Mono", Consolas, monospace;
+    letter-spacing: -0.09em;
+    animation: welcome-terminal-copy 520ms 180ms ease-out both;
+}
+
+.admin-terminal .admin-welcome-content h1 span {
+    color: #85d9b3;
+}
+
+.admin-terminal .admin-welcome-copy {
+    max-width: 420px;
+    margin: 18px auto 23px;
+    color: #92a19f;
+    font-size: 0.69rem;
+    line-height: 1.8;
+    animation: welcome-terminal-copy 520ms 270ms ease-out both;
+}
+
+.admin-terminal .admin-welcome-enter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    min-height: 43px;
+    padding: 0 0.9rem;
+    border: 1px solid rgba(101, 230, 178, 0.42);
+    border-radius: 4px;
+    color: var(--terminal-accent);
+    background: rgba(101, 230, 178, 0.08);
+    font: 500 0.62rem "JetBrains Mono", Consolas, monospace;
+    cursor: pointer;
+    transition: background 150ms ease, box-shadow 150ms ease;
+    animation: welcome-terminal-copy 520ms 350ms ease-out both;
+}
+
+.admin-terminal .admin-welcome-enter:hover {
+    background: rgba(101, 230, 178, 0.16);
+    box-shadow: 0 0 23px rgba(101, 230, 178, 0.1);
+}
+
+.admin-terminal .admin-welcome-skip {
+    display: block;
+    margin: 13px auto 0;
+    padding: 7px 10px;
+    border: 0;
+    color: #758581;
+    background: transparent;
+    font: 0.56rem "JetBrains Mono", Consolas, monospace;
+    cursor: pointer;
+}
+
+.admin-terminal .admin-welcome-skip:hover {
+    color: var(--terminal-text);
+}
+
+.admin-terminal .admin-welcome-footer {
+    position: absolute;
+    right: 22px;
+    bottom: 20px;
+}
+
+.admin-terminal .admin-welcome-footer span {
+    color: var(--terminal-accent);
+}
+
+.admin-terminal .inbox-filter-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin: -0.65rem 0 1.2rem;
+    padding: 0.7rem;
+    border: 1px solid var(--terminal-line);
+    border-radius: 6px;
+    background: rgba(13, 18, 23, 0.84);
+}
+
+.admin-terminal .inbox-search {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex: 1 1 220px;
+    min-width: 170px;
+    color: var(--terminal-accent);
+}
+
+.admin-terminal .inbox-search input {
+    width: 100%;
+    min-height: 35px;
+    padding: 0.45rem 0.55rem;
+    border: 1px solid var(--terminal-line);
+    border-radius: 4px;
+    color: var(--terminal-text);
+    background: #090e12;
+    font: 400 0.62rem "JetBrains Mono", Consolas, monospace;
+}
+
+.admin-terminal .inbox-read-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--terminal-muted);
+    font-size: 0.54rem;
+}
+
+.admin-terminal .inbox-read-filter select {
+    min-height: 35px;
+    padding: 0.4rem 0.5rem;
+    border: 1px solid var(--terminal-line);
+    border-radius: 4px;
+    color: var(--terminal-text);
+    background: #090e12;
+    font: 400 0.6rem "JetBrains Mono", Consolas, monospace;
+}
+
+.admin-terminal .console-filter-submit,
+.admin-terminal .console-filter-reset {
+    min-height: 35px;
+    padding: 0.45rem 0.65rem;
+    border: 1px solid rgba(101, 230, 178, 0.28);
+    border-radius: 4px;
+    color: var(--terminal-accent);
+    background: var(--terminal-accent-soft);
+    font: 500 0.59rem "JetBrains Mono", Consolas, monospace;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.admin-terminal .console-filter-reset {
+    display: inline-flex;
+    align-items: center;
+    border-color: var(--terminal-line);
+    color: var(--terminal-muted);
+    background: transparent;
+}
+
+.admin-terminal .console-preview-link {
+    flex: 0 0 auto;
+    color: var(--terminal-accent);
+    font-size: 0.52rem;
+    text-decoration: none;
+}
+
+.admin-terminal .console-preview-link:hover {
+    text-decoration: underline;
+}
+
+.admin-terminal .console-heading-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.admin-terminal .activity-feed {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: 0.45rem;
+}
+
+.admin-terminal .activity-feed-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-width: 0;
+    padding: 0.65rem;
+    border: 1px solid rgba(165, 190, 199, 0.07);
+    border-radius: 4px;
+    color: inherit;
+    text-decoration: none;
+    transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.admin-terminal .activity-feed-row:hover {
+    transform: translateY(-1px);
+    border-color: rgba(101, 230, 178, 0.24);
+    background: rgba(101, 230, 178, 0.035);
+}
+
+.admin-terminal .activity-feed-marker {
+    display: grid;
+    width: 29px;
+    height: 29px;
+    flex: 0 0 29px;
+    place-items: center;
+    border: 1px solid rgba(101, 230, 178, 0.19);
+    border-radius: 4px;
+    color: var(--terminal-accent);
+    background: var(--terminal-accent-soft);
+    font-size: 0.72rem;
+}
+
+.admin-terminal .activity-feed-copy {
+    display: grid;
+    min-width: 0;
+    flex: 1;
+    gap: 0.26rem;
+}
+
+.admin-terminal .activity-feed-copy strong {
+    overflow: hidden;
+    color: #d7e1e3;
+    font-size: 0.61rem;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-terminal .activity-feed-copy small {
+    overflow: hidden;
+    color: #708085;
+    font-size: 0.55rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-terminal .activity-feed-row time {
+    flex: 0 0 auto;
+    color: #75858a;
+    font-size: 0.52rem;
+}
+
+.admin-terminal .console-metric-value {
+    font-variant-numeric: tabular-nums;
+}
+
+@keyframes palette-enter {
+    from { opacity: 0; transform: translateY(-7px) scale(.99); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes welcome-terminal-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes welcome-terminal-out { to { opacity: 0; visibility: hidden; } }
+@keyframes welcome-terminal-mark { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes welcome-terminal-copy { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes terminal-cursor { 50% { opacity: .15; } }
+
+.admin-terminal .topbar-status,
+.admin-terminal .live-site-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--terminal-muted);
+    font-size: 0.66rem;
+    letter-spacing: 0.07em;
+    text-decoration: none;
+}
+
+.admin-terminal .live-site-link {
+    min-height: 34px;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid var(--terminal-line);
+    border-radius: 5px;
+    color: var(--terminal-text);
+    transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.admin-terminal .live-site-link:hover {
+    border-color: rgba(101, 230, 178, 0.45);
+    background: var(--terminal-accent-soft);
+    color: var(--terminal-accent);
+}
+
+.admin-terminal .status-pulse,
+.admin-terminal .live-indicator {
+    position: relative;
+    width: 7px;
+    height: 7px;
+    flex: 0 0 7px;
+    border-radius: 50%;
+    background: var(--terminal-accent);
+    box-shadow: 0 0 12px rgba(101, 230, 178, 0.65);
+}
+
+.admin-terminal .status-pulse::after,
+.admin-terminal .live-indicator::after {
+    position: absolute;
+    inset: -4px;
+    border: 1px solid rgba(101, 230, 178, 0.42);
+    border-radius: 50%;
+    content: "";
+    animation: terminal-pulse 2.2s ease-out infinite;
+}
+
+.admin-terminal .workspace-viewport {
+    display: block;
+    min-height: calc(100vh - 64px);
+    margin-top: 64px;
+}
+
+.admin-terminal .floating-sidebar {
+    top: 64px;
+    width: var(--sidebar-width);
+    padding: 1.4rem 0.8rem 1rem;
+    overflow-y: auto;
+    background: rgba(10, 14, 18, 0.94);
+    border-right: 1px solid var(--terminal-line);
+    scrollbar-color: #27353b transparent;
+    scrollbar-width: thin;
+}
+
+.admin-terminal .menu-group-title {
+    margin: 1.6rem 0 0.5rem;
+    padding: 0 0.7rem;
+    color: #64737b;
+    font: 500 0.61rem/1.4 "JetBrains Mono", Consolas, monospace;
+    letter-spacing: 0.13em;
+}
+
+.admin-terminal .menu-group-title:first-of-type {
+    margin-top: 0.4rem;
+}
+
+.admin-terminal .nav-anchor-node {
+    position: relative;
+    min-height: 39px;
+    margin: 0.18rem 0;
+    padding: 0.62rem 0.7rem;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    color: #94a1a7;
+    font: 400 0.72rem/1.3 "JetBrains Mono", Consolas, monospace;
+    transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.admin-terminal .nav-anchor-node .anchor-content-core {
+    gap: 0.68rem;
+}
+
+.admin-terminal .nav-anchor-node .icon-node-brand {
+    width: 16px;
+    color: #6f8087;
+    font-size: 0.9rem;
+}
+
+.admin-terminal .nav-anchor-node .icon-node-chevron {
+    color: #607078;
+    font-size: 0.68rem;
+}
+
+.admin-terminal .nav-anchor-node:hover {
+    border-color: var(--terminal-line);
+    background: rgba(255, 255, 255, 0.025);
+    color: var(--terminal-text);
+}
+
+.admin-terminal .nav-anchor-node:hover .icon-node-brand,
+.admin-terminal .nav-anchor-node.active-route-node .icon-node-brand {
+    color: var(--terminal-accent);
+}
+
+.admin-terminal .nav-anchor-node.active-route-node {
+    padding-left: calc(0.7rem - 2px);
+    border: 1px solid rgba(101, 230, 178, 0.19);
+    border-left: 2px solid var(--terminal-accent);
+    background: linear-gradient(90deg, rgba(101, 230, 178, 0.1), rgba(101, 230, 178, 0.015));
+    color: #d7eee5;
+    font-weight: 500;
+}
+
+.admin-terminal .session-terminate-box {
+    padding-top: 1rem;
+}
+
+.admin-terminal .session-terminate-trigger {
+    justify-content: flex-start !important;
+    border-color: rgba(255, 123, 120, 0.16) !important;
+    background: rgba(255, 123, 120, 0.035) !important;
+    color: #d38c89 !important;
+}
+
+.admin-terminal .session-terminate-trigger:hover {
+    border-color: rgba(255, 123, 120, 0.4) !important;
+    background: rgba(255, 123, 120, 0.1) !important;
+    color: #ffaaa7 !important;
+    box-shadow: none !important;
+}
+
+.admin-terminal .workspace-content-canvas {
+    min-height: calc(100vh - 64px);
+    margin-left: var(--sidebar-width);
+    padding: 1.75rem clamp(1rem, 3vw, 2.6rem) 3rem;
+    width: calc(100% - var(--sidebar-width));
+    color: var(--terminal-text);
+    animation: terminal-arrive 360ms ease-out both;
+}
+
+.admin-terminal .viewport-blur-overlay {
+    top: 64px;
+    background: rgba(3, 5, 7, 0.72);
+}
+
+.admin-terminal a {
+    color: var(--terminal-accent);
+}
+
+.admin-terminal :focus-visible {
+    outline: 2px solid var(--terminal-accent);
+    outline-offset: 3px;
+}
+
+.admin-terminal .cyber-card,
+.admin-terminal .cyber-form-card,
+.admin-terminal .dashboard-sidebar,
+.admin-terminal .dashboard-panel,
+.admin-terminal .matrix-card,
+.admin-terminal .editor-card,
+.admin-terminal .message-card,
+.admin-terminal .analytics-card {
+    background: var(--terminal-panel) !important;
+    border: 1px solid var(--terminal-line) !important;
+    border-radius: 7px !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18) !important;
+    color: var(--terminal-text);
+}
+
+.admin-terminal .cyber-card::before,
+.admin-terminal .cyber-form-card::before {
+    background: linear-gradient(90deg, transparent, var(--terminal-accent), transparent) !important;
+    opacity: 0.38 !important;
+}
+
+.admin-terminal .cyber-card:hover,
+.admin-terminal .matrix-card:hover {
+    border-color: rgba(101, 230, 178, 0.3) !important;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.28), 0 0 24px rgba(101, 230, 178, 0.035) !important;
+}
+
+.admin-terminal .cyber-card h1,
+.admin-terminal .cyber-card h2,
+.admin-terminal .cyber-card h3,
+.admin-terminal .cyber-card h4,
+.admin-terminal .dashboard-panel h3,
+.admin-terminal .matrix-cell.primary-title,
+.admin-terminal .article-title-node,
+.admin-terminal .panel-headline,
+.admin-terminal .page-title {
+    color: var(--terminal-text) !important;
+}
+
+.admin-terminal .card-header-deck,
+.admin-terminal .panel-header-node,
+.admin-terminal .matrix-records-title,
+.admin-terminal .feed-section-divider {
+    border-color: var(--terminal-line) !important;
+}
+
+.admin-terminal .card-header-title,
+.admin-terminal .filter-label,
+.admin-terminal .telemetry-node-label,
+.admin-terminal .matrix-cell.secondary-context,
+.admin-terminal .matrix-cell.meta-timeline,
+.admin-terminal .empty-state-placeholder {
+    color: var(--terminal-muted) !important;
+}
+
+.admin-terminal .telemetry-node-block,
+.admin-terminal .matrix-cell.index-badge,
+.admin-terminal .form-row,
+.admin-terminal .telemetry-filter-bar {
+    border-color: var(--terminal-line) !important;
+    background-color: rgba(255, 255, 255, 0.018) !important;
+}
+
+.admin-terminal .telemetry-node-value,
+.admin-terminal .entry-headline-link {
+    color: var(--terminal-text) !important;
+}
+
+.admin-terminal .card-header-title ion-icon,
+.admin-terminal .article-title-node span,
+.admin-terminal .menu-btn ion-icon {
+    color: var(--terminal-accent) !important;
+}
+
+.admin-terminal ion-icon {
+    vertical-align: middle;
+}
+
+.admin-terminal .cyber-btn-primary,
+.admin-terminal .btn-primary,
+.admin-terminal .btn-login {
+    border: 1px solid rgba(101, 230, 178, 0.35) !important;
+    border-radius: 5px !important;
+    background: var(--terminal-accent-soft) !important;
+    color: var(--terminal-accent) !important;
+    box-shadow: none !important;
+    font-family: "JetBrains Mono", Consolas, monospace;
+}
+
+.admin-terminal .cyber-btn-primary:hover,
+.admin-terminal .btn-primary:hover,
+.admin-terminal .btn-login:hover {
+    border-color: var(--terminal-accent) !important;
+    background: rgba(101, 230, 178, 0.2) !important;
+    color: #a4f5d0 !important;
+    box-shadow: 0 0 20px rgba(101, 230, 178, 0.1) !important;
+    transform: translateY(-1px);
+}
+
+.admin-terminal .action-pill-btn,
+.admin-terminal .action-icon-btn {
+    border-radius: 4px !important;
+    font-family: "JetBrains Mono", Consolas, monospace;
+}
+
+.admin-terminal .action-pill-btn.edit,
+.admin-terminal .action-icon-btn.edit {
+    border-color: rgba(101, 230, 178, 0.23) !important;
+    background: rgba(101, 230, 178, 0.06) !important;
+    color: var(--terminal-accent) !important;
+}
+
+.admin-terminal .action-pill-btn.delete,
+.admin-terminal .action-icon-btn.delete {
+    border-color: rgba(255, 123, 120, 0.23) !important;
+    background: rgba(255, 123, 120, 0.06) !important;
+    color: var(--terminal-danger) !important;
+}
+
+.admin-terminal .resume-delete-form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.admin-terminal input:not([type="checkbox"]):not([type="radio"]),
+.admin-terminal textarea,
+.admin-terminal select,
+.admin-terminal .cyber-input,
+.admin-terminal .form-control {
+    border: 1px solid var(--terminal-line) !important;
+    border-radius: 5px !important;
+    background: #090e12 !important;
+    color: var(--terminal-text) !important;
+    font-family: "JetBrains Mono", Consolas, monospace;
+}
+
+.admin-terminal input:focus,
+.admin-terminal textarea:focus,
+.admin-terminal select:focus,
+.admin-terminal .cyber-input:focus,
+.admin-terminal .form-control:focus {
+    border-color: rgba(101, 230, 178, 0.72) !important;
+    background: #0b1413 !important;
+    box-shadow: 0 0 0 3px rgba(101, 230, 178, 0.08) !important;
+}
+
+.admin-terminal input::placeholder,
+.admin-terminal textarea::placeholder {
+    color: #59696f !important;
+}
+
+.admin-terminal label,
+.admin-terminal .form-group label {
+    color: #a7b3b7;
+}
+
+.admin-terminal .dense-data-matrix,
+.admin-terminal .cyber-table,
+.admin-terminal table {
+    color: var(--terminal-text);
+}
+
+.admin-terminal .dense-data-matrix th,
+.admin-terminal .cyber-table th,
+.admin-terminal table th {
+    background: rgba(255, 255, 255, 0.025);
+    color: var(--terminal-muted);
+    border-color: var(--terminal-line);
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.09em;
+}
+
+.admin-terminal .dense-data-matrix td,
+.admin-terminal .cyber-table td,
+.admin-terminal table td {
+    color: var(--terminal-text);
+    border-color: rgba(165, 190, 199, 0.08);
+}
+
+.admin-terminal .dashboard-container {
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 1rem;
+}
+
+.admin-terminal .dashboard-sidebar {
+    top: 82px;
+    padding: 0.75rem;
+}
+
+.admin-terminal .menu-btn {
+    border-radius: 5px;
+    color: var(--terminal-muted);
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: 0.72rem;
+}
+
+.admin-terminal .menu-btn:hover,
+.admin-terminal .menu-btn.active {
+    border-color: rgba(101, 230, 178, 0.22);
+    background: var(--terminal-accent-soft);
+    color: var(--terminal-accent);
+}
+
+.admin-terminal .dashboard-panel {
+    padding: clamp(1rem, 2vw, 1.6rem);
+}
+
+.admin-terminal .custom-form-grid {
+    border: 1px solid var(--terminal-line) !important;
+    border-radius: 6px !important;
+    background: var(--terminal-panel-raised) !important;
+    box-shadow: none !important;
+}
+
+.admin-terminal .matrix-grid {
+    gap: 0.55rem;
+}
+
+.admin-terminal .matrix-card {
+    padding: 0.85rem 1rem;
+    grid-template-columns: minmax(140px, 2fr) minmax(100px, 1.4fr) minmax(90px, 1fr) auto minmax(140px, 1fr);
+}
+
+.admin-terminal .matrix-actions-group {
+    gap: 0.35rem;
+}
+
+.admin-terminal .console-dashboard {
+    display: grid;
+    gap: 1rem;
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+.admin-terminal .console-page-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 0.2rem;
+}
+
+.admin-terminal .terminal-eyebrow,
+.admin-terminal .terminal-label {
+    color: var(--terminal-accent);
+    font-size: 0.63rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.admin-terminal .console-page-heading h1 {
+    margin: 0.45rem 0 0.35rem;
+    color: var(--terminal-text);
+    font: 500 clamp(1.45rem, 3vw, 2.1rem)/1.15 "JetBrains Mono", Consolas, monospace;
+    letter-spacing: -0.07em;
+}
+
+.admin-terminal .console-page-heading p {
+    color: var(--terminal-muted);
+    font: 400 0.75rem/1.65 "JetBrains Mono", Consolas, monospace;
+}
+
+.admin-terminal .console-clock {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid var(--terminal-line);
+    border-radius: 4px;
+    color: var(--terminal-muted);
+    font-size: 0.62rem;
+    white-space: nowrap;
+}
+
+.admin-terminal .console-hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(210px, 0.8fr);
+    min-height: 200px;
+    overflow: hidden;
+    padding: clamp(1.2rem, 3vw, 2rem);
+    border: 1px solid var(--terminal-line);
+    border-radius: 7px;
+    background:
+        linear-gradient(110deg, rgba(13, 23, 24, 0.97) 0%, rgba(12, 20, 22, 0.88) 58%, rgba(12, 20, 22, 0.54) 100%),
+        repeating-linear-gradient(0deg, transparent 0 28px, rgba(150, 200, 187, 0.04) 29px);
+}
+
+.admin-terminal .console-hero-copy {
+    position: relative;
+    z-index: 1;
+    align-self: center;
+}
+
+.admin-terminal .console-hero h2 {
+    margin: 0.55rem 0 0.5rem;
+    color: #e8f4ef;
+    font: 500 clamp(1.15rem, 2.4vw, 1.75rem)/1.25 "JetBrains Mono", Consolas, monospace;
+    letter-spacing: -0.07em;
+}
+
+.admin-terminal .console-hero-copy > p:not(.terminal-eyebrow) {
+    max-width: 38rem;
+    color: #8d9d9f;
+    font: 400 0.72rem/1.7 "JetBrains Mono", Consolas, monospace;
+}
+
+.admin-terminal .console-hero-status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1rem;
+    margin-top: 1.15rem;
+    color: #9eadae;
+    font-size: 0.62rem;
+}
+
+.admin-terminal .console-hero-status span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.admin-terminal .orbit-visual {
+    position: absolute;
+    top: 50%;
+    right: clamp(0.3rem, 6vw, 5.5rem);
+    width: 205px;
+    aspect-ratio: 1;
+    transform: translateY(-50%);
+    opacity: 0.9;
+}
+
+.admin-terminal .orbit-ring {
+    position: absolute;
+    inset: 9%;
+    border: 1px solid rgba(101, 230, 178, 0.18);
+    border-radius: 50%;
+    animation: orbit-turn 36s linear infinite;
+}
+
+.admin-terminal .orbit-ring::before,
+.admin-terminal .orbit-ring::after {
+    position: absolute;
+    content: "";
+    border: 1px dashed rgba(101, 230, 178, 0.16);
+    border-radius: 50%;
+}
+
+.admin-terminal .orbit-ring::before {
+    inset: 15%;
+    transform: rotate(38deg) scaleX(0.66);
+}
+
+.admin-terminal .orbit-ring::after {
+    inset: 0;
+    transform: rotate(-38deg) scaleY(0.54);
+}
+
+.admin-terminal .orbit-ring.ring-two {
+    inset: 0;
+    border-style: dashed;
+    animation-direction: reverse;
+    animation-duration: 55s;
+}
+
+.admin-terminal .orbit-core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    width: 48px;
+    aspect-ratio: 1;
+    place-items: center;
+    border: 1px solid rgba(101, 230, 178, 0.64);
+    border-radius: 50%;
+    background: rgba(101, 230, 178, 0.1);
+    box-shadow: 0 0 28px rgba(101, 230, 178, 0.13), inset 0 0 16px rgba(101, 230, 178, 0.08);
+    color: var(--terminal-accent);
+    font-size: 0.74rem;
+    font-weight: 700;
+    transform: translate(-50%, -50%);
+}
+
+.admin-terminal .orbit-point {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--terminal-accent);
+    box-shadow: 0 0 10px rgba(101, 230, 178, 0.75);
+}
+
+.admin-terminal .orbit-point.point-one {
+    top: 16%;
+    left: 67%;
+}
+
+.admin-terminal .orbit-point.point-two {
+    top: 66%;
+    left: 7%;
+    width: 4px;
+    height: 4px;
+    background: var(--terminal-warn);
+    box-shadow: 0 0 9px rgba(240, 191, 107, 0.7);
+}
+
+.admin-terminal .console-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.7rem;
+}
+
+.admin-terminal .console-metric {
+    position: relative;
+    overflow: hidden;
+    min-height: 95px;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--terminal-line);
+    border-radius: 6px;
+    background: rgba(13, 18, 23, 0.9);
+    transition: border-color 180ms ease, transform 180ms ease;
+}
+
+.admin-terminal .console-metric:hover {
+    border-color: rgba(101, 230, 178, 0.38);
+    transform: translateY(-2px);
+}
+
+.admin-terminal .console-metric-label {
+    color: var(--terminal-muted);
+    font-size: 0.59rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.admin-terminal .console-metric-value {
+    display: block;
+    margin-top: 0.7rem;
+    color: var(--terminal-text);
+    font: 500 1.35rem/1 "JetBrains Mono", Consolas, monospace;
+    letter-spacing: -0.06em;
+}
+
+.admin-terminal .console-metric-value.warn {
+    color: var(--terminal-warn);
+}
+
+.admin-terminal .console-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+    gap: 0.8rem;
+}
+
+.admin-terminal .console-panel {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--terminal-line);
+    border-radius: 6px;
+    background: rgba(13, 18, 23, 0.92);
+}
+
+.admin-terminal .console-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 46px;
+    padding: 0.75rem 0.9rem;
+    border-bottom: 1px solid var(--terminal-line);
+}
+
+.admin-terminal .console-panel-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: #d7e1e3;
+    font-size: 0.66rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.admin-terminal .console-panel-title i {
+    color: var(--terminal-accent);
+    font-size: 0.82rem;
+}
+
+.admin-terminal .console-panel-meta {
+    color: #66777c;
+    font-size: 0.58rem;
+}
+
+.admin-terminal .console-panel-body {
+    padding: 0.85rem 0.9rem;
+}
+
+.admin-terminal .activity-chart {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    align-items: end;
+    gap: 0.55rem;
+    height: 145px;
+    padding-top: 0.5rem;
+}
+
+.admin-terminal .activity-column {
+    display: flex;
+    height: 100%;
+    min-width: 0;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.admin-terminal .activity-bar-track {
+    display: flex;
+    width: 100%;
+    height: 112px;
+    align-items: flex-end;
+    justify-content: center;
+    border-bottom: 1px solid rgba(165, 190, 199, 0.1);
+    background: repeating-linear-gradient(to top, transparent 0 27px, rgba(165, 190, 199, 0.055) 28px);
+}
+
+.admin-terminal .activity-bar {
+    width: min(60%, 25px);
+    height: max(4px, var(--bar-height));
+    border: 1px solid rgba(101, 230, 178, 0.42);
+    border-bottom: 0;
+    border-radius: 3px 3px 0 0;
+    background: linear-gradient(180deg, rgba(101, 230, 178, 0.75), rgba(101, 230, 178, 0.12));
+    box-shadow: 0 0 14px rgba(101, 230, 178, 0.09);
+    animation: bar-rise 450ms ease-out both;
+    transform-origin: bottom;
+}
+
+.admin-terminal .activity-label {
+    color: #718187;
+    font-size: 0.57rem;
+}
+
+.admin-terminal .console-data-list {
+    display: grid;
+    gap: 0.15rem;
+}
+
+.admin-terminal .console-data-row {
+    display: flex;
+    min-width: 0;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.62rem 0.2rem;
+    border-bottom: 1px solid rgba(165, 190, 199, 0.07);
+    color: #a9b5b8;
+    font-size: 0.65rem;
+    text-decoration: none;
+}
+
+.admin-terminal .console-data-row:last-child {
+    border-bottom: 0;
+}
+
+.admin-terminal a.console-data-row:hover {
+    color: var(--terminal-accent);
+}
+
+.admin-terminal .console-data-row strong {
+    flex: 0 0 auto;
+    color: #d9e3e3;
+    font-weight: 500;
+}
+
+.admin-terminal .console-data-main {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-terminal .console-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.22rem 0.38rem;
+    border: 1px solid var(--terminal-line);
+    border-radius: 3px;
+    color: #89989c;
+    font-size: 0.55rem;
+    white-space: nowrap;
+}
+
+.admin-terminal .console-tag.is-live {
+    border-color: rgba(101, 230, 178, 0.2);
+    color: var(--terminal-accent);
+}
+
+.admin-terminal .console-empty {
+    padding: 1.1rem 0.2rem;
+    color: #6d7b80;
+    font-size: 0.66rem;
+    text-align: center;
+}
+
+.admin-terminal .console-panel-link {
+    color: var(--terminal-accent);
+    font-size: 0.59rem;
+    text-decoration: none;
+}
+
+.admin-terminal .console-panel-link:hover {
+    color: #a4f5d0;
+    text-decoration: underline;
+}
+
+.admin-terminal .dashboard-workspace-container,
+.admin-terminal .analytics-workspace-container,
+.admin-terminal .form-workspace-container {
+    font-family: inherit;
+}
+
+.admin-terminal .cyber-card {
+    border-color: var(--terminal-line) !important;
+    border-radius: 6px !important;
+    background: var(--terminal-panel) !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2) !important;
+}
+
+.admin-terminal .metric-label,
+.admin-terminal .metric-title,
+.admin-terminal .filter-label,
+.admin-terminal .sender-email,
+.admin-terminal .path-text,
+.admin-terminal .section-headline {
+    font-family: "JetBrains Mono", Consolas, monospace;
+}
+
+.admin-terminal .metric-label,
+.admin-terminal .metric-title {
+    color: var(--terminal-muted) !important;
+    letter-spacing: 0.08em;
+}
+
+.admin-terminal .metric-value {
+    color: var(--terminal-text) !important;
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+}
+
+.admin-terminal #timelineChart {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.admin-terminal .cyber-table th {
+    background: rgba(255, 255, 255, 0.025) !important;
+    color: var(--terminal-muted) !important;
+    font: 500 0.62rem "JetBrains Mono", Consolas, monospace;
+    letter-spacing: 0.08em;
+}
+
+.admin-terminal .cyber-table td {
+    color: var(--terminal-text) !important;
+    font-family: inherit;
+}
+
+.admin-terminal .subject-text,
+.admin-terminal .badge-featured,
+.admin-terminal .badge-cyan,
+.admin-terminal .badge-emerald,
+.admin-terminal .asset-active {
+    color: var(--terminal-accent) !important;
+}
+
+.admin-terminal .badge-featured,
+.admin-terminal .badge-cyan,
+.admin-terminal .badge-emerald {
+    border-color: rgba(101, 230, 178, 0.25) !important;
+    background: var(--terminal-accent-soft) !important;
+}
+
+.admin-terminal .cyber-select,
+.admin-terminal .inbox-read-filter select {
+    border-color: var(--terminal-line);
+    color: var(--terminal-text);
+    background-color: #090e12;
+    font-family: "JetBrains Mono", Consolas, monospace;
+}
+
+.admin-terminal .console-flash {
+    margin: 0 0 0.9rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid rgba(101, 230, 178, 0.2);
+    border-radius: 5px;
+    background: rgba(101, 230, 178, 0.06);
+    color: #c9e8d9;
+    font-size: 0.72rem;
+}
+
+.admin-terminal .console-flash.error {
+    border-color: rgba(255, 123, 120, 0.24);
+    background: rgba(255, 123, 120, 0.06);
+    color: #ffc0bc;
+}
+
+.admin-login-screen {
+    min-height: 100vh;
+    padding: 1rem;
+    background-color: var(--terminal-bg);
+    background-image:
+        radial-gradient(ellipse at 50% 20%, rgba(32, 87, 72, 0.19), transparent 47%),
+        linear-gradient(rgba(141, 175, 181, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(141, 175, 181, 0.025) 1px, transparent 1px);
+    background-size: auto, 38px 38px, 38px 38px;
+    color: var(--terminal-text);
+    font-family: "JetBrains Mono", Consolas, monospace;
+}
+
+.admin-login-screen .login-card {
+    border: 1px solid var(--terminal-line);
+    border-radius: 7px;
+    background: rgba(14, 19, 24, 0.97);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5), 0 0 40px rgba(101, 230, 178, 0.04);
+}
+
+.admin-login-screen .login-card::before {
+    background: linear-gradient(90deg, transparent, var(--terminal-accent), transparent);
+}
+
+.admin-login-screen .brand-icon-shield {
+    border-color: rgba(101, 230, 178, 0.25);
+    border-radius: 6px;
+    background: var(--terminal-accent-soft);
+    color: var(--terminal-accent);
+    box-shadow: 0 0 25px rgba(101, 230, 178, 0.07);
+}
+
+.admin-login-screen .login-card h2 {
+    color: var(--terminal-text);
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: 1.1rem;
+    letter-spacing: -0.04em;
+}
+
+.admin-login-screen .login-card p,
+.admin-login-screen .form-group label,
+.admin-login-screen .back-home {
+    color: var(--terminal-muted);
+    font-family: "JetBrains Mono", Consolas, monospace;
+}
+
+.admin-login-screen .form-control {
+    border-color: var(--terminal-line);
+    border-radius: 5px;
+    background: #090e12;
+    color: var(--terminal-text);
+    font-family: "JetBrains Mono", Consolas, monospace;
+}
+
+.admin-login-screen .form-control:focus {
+    border-color: rgba(101, 230, 178, 0.72);
+    background: #0b1413;
+    box-shadow: 0 0 0 3px rgba(101, 230, 178, 0.08);
+}
+
+.admin-login-screen .btn-login {
+    min-height: 43px;
+}
+
+.admin-login-screen .back-home:hover {
+    color: var(--terminal-accent);
+}
+
+@keyframes terminal-pulse {
+    0% { opacity: 0.75; transform: scale(0.65); }
+    100% { opacity: 0; transform: scale(1.7); }
+}
+
+@keyframes terminal-arrive {
+    from { opacity: 0; transform: translateY(7px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes orbit-turn {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes bar-rise {
+    from { transform: scaleY(0.12); }
+    to { transform: scaleY(1); }
+}
+
+@media (max-width: 991px) {
+    .admin-terminal .glass-header {
+        padding: 0 1rem;
+    }
+
+    .admin-terminal .floating-sidebar {
+        top: 64px;
+        width: min(284px, 84vw);
+        padding-top: 1.2rem;
+        background: rgba(9, 13, 17, 0.98);
+    }
+
+    .admin-terminal .workspace-content-canvas {
+        margin-left: 0;
+        width: 100%;
+        padding: 1.35rem 1rem 2rem;
+    }
+
+    .admin-terminal .console-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-terminal .dashboard-container {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-terminal .dashboard-sidebar {
+        position: static;
+    }
+
+    .admin-terminal .dashboard-sidebar .sidebar-menu {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .admin-terminal .dashboard-sidebar .menu-btn {
+        width: auto;
+    }
+}
+
+@media (max-width: 680px) {
+    .admin-terminal .brand-logo-text {
+        font-size: 0.65rem;
+    }
+
+    .admin-terminal .topbar-status {
+        display: none;
+    }
+
+    .admin-terminal .command-trigger span,
+    .admin-terminal .command-trigger kbd {
+        display: none;
+    }
+
+    .admin-terminal .command-trigger {
+        width: 33px;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .admin-terminal .live-site-link {
+        min-height: 32px;
+        padding: 0.4rem 0.55rem;
+        font-size: 0.58rem;
+    }
+
+    .admin-terminal .console-page-heading {
+        align-items: flex-start;
+    }
+
+    .admin-terminal .console-clock {
+        display: none;
+    }
+
+    .admin-terminal .console-heading-actions {
+        align-self: flex-start;
+    }
+
+    .admin-terminal .console-search-shortcut {
+        min-height: 31px;
+        font-size: 0.54rem;
+    }
+
+    .admin-terminal .console-hero {
+        grid-template-columns: 1fr;
+        min-height: 185px;
+    }
+
+    .admin-terminal .orbit-visual {
+        right: -74px;
+        width: 175px;
+        opacity: 0.38;
+    }
+
+    .admin-terminal .console-hero-copy {
+        max-width: 82%;
+    }
+
+    .admin-terminal .console-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-terminal .console-metric {
+        min-height: 82px;
+    }
+
+    .admin-terminal .matrix-card {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.55rem 0.75rem;
+        padding: 0.85rem;
+    }
+
+    .admin-terminal .matrix-actions-group {
+        grid-column: 1 / -1;
+    }
+
+    .admin-terminal .resume-workspace-wrapper {
+        padding: 0;
+    }
+
+    .admin-terminal .article-title-node {
+        font-size: 1.25rem;
+    }
+
+    .admin-terminal .dashboard-panel {
+        padding: 0.85rem;
+    }
+
+    .admin-terminal .command-palette-footer {
+        justify-content: space-between;
+        gap: 0.35rem;
+        font-size: 0.45rem;
+    }
+
+    .admin-terminal .inbox-filter-bar {
+        align-items: stretch;
+    }
+
+    .admin-terminal .inbox-read-filter {
+        flex: 1;
+        justify-content: space-between;
+    }
+
+    .admin-terminal .console-filter-submit,
+    .admin-terminal .console-filter-reset {
+        justify-content: center;
+        flex: 1;
+    }
+
+    .admin-terminal .admin-welcome-footer {
+        right: 12px;
+        bottom: 12px;
+        font-size: 0.46rem;
+    }
+}
+
+@media (max-width: 390px) {
+    .admin-terminal .brand-mark {
+        display: none;
+    }
+
+    .admin-terminal .brand-logo-text {
+        font-size: 0.59rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-terminal *,
+    .admin-terminal *::before,
+    .admin-terminal *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .admin-terminal .command-palette[open],
+    .admin-terminal .admin-welcome[open] {
+        animation: none;
+    }
+
+    .admin-terminal .admin-welcome-emblem,
+    .admin-terminal .admin-welcome-content h1,
+    .admin-terminal .admin-welcome-copy,
+    .admin-terminal .admin-welcome-enter {
+        animation: none;
+    }
+}

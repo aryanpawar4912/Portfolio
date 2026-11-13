@@ -1,8 +1,8 @@
 import logging
 from datetime import timedelta
 from django.utils import timezone
-from django.db.models import F
-from .models import PageView, SiteStatistic, Contact
+from django.db.models import Case, Exists, F, IntegerField, Value, When
+from .models import PageView, SiteStatistic
 
 logger = logging.getLogger(__name__)
 
@@ -42,30 +42,35 @@ class PageViewTrackingMiddleware:
         referrer = request.META.get('HTTP_REFERER', '')[:200]
 
         # 1. Log page view record atomically
-        PageView.objects.create(
+        page_view = PageView.objects.create(
             page=page_name,
             ip_address=ip_address,
             user_agent=user_agent,
             referrer=referrer
         )
 
-        # 2. Optimized, low-overhead SiteStatistic Updates
-        stat, created = SiteStatistic.objects.get_or_create(pk=1)
-        
-        # High-Performance Increment: No table scans!
-        stat.total_views = F('total_views') + 1
-        
-        # Sync current total contacts cleanly
-        stat.total_contacts = Contact.objects.count()
-
-        # Check if this IP is unique within the rolling 30-day window
+        # 2. Update existing counters in one round trip; create the singleton lazily.
         thirty_days_ago = timezone.now() - timedelta(days=30)
-        is_new_visitor = not PageView.objects.filter(
+        previous_views = PageView.objects.filter(
             ip_address=ip_address,
             timestamp__gte=thirty_days_ago
-        ).exclude(page=page_name).exists() # Exclude current hit to see if they were already here
+        ).exclude(pk=page_view.pk)
 
-        if is_new_visitor or created:
-            stat.total_unique_visitors = F('total_unique_visitors') + 1
+        unique_visitor_increment = Case(
+            When(~Exists(previous_views), then=Value(1)),
+            default=Value(0),
+            output_field=IntegerField(),
+        )
 
-        stat.save()
+        statistic_updates = {
+            'total_views': F('total_views') + 1,
+            'total_unique_visitors': F('total_unique_visitors') + unique_visitor_increment,
+        }
+        updated = SiteStatistic.objects.filter(pk=1).update(**statistic_updates)
+        if not updated:
+            _, created = SiteStatistic.objects.get_or_create(
+                pk=1,
+                defaults={'total_views': 1, 'total_unique_visitors': 1},
+            )
+            if not created:
+                SiteStatistic.objects.filter(pk=1).update(**statistic_updates)

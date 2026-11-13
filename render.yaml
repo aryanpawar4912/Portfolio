@@ -2,20 +2,22 @@ services:
   - type: web
     name: portfolio-website
     runtime: python
-    buildCommand: ./build.sh
-    startCommand: gunicorn portfolio.wsgi:application
+    buildCommand: bash build.sh
+    startCommand: gunicorn portfolio.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
-        value: "3.10.16" # Forces the exact Python 3.10 runtime engine
+        value: "3.14.10"
       - key: DJANGO_DEBUG
         value: "False"
       - key: DJANGO_SECRET_KEY
         sync: false 
+      - key: DJANGO_ALLOWED_HOSTS
+        value: "portfolio-website.onrender.com"
       - key: DATABASE_URL
         sync: false 
       - key: DJANGO_EMAIL_USER
         sync: false
-      - key: HOST_PASSWORD
+      - key: DJANGO_EMAIL_PASSWORD
         sync: false 
       - key: DJANGO_SUPERUSER_USERNAME
         value: "aryanpawar4912"

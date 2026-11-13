@@ -6,18 +6,43 @@ Configured for Render + Neon DB deployment.
 from pathlib import Path
 import os
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- PRODUCTION SECURITY ---
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-fallback-key-for-local-dev')
-
 # Automatically turns off DEBUG mode when running on Render
-DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DJANGO_DEBUG', 'False').strip().lower() in {'1', 'true', 'yes'}
 
-# Allow Render's internal host and your custom subdomains
-ALLOWED_HOSTS = os.getenv('HOST', 'localhost').split(',')
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    if not DEBUG:
+        raise ImproperlyConfigured('DJANGO_SECRET_KEY must be configured when DEBUG is disabled.')
+    SECRET_KEY = 'django-insecure-local-development-only'
+elif not DEBUG and (len(SECRET_KEY) < 50 or SECRET_KEY.startswith('django-insecure-')):
+    raise ImproperlyConfigured('DJANGO_SECRET_KEY must be a strong, randomly generated key in production.')
+
+ALLOWED_HOSTS = [
+    h.strip() for h in os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',') if h.strip()
+]
+
+if DEBUG:
+    ALLOWED_HOSTS.extend(['localhost', '127.0.0.1'])
+elif not ALLOWED_HOSTS:
+    raise ImproperlyConfigured('DJANGO_ALLOWED_HOSTS must contain the deployed host.')
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',')
+    if origin.strip()
+]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 
 # --- APPLICATION DEFINITION ---
@@ -71,10 +96,16 @@ WSGI_APPLICATION = 'portfolio.wsgi.application'
 
 
 # --- DATABASE CONFIGURATION ---
-# Uses SQLite locally for quick testing, swaps to Neon PostgreSQL automatically on Render
+database_url = os.getenv('DATABASE_URL')
+if not DEBUG:
+    if not database_url:
+        raise ImproperlyConfigured('DATABASE_URL must be configured in production.')
+    if not database_url.startswith(('postgres://', 'postgresql://')):
+        raise ImproperlyConfigured('DATABASE_URL must use PostgreSQL in production.')
+
 DATABASES = {
     'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        default=database_url or f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
         conn_health_checks=True,
     )
@@ -103,17 +134,21 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # WhiteNoise storage optimization (compresses and caches files)
+STATICFILES_STORAGE_BACKEND = (
+    'whitenoise.storage.CompressedStaticFilesStorage'
+    if DEBUG else 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+)
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": STATICFILES_STORAGE_BACKEND,
     },
 }
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = Path(os.getenv('DJANGO_MEDIA_ROOT', str(BASE_DIR / 'media')))
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -124,6 +159,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('DJANGO_EMAIL_USER') 
-HOST_PASSWORD = os.getenv('HOST_PASSWORD')
+EMAIL_HOST_PASSWORD = os.getenv('DJANGO_EMAIL_PASSWORD', os.getenv('HOST_PASSWORD', ''))
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-

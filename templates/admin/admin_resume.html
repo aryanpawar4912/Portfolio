@@ -366,6 +366,16 @@
 </style>
 
 <article class="resume-workspace-wrapper active">
+    {% if messages %}
+    <div aria-live="polite">
+        {% for message in messages %}
+        <div class="console-flash{% if message.tags == 'error' %} error{% endif %}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+        {% if submitted_form.errors %}
+        <div class="console-flash error" role="alert">{{ submitted_form.errors.as_ul }}</div>
+        {% endif %}
     <header>
         <h2 class="article-title-node">
             <span><ion-icon name="options-outline"></ion-icon></span> Resume Custom Dashboard
@@ -415,7 +425,7 @@
                         <div class="matrix-cell index-badge">ORD-{{ exp.order }}</div>
                         <div class="matrix-actions-group">
                             <a href="{% url 'edit_resume_item' 'experience' exp.id %}" class="action-pill-btn edit"><ion-icon name="create-outline"></ion-icon> Edit</a>
-                            <a href="{% url 'delete_resume_item' 'experience' exp.id %}" class="action-pill-btn delete" onclick="return confirm('Purge this record completely?')"><ion-icon name="trash-outline"></ion-icon> Delete</a>
+                            <form method="post" action="{% url 'delete_resume_item' 'experience' exp.id %}" class="resume-delete-form" onsubmit="return confirm('Purge this record completely?')">{% csrf_token %}<button type="submit" class="action-pill-btn delete"><ion-icon name="trash-outline"></ion-icon> Delete</button></form>
                         </div>
                     </div>
                     {% empty %}
@@ -451,7 +461,7 @@
                         <div class="matrix-cell index-badge">POS-{{ edu.order }}</div>
                         <div class="matrix-actions-group">
                             <a href="{% url 'edit_resume_item' 'education' edu.id %}" class="action-pill-btn edit"><ion-icon name="create-outline"></ion-icon> Edit</a>
-                            <a href="{% url 'delete_resume_item' 'education' edu.id %}" class="action-pill-btn delete" onclick="return confirm('Purge this record completely?')"><ion-icon name="trash-outline"></ion-icon> Delete</a>
+                            <form method="post" action="{% url 'delete_resume_item' 'education' edu.id %}" class="resume-delete-form" onsubmit="return confirm('Purge this record completely?')">{% csrf_token %}<button type="submit" class="action-pill-btn delete"><ion-icon name="trash-outline"></ion-icon> Delete</button></form>
                         </div>
                     </div>
                     {% empty %}
@@ -487,7 +497,7 @@
                         <div class="matrix-cell index-badge">ORD-{{ cert.order }}</div>
                         <div class="matrix-actions-group">
                             <a href="{% url 'edit_resume_item' 'certification' cert.id %}" class="action-pill-btn edit"><ion-icon name="create-outline"></ion-icon> Edit</a>
-                            <a href="{% url 'delete_resume_item' 'certification' cert.id %}" class="action-pill-btn delete" onclick="return confirm('Purge this record completely?')"><ion-icon name="trash-outline"></ion-icon> Delete</a>
+                            <form method="post" action="{% url 'delete_resume_item' 'certification' cert.id %}" class="resume-delete-form" onsubmit="return confirm('Purge this record completely?')">{% csrf_token %}<button type="submit" class="action-pill-btn delete"><ion-icon name="trash-outline"></ion-icon> Delete</button></form>
                         </div>
                     </div>
                     {% empty %}
@@ -522,7 +532,7 @@
                         <div class="matrix-cell index-badge">WGT-{{ skill.order }}</div>
                         <div class="matrix-actions-group">
                             <a href="{% url 'edit_resume_item' 'skill' skill.id %}" class="action-pill-btn edit"><ion-icon name="create-outline"></ion-icon> Edit</a>
-                            <a href="{% url 'delete_resume_item' 'skill' skill.id %}" class="action-pill-btn delete" onclick="return confirm('Purge this record completely?')"><ion-icon name="trash-outline"></ion-icon> Delete</a>
+                            <form method="post" action="{% url 'delete_resume_item' 'skill' skill.id %}" class="resume-delete-form" onsubmit="return confirm('Purge this record completely?')">{% csrf_token %}<button type="submit" class="action-pill-btn delete"><ion-icon name="trash-outline"></ion-icon> Delete</button></form>
                         </div>
                     </div>
                     {% empty %}
@@ -562,7 +572,7 @@
                         <div class="matrix-cell index-badge">PUB-{{ pub.order }}</div>
                         <div class="matrix-actions-group">
                             <a href="{% url 'edit_resume_item' 'publication' pub.id %}" class="action-pill-btn edit"><ion-icon name="create-outline"></ion-icon> Edit</a>
-                            <a href="{% url 'delete_resume_item' 'publication' pub.id %}" class="action-pill-btn delete" onclick="return confirm('Purge this record completely?')"><ion-icon name="trash-outline"></ion-icon> Delete</a>
+                            <form method="post" action="{% url 'delete_resume_item' 'publication' pub.id %}" class="resume-delete-form" onsubmit="return confirm('Purge this record completely?')">{% csrf_token %}<button type="submit" class="action-pill-btn delete"><ion-icon name="trash-outline"></ion-icon> Delete</button></form>
                         </div>
                     </div>
                     {% empty %}
@@ -598,7 +608,7 @@
                         <div class="matrix-cell index-badge">RNK-{{ award.order }}</div>
                         <div class="matrix-actions-group">
                             <a href="{% url 'edit_resume_item' 'award' award.id %}" class="action-pill-btn edit"><ion-icon name="create-outline"></ion-icon> Edit</a>
-                            <a href="{% url 'delete_resume_item' 'award' award.id %}" class="action-pill-btn delete" onclick="return confirm('Purge this record completely?')"><ion-icon name="trash-outline"></ion-icon> Delete</a>
+                            <form method="post" action="{% url 'delete_resume_item' 'award' award.id %}" class="resume-delete-form" onsubmit="return confirm('Purge this record completely?')">{% csrf_token %}<button type="submit" class="action-pill-btn delete"><ion-icon name="trash-outline"></ion-icon> Delete</button></form>
                         </div>
                     </div>
                     {% empty %}
@@ -633,7 +643,7 @@
                         <div class="matrix-cell index-badge">ORD-{{ strength.order }}</div>
                         <div class="matrix-actions-group">
                             <a href="{% url 'edit_resume_item' 'strength' strength.id %}" class="action-pill-btn edit"><ion-icon name="create-outline"></ion-icon> Edit</a>
-                            <a href="{% url 'delete_resume_item' 'strength' strength.id %}" class="action-pill-btn delete" onclick="return confirm('Remove strength focus?')"><ion-icon name="trash-outline"></ion-icon> Delete</a>
+                            <form method="post" action="{% url 'delete_resume_item' 'strength' strength.id %}" class="resume-delete-form" onsubmit="return confirm('Remove strength focus?')">{% csrf_token %}<button type="submit" class="action-pill-btn delete"><ion-icon name="trash-outline"></ion-icon> Delete</button></form>
                         </div>
                     </div>
                     {% empty %}
@@ -668,7 +678,7 @@
                         <div class="matrix-cell index-badge">ORD-{{ interest.order }}</div>
                         <div class="matrix-actions-group">
                             <a href="{% url 'edit_resume_item' 'interest' interest.id %}" class="action-pill-btn edit"><ion-icon name="create-outline"></ion-icon> Edit</a>
-                            <a href="{% url 'delete_resume_item' 'interest' interest.id %}" class="action-pill-btn delete" onclick="return confirm('Remove interest module?')"><ion-icon name="trash-outline"></ion-icon> Delete</a>
+                            <form method="post" action="{% url 'delete_resume_item' 'interest' interest.id %}" class="resume-delete-form" onsubmit="return confirm('Remove interest module?')">{% csrf_token %}<button type="submit" class="action-pill-btn delete"><ion-icon name="trash-outline"></ion-icon> Delete</button></form>
                         </div>
                     </div>
                     {% empty %}
@@ -740,11 +750,16 @@
 
     // Diagnostics Execution Frame on Window Complete
     window.addEventListener('DOMContentLoaded', () => {
-        const activeTabCache = localStorage.getItem('active_resume_tab');
+        const activeTabCache = '{{ active_tab|default:""|escapejs }}' || localStorage.getItem('active_resume_tab');
         if (activeTabCache && document.getElementById(activeTabCache)) {
             switchTab(null, activeTabCache);
         }
         setupFormPlaceholders();
     });
 </script>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 {% endblock %}

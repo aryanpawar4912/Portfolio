@@ -1,532 +1,173 @@
 {% extends 'admin/admin_base.html' %}
-{% block title %}Dashboard Hub - Operational Matrix{% endblock %}
+
+{% block title %}Operations console - Admin{% endblock %}
 
 {% block content %}
-<style>
-    /* =========================================================
-       CYBER-MINIMALIST DASHBOARD ENGINE
-       ========================================================= */
-    :root {
-        --bg-panel: #131826;
-        --bg-field: rgba(0, 0, 0, 0.25);
-        --border-subtle: rgba(255, 255, 255, 0.08);
-        --text-bright: #f8fafc;
-        --text-dim: #94a3b8;
-        --accent-core: #6366f1; /* Indigo */
-        --accent-neon: #38bdf8; /* Cyan Glow */
-        --accent-danger: #f43f5e; /* Rose Alert */
-        --accent-success: #10b981; /* Emerald */
-        --radius-standard: 12px;
-        --radius-inner: 8px;
-    }
-
-    /* Core Layout */
-    .dashboard-wrapper {
-        animation: interfaceFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .cyber-layout-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1.75rem;
-    }
-
-    @media (min-width: 768px) {
-        .cyber-layout-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    @media (min-width: 1300px) {
-        .cyber-layout-grid {
-            grid-template-columns: 1.1fr 1.1fr 0.8fr;
-        }
-    }
-
-    /* Architectural Workspace Card */
-    .cyber-card {
-        background: var(--bg-panel);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-standard);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
-        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    .cyber-card:hover {
-        border-color: rgba(99, 102, 241, 0.3);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    }
-
-    .card-header-deck {
-        padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid var(--border-subtle);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%);
-    }
-
-    .card-header-title {
-        font-size: 0.85rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--text-dim);
-        display: flex;
-        align-items: center;
-        gap: 0.65rem;
-    }
-
-    .card-header-title ion-icon {
-        color: var(--accent-neon);
-        font-size: 1.1rem;
-    }
-
-    .card-header-utility-icon {
-        color: var(--text-dim);
-        font-size: 1rem;
-        opacity: 0.5;
-    }
-
-    .card-body-container {
-        padding: 1.5rem;
-        flex: 1;
-    }
-
-    /* Telemetry Blocks */
-    .telemetry-row-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.75rem;
-    }
-
-    .telemetry-node-block {
-        background: var(--bg-field);
-        border: 1px solid var(--border-subtle);
-        padding: 1.25rem 0.75rem;
-        border-radius: var(--radius-inner);
-        text-align: center;
-        transition: background 0.2s ease, border-color 0.2s ease;
-    }
-
-    .telemetry-node-block:hover {
-        background: rgba(99, 102, 241, 0.05);
-        border-color: rgba(99, 102, 241, 0.2);
-    }
-
-    .telemetry-node-value {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: var(--text-bright);
-        font-family: 'JetBrains Mono', monospace, sans-serif;
-        letter-spacing: -0.03em;
-    }
-
-    .telemetry-node-label {
-        font-size: 0.65rem;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: var(--text-dim);
-        margin-top: 0.5rem;
-        font-weight: 600;
-    }
-
-    /* Data Tables */
-    .dense-data-matrix {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .dense-data-matrix th {
-        text-align: left;
-        background: rgba(0, 0, 0, 0.2);
-        padding: 0.85rem 1rem;
-        color: var(--text-dim);
-        font-weight: 700;
-        text-transform: uppercase;
-        font-size: 0.65rem;
-        letter-spacing: 0.08em;
-        border-bottom: 1px solid var(--border-subtle);
-    }
-
-    .dense-data-matrix td {
-        padding: 0.9rem 1rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-        color: var(--text-bright);
-        font-size: 0.85rem;
-    }
-
-    .dense-data-matrix tr:last-child td {
-        border-bottom: none;
-    }
-
-    /* Feed Layouts */
-    .feed-group-wrapper {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .feed-section-divider {
-        background: rgba(0, 0, 0, 0.2);
-        font-size: 0.68rem;
-        font-weight: 700;
-        padding: 0.6rem 1.5rem;
-        color: var(--text-dim);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        border-bottom: 1px solid var(--border-subtle);
-        border-top: 1px solid var(--border-subtle);
-    }
-
-    .feed-section-divider:first-of-type {
-        border-top: none;
-    }
-
-    .feed-row-element {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-        transition: background 0.2s ease;
-    }
-
-    .feed-row-element:hover {
-        background: rgba(255, 255, 255, 0.02);
-    }
-
-    .feed-row-element:last-child {
-        border-bottom: none;
-    }
-
-    .feed-row-element a.entry-headline-link {
-        color: var(--text-bright);
-        text-decoration: none;
-        font-size: 0.88rem;
-        font-weight: 600;
-        transition: color 0.15s ease;
-    }
-
-    .feed-row-element a.entry-headline-link:hover {
-        color: var(--accent-neon);
-    }
-
-    /* Badges & Actions */
-    .badge-status-node {
-        display: inline-block;
-        padding: 0.15rem 0.5rem;
-        border-radius: 4px;
-        font-size: 0.68rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        background: rgba(255,255,255,0.05);
-        color: var(--text-dim);
-        border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .badge-status-node.status-published {
-        background: rgba(16, 185, 129, 0.1);
-        color: var(--accent-success);
-        border-color: rgba(16, 185, 129, 0.2);
-    }
-
-    .action-button-group {
-        display: flex;
-        gap: 0.85rem;
-        align-items: center;
-    }
-
-    .action-button-group a {
-        color: var(--text-dim);
-        font-size: 1.1rem;
-        transition: all 0.15s ease;
-    }
-
-    .action-button-group a:hover {
-        color: var(--accent-neon);
-        transform: scale(1.1);
-    }
-
-    .action-button-group button.delete-btn-node {
-        background: none;
-        border: none;
-        color: var(--text-dim);
-        cursor: pointer;
-        padding: 0;
-        font-size: 1.1rem;
-        transition: all 0.15s ease;
-    }
-
-    .action-button-group button.delete-btn-node:hover {
-        color: var(--accent-danger);
-        transform: scale(1.1);
-    }
-
-    /* Utility Links */
-    .utility-stack-vertical {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-
-    .utility-link-row {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        font-size: 0.9rem;
-        padding: 0.5rem 0;
-    }
-
-    .utility-link-row a {
-        color: var(--text-bright);
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.15s ease, transform 0.15s ease;
-    }
-
-    .utility-link-row a:hover {
-        color: var(--accent-neon);
-        transform: translateX(4px);
-    }
-
-    .utility-link-row ion-icon {
-        color: var(--accent-core);
-        font-size: 1.2rem;
-    }
-
-    .empty-state-placeholder {
-        padding: 2.5rem 1rem;
-        text-align: center;
-        color: var(--text-dim);
-        font-size: 0.85rem;
-        font-style: italic;
-    }
-
-    @keyframes interfaceFadeIn {
-        from { opacity: 0; transform: translateY(6px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-</style>
-
-<div class="dashboard-wrapper">
+<section class="console-dashboard" aria-labelledby="console-title">
     {% if messages %}
-    <div style="margin-bottom: 1.75rem; width: 100%;">
-        {% for message in messages %}
-        <div style="padding: 1rem 1.5rem; border-radius: var(--radius-inner); margin-bottom: 0.5rem; background: {% if message.tags == 'error' %}rgba(244,63,94,0.1){% else %}rgba(99,102,241,0.1){% endif %}; border: 1px solid {% if message.tags == 'error' %}rgba(244,63,94,0.2){% else %}rgba(99,102,241,0.2){% endif %}; color: var(--text-bright); font-size: 0.88rem; display: flex; align-items: center; gap: 0.75rem;">
-            <ion-icon name="{% if message.tags == 'error' %}alert-circle-outline{% else %}information-circle-outline{% endif %}" style="font-size: 1.2rem; color: {% if message.tags == 'error' %}var(--accent-danger){% else %}var(--accent-neon){% endif %};"></ion-icon>
-            <span>{{ message }}</span>
+        <div aria-live="polite">
+            {% for message in messages %}
+                <div class="console-flash{% if message.tags == 'error' %} error{% endif %}">{{ message }}</div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
     {% endif %}
 
-    <div class="cyber-layout-grid">
-        
-        <div style="display: flex; flex-direction: column; gap: 1.75rem;">
-            
-            <div class="cyber-card">
-                <div class="card-header-deck">
-                    <span class="card-header-title"><ion-icon name="pulse-outline"></ion-icon> Telemetry Waveform</span>
-                    <ion-icon name="open-outline" class="card-header-utility-icon"></ion-icon>
-                </div>
-                <div class="card-body-container" style="padding-bottom: 1rem;">
-                    <div style="height: 150px; width: 100%; display: flex; align-items: flex-end; justify-content: space-between; padding-top: 15px;" id="cyberAnalyticsChartNode">
-                        </div>
-                </div>
-            </div>
+    <header class="console-page-heading">
+        <div>
+            <div class="terminal-eyebrow">PORTFOLIO SYSTEM / CONTROL ROOM</div>
+            <h1 id="console-title">Operations console</h1>
+            <p>Manage published work, resume data, and incoming messages.</p>
+        </div>
+        <div class="console-heading-actions">
+            <button type="button" class="console-search-shortcut" data-command-open><i class="bi bi-search"></i> Search <kbd>CTRL K</kbd></button>
+            <div class="console-clock"><span class="live-indicator"></span> LIVE WORKSPACE</div>
+        </div>
+    </header>
 
-            <div class="cyber-card">
-                <div class="card-header-deck">
-                    <span class="card-header-title"><ion-icon name="git-network-outline"></ion-icon> Directory Vectors</span>
-                    <ion-icon name="hardware-chip-outline" class="card-header-utility-icon"></ion-icon>
-                </div>
-                <div style="overflow-x: auto;">
-                    {% if page_views %}
-                    <table class="dense-data-matrix">
-                        <thead>
-                            <tr>
-                                <th>Resource Path Identifier</th>
-                                <th style="text-align: right; padding-right: 1.5rem;">System Load Hits</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for page in page_views|slice:":6" %}
-                            <tr>
-                                <td style="font-family: 'JetBrains Mono', monospace; color: var(--accent-neon); font-size: 0.8rem;">/{{ page.page }}</td>
-                                <td style="text-align: right; font-weight: 600; padding-right: 1.5rem; font-family: 'JetBrains Mono', monospace; color: var(--text-bright);">{{ page.count }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    {% else %}
-                    <div class="empty-state-placeholder">No analytical data streams processing at present.</div>
-                    {% endif %}
-                </div>
+    <section class="console-hero" aria-label="Workspace status">
+        <div class="console-hero-copy">
+            <div class="terminal-eyebrow">CORE SYSTEM / PUBLIC PORTFOLIO</div>
+            <h2>Content control, at a glance.</h2>
+            <p>Updates saved here are served by the portfolio pages directly from the database.</p>
+            <div class="console-hero-status">
+                <span><span class="live-indicator"></span> ADMIN SESSION ACTIVE</span>
+                <span><i class="bi bi-database-check"></i> DATABASE CONNECTED</span>
             </div>
         </div>
-
-        <div style="display: flex; flex-direction: column; gap: 1.75rem;">
-            
-            <div class="cyber-card">
-                <div class="card-header-deck">
-                    <span class="card-header-title"><ion-icon name="pie-chart-outline"></ion-icon> Data Infrastructure</span>
-                    <ion-icon name="shield-checkmark-outline" class="card-header-utility-icon" style="color: var(--accent-success); opacity: 1;"></ion-icon>
-                </div>
-                <div class="card-body-container">
-                    <div class="telemetry-row-grid">
-                        <div class="telemetry-node-block">
-                            <div class="telemetry-node-value">{{ total_views|default:"0" }}</div>
-                            <div class="telemetry-node-label">Page Loads</div>
-                        </div>
-                        <div class="telemetry-node-block">
-                            <div class="telemetry-node-value">{{ unique_visitors_30d|default:"0" }}</div>
-                            <div class="telemetry-node-label">30d Matrix</div>
-                        </div>
-                        <div class="telemetry-node-block">
-                            <div class="telemetry-node-value" style="color: var(--accent-danger);">{{ unread_contacts|default:"0" }}</div>
-                            <div class="telemetry-node-label">Unread</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="cyber-card">
-                <div class="card-header-deck">
-                    <span class="card-header-title"><ion-icon name="server-outline"></ion-icon> Workspace Aggregator</span>
-                </div>
-                <div class="feed-group-wrapper">
-                    
-                    <div class="feed-section-divider">Active Content Nodes</div>
-                    {% if posts %}
-                        {% for post in posts|slice:":4" %}
-                        <div class="feed-row-element">
-                            <div style="max-width: 75%;">
-                                <a href="{% url 'admin_edit_post' post.id %}" class="entry-headline-link">{{ post.title|slice:":36" }}{% if post.title|length > 36 %}...{% endif %}</a>
-                                <div style="margin-top: 6px; display: flex; align-items: center; gap: 0.5rem;">
-                                    <span class="badge-status-node {% if post.status == 'published' %}status-published{% endif %}">{{ post.status }}</span>
-                                </div>
-                            </div>
-                            <div class="action-button-group">
-                                <a href="{% url 'admin_edit_post' post.id %}" title="Modify System Record"><ion-icon name="create-outline"></ion-icon></a>
-                                <form method="POST" action="{% url 'admin_delete_post' post.id %}" style="display: inline; margin: 0;" onsubmit="return confirm('Execute permanent removal sequence on this content entity node?');">
-                                    {% csrf_token %}
-                                    <button type="submit" class="delete-btn-node" title="Purge Record"><ion-icon name="trash-outline"></ion-icon></button>
-                                </form>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    {% else %}
-                        <div class="empty-state-placeholder" style="padding: 1.5rem 0;">No active layout text nodes mapped.</div>
-                    {% endif %}
-
-                    <div class="feed-section-divider">Inbound Transmissions</div>
-                    {% if recent_contacts %}
-                        {% for message in recent_contacts|slice:":3" %}
-                        <div class="feed-row-element">
-                            <div style="max-width: 75%;">
-                                <span style="font-weight: 600; color: var(--text-bright); font-size: 0.85rem; display: block;">{{ message.name }}</span>
-                                <span style="color: var(--text-dim); font-size: 0.78rem; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px;">{{ message.message }}</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 0.65rem;">
-                                <span style="font-size: 0.7rem; color: var(--text-dim); font-weight: 600; font-family: monospace;">{{ message.created_at|date:"M d" }}</span>
-                                {% if not message.is_read %}
-                                <span style="height: 6px; width: 6px; background-color: var(--accent-danger); border-radius: 50%; box-shadow: 0 0 8px var(--accent-danger);"></span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        {% endfor %}
-                    {% else %}
-                        <div class="empty-state-placeholder" style="padding: 1.5rem 0;">No inbound packets logged.</div>
-                    {% endif %}
-
-                </div>
-            </div>
+        <div class="orbit-visual" aria-hidden="true">
+            <div class="orbit-ring"><span class="orbit-point point-one"></span></div>
+            <div class="orbit-ring ring-two"><span class="orbit-point point-two"></span></div>
+            <div class="orbit-core">AP</div>
         </div>
+    </section>
 
-        <div style="display: flex; flex-direction: column; gap: 1.75rem;">
-            
-            <div class="cyber-card">
-                <div class="card-header-deck">
-                    <span class="card-header-title"><ion-icon name="flash-outline"></ion-icon> Direct Routing System</span>
-                </div>
-                <div class="card-body-container">
-                    <div class="utility-stack-vertical">
-                        <div class="utility-link-row">
-                            <ion-icon name="arrow-forward-outline"></ion-icon>
-                            <a href="/" target="_blank">View Public Environment</a>
-                        </div>
-                        <div class="utility-link-row">
-                            <ion-icon name="arrow-forward-outline"></ion-icon>
-                            <a href="{% url 'admin_create_post' %}">Instantiate Publication Node</a>
-                        </div>
-                        <div class="utility-link-row">
-                            <ion-icon name="arrow-forward-outline"></ion-icon>
-                            <a href="{% url 'admin_contacts' %}">Access Communications Trunk ({{ total_contacts|default:"0" }})</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="cyber-card">
-                <div class="card-header-deck">
-                    <span class="card-header-title"><ion-icon name="hardware-chip-outline"></ion-icon> Architectural Diagnostics</span>
-                </div>
-                <div class="card-body-container">
-                    <div style="font-size: 0.85rem; line-height: 1.5;">
-                        <span style="color: var(--accent-success); font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
-                            <span style="height: 8px; width: 8px; background: var(--accent-success); border-radius: 50%; display: inline-block; box-shadow: 0 0 10px var(--accent-success);"></span>
-                            All Operational Channels Active
-                        </span>
-                        <span style="color: var(--text-dim); font-size: 0.78rem; display: block;">Machine layout matrices rendering cleanly. Database latency verification parameters testing optimal.</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="cyber-card">
-                <div class="card-header-deck">
-                    <span class="card-header-title"><ion-icon name="time-outline"></ion-icon> Modifications History</span>
-                </div>
-                <div class="card-body-container" style="padding: 0;">
-                    <div class="empty-state-placeholder" style="padding: 1.75rem 1rem; font-size: 0.78rem;">
-                        No operational transactions registered within this dynamic interaction state.
-                    </div>
-                </div>
-            </div>
+    <section class="console-metrics" aria-label="Portfolio metrics">
+        <div class="console-metric">
+            <span class="console-metric-label">All-time page views</span>
+            <strong class="console-metric-value" data-count-up="{{ total_views|default:'0' }}">0</strong>
         </div>
+        <div class="console-metric">
+            <span class="console-metric-label">Unique visitors / 30d</span>
+            <strong class="console-metric-value" data-count-up="{{ unique_visitors_30d|default:'0' }}">0</strong>
+        </div>
+        <div class="console-metric">
+            <span class="console-metric-label">Published articles</span>
+            <strong class="console-metric-value" data-count-up="{{ published_post_count|default:'0' }}">0</strong>
+        </div>
+        <div class="console-metric">
+            <span class="console-metric-label">Unread messages</span>
+            <strong class="console-metric-value{% if unread_contacts %} warn{% endif %}" data-count-up="{{ unread_contacts|default:'0' }}">0</strong>
+        </div>
+    </section>
 
+    <div class="console-grid">
+        <section class="console-panel" aria-labelledby="activity-title">
+            <header class="console-panel-header">
+                <h2 class="console-panel-title" id="activity-title"><i class="bi bi-activity"></i> VISIT ACTIVITY</h2>
+                <span class="console-panel-meta">LAST 7 DAYS</span>
+            </header>
+            <div class="console-panel-body">
+                <div class="activity-chart" role="img" aria-label="Daily page views for the last seven days">
+                    {% for point in activity_points %}
+                        <div class="activity-column" title="{{ point.value }} page views">
+                            <div class="activity-bar-track">
+                                <span class="activity-bar" style="--bar-height: {{ point.height }}%;"></span>
+                            </div>
+                            <span class="activity-label">{{ point.label }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <section class="console-panel" aria-labelledby="routes-title">
+            <header class="console-panel-header">
+                <h2 class="console-panel-title" id="routes-title"><i class="bi bi-signpost-split"></i> TOP PAGES</h2>
+                <a class="console-panel-link" href="{% url 'admin_analytics' %}">FULL ANALYTICS <i class="bi bi-arrow-up-right"></i></a>
+            </header>
+            <div class="console-panel-body console-data-list">
+                {% for page in page_views|slice:":5" %}
+                    <div class="console-data-row">
+                        <span class="console-data-main">{{ page.page|default:"/" }}</span>
+                        <strong>{{ page.count }}</strong>
+                    </div>
+                {% empty %}
+                    <div class="console-empty">No page-view data has been recorded yet.</div>
+                {% endfor %}
+            </div>
+        </section>
     </div>
-</div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const structuralLabels = JSON.parse('{{ chart_labels|safe }}' || '[]');
-        const sequentialDataPoints = JSON.parse('{{ chart_data|safe }}' || '[]');
-        
-        const graphicContainer = document.getElementById('cyberAnalyticsChartNode');
-        if (!graphicContainer || sequentialDataPoints.length === 0) {
-            if (graphicContainer) graphicContainer.innerHTML = '<div class="empty-state-placeholder" style="width:100%;">No operational transaction history found.</div>';
-            return;
-        }
+    <div class="console-grid">
+        <section class="console-panel" aria-labelledby="content-title">
+            <header class="console-panel-header">
+                <h2 class="console-panel-title" id="content-title"><i class="bi bi-journal-code"></i> RECENT CONTENT</h2>
+                <a class="console-panel-link" href="{% url 'admin_create_post' %}">NEW ARTICLE <i class="bi bi-plus-lg"></i></a>
+            </header>
+            <div class="console-panel-body console-data-list">
+                {% for post in posts %}
+                    <div class="console-data-row">
+                        <a class="console-data-main" href="{% url 'admin_edit_post' post.id %}">{{ post.title }}</a>
+                        <a class="console-preview-link" href="{% url 'admin_dashboard' %}?preview=post&amp;id={{ post.id }}" target="_blank" rel="noopener noreferrer" aria-label="Preview {{ post.title }}"><i class="bi bi-eye"></i> PREVIEW</a>
+                        <span class="console-tag{% if post.status == 'published' %} is-live{% endif %}">{{ post.status|upper }}</span>
+                    </div>
+                {% empty %}
+                    <div class="console-empty">No articles created yet.</div>
+                {% endfor %}
+            </div>
+        </section>
 
-        const evaluationPeakValue = Math.max(...sequentialDataPoints, 1);
-        
-        sequentialDataPoints.forEach((value, index) => {
-            const calculatedPercentage = (value / evaluationPeakValue) * 100;
-            const geometricColumnNode = document.createElement('div');
-            
-            geometricColumnNode.style = "display: flex; flex-direction: column; align-items: center; flex: 1; gap: 8px; height: 100%; justify-content: flex-end;";
-            
-            // Updated inline styling to use the CSS custom properties
-            geometricColumnNode.innerHTML = `
-                <div style="width: 40%; max-width: 14px; background: linear-gradient(180deg, var(--accent-neon) 0%, rgba(99,102,241,0.05) 100%); height: ${calculatedPercentage ? (calculatedPercentage * 0.8) + 6 : 4}px; border-radius: 4px; transition: all 0.2s;" title="${value} operations logged" onmouseover="this.style.filter='brightness(1.3)'" onmouseout="this.style.filter='none'"></div>
-                <span style="font-size: 0.62rem; color: var(--text-dim); font-weight: 600; font-family: 'JetBrains Mono', monospace;">${structuralLabels[index] || ''}</span>
-            `;
-            graphicContainer.appendChild(geometricColumnNode);
-        });
-    });
-</script>
+        <section class="console-panel" aria-labelledby="projects-title">
+            <header class="console-panel-header">
+                <h2 class="console-panel-title" id="projects-title"><i class="bi bi-window-stack"></i> PROJECTS</h2>
+                <a class="console-panel-link" href="{% url 'admin_project' %}">ALL {{ project_count }} <i class="bi bi-arrow-up-right"></i></a>
+            </header>
+            <div class="console-panel-body console-data-list">
+                {% for project in recent_projects %}
+                    <div class="console-data-row">
+                        <a class="console-data-main" href="{% url 'admin_edit_project' project.id %}">{{ project.title }}</a>
+                        <a class="console-preview-link" href="{% url 'admin_dashboard' %}?preview=project&amp;id={{ project.id }}" target="_blank" rel="noopener noreferrer" aria-label="Preview {{ project.title }}"><i class="bi bi-eye"></i> PREVIEW</a>
+                    </div>
+                {% empty %}
+                    <div class="console-empty">No projects added yet.</div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="console-panel" aria-labelledby="inbox-title">
+            <header class="console-panel-header">
+                <h2 class="console-panel-title" id="inbox-title"><i class="bi bi-inbox"></i> INBOUND MESSAGES</h2>
+                <a class="console-panel-link" href="{% url 'admin_contacts' %}">OPEN INBOX <i class="bi bi-arrow-up-right"></i></a>
+            </header>
+            <div class="console-panel-body console-data-list">
+                {% for message in recent_contacts|slice:":4" %}
+                    <a class="console-data-row" href="{% url 'admin_contact_detail' message.id %}">
+                        <span class="console-data-main">{{ message.name }} <span class="console-panel-meta">/ {{ message.created_at|date:"M d" }}</span></span>
+                        {% if not message.is_read %}<span class="console-tag is-live">NEW</span>{% else %}<i class="bi bi-arrow-up-right console-panel-meta"></i>{% endif %}
+                    </a>
+                {% empty %}
+                    <div class="console-empty">No contact messages have arrived yet.</div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+    <section class="console-panel" aria-labelledby="timeline-title">
+        <header class="console-panel-header">
+            <h2 class="console-panel-title" id="timeline-title"><i class="bi bi-clock-history"></i> RECENT TIMELINE</h2>
+            <span class="console-panel-meta">LATEST RECORDS / INBOUND</span>
+        </header>
+        <div class="console-panel-body activity-feed">
+            {% for entry in activity_entries %}
+                <a class="activity-feed-row" href="{{ entry.url }}">
+                    <span class="activity-feed-marker"><i class="bi {% if entry.kind == 'MESSAGE' %}bi-inbox{% elif entry.kind == 'PROJECT' %}bi-window-stack{% else %}bi-journal-text{% endif %}"></i></span>
+                    <span class="activity-feed-copy"><span class="console-tag">{{ entry.kind }}</span><strong>{{ entry.title }}</strong><small>{{ entry.detail }}</small></span>
+                    <time datetime="{{ entry.timestamp|date:'c' }}">{{ entry.timestamp|timesince }} ago</time>
+                </a>
+            {% empty %}
+                <div class="console-empty">Your latest messages and content records will appear here.</div>
+            {% endfor %}
+        </div>
+    </section>
+</section>
 {% endblock %}

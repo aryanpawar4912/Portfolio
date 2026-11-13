@@ -5,9 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Console Workspace{% endblock %}</title>
+    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
     
     <!-- Design Architecture Resources -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
     <style>
@@ -261,22 +265,40 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="{% static 'css/admin-console.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
-<body>
-
+<body class="admin-terminal">
+    <dialog class="admin-welcome" id="adminWelcome" aria-labelledby="adminWelcomeTitle">
+        <div class="admin-welcome-scan" aria-hidden="true"></div>
+        <div class="admin-welcome-content">
+            <span class="admin-welcome-kicker"><span class="status-pulse"></span> AUTHENTICATED / ADMIN WORKSPACE</span>
+            <div class="admin-welcome-emblem" aria-hidden="true">AP<span>_</span></div>
+            <p class="admin-welcome-path">SYSTEMS / CONTENT / ANALYTICS</p>
+            <h1 id="adminWelcomeTitle">Welcome back,<br><span>{{ request.user.first_name|default:request.user.username }}.</span></h1>
+            <p class="admin-welcome-copy">Your workspace is ready. Search records, publish updates, and keep the portfolio current.</p>
+            <button type="button" class="admin-welcome-enter" data-welcome-dismiss>INITIALIZE WORKSPACE <i class="bi bi-arrow-right"></i></button>
+            <button type="button" class="admin-welcome-skip" data-welcome-dismiss>Skip intro</button>
+        </div>
+        <span class="admin-welcome-footer">SECURE SESSION / <span>READY</span></span>
+    </dialog>
     <!-- Header System Block -->
     <header class="glass-header">
         <div class="brand-wrapper">
-            <button class="action-trigger-mobile" id="responsiveNavToggle" aria-label="Toggle Menu Stack">
+            <button class="action-trigger-mobile" id="responsiveNavToggle" aria-label="Toggle navigation" aria-controls="interactiveSidebarNode" aria-expanded="false">
                 <i class="bi bi-grid-fill"></i>
             </button>
-            <span class="brand-logo-text">🫆 Aryan Pawar Workspace</span>
+            <span class="brand-mark" aria-hidden="true">AP</span>
+            <span class="brand-logo-text">ARYAN.PAWAR <span>//</span> CONTROL</span>
         </div>
         
-        <div>
-            <a href="/" target="_blank" style="color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.03); padding: 0.5rem 1rem; border: 1px solid var(--border-subtle); border-radius: 8px; transition: all 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.15)'" onmouseout="this.style.borderColor='var(--border-subtle)'">
-                <i class="bi bi-arrow-up-right-circle"></i> <span>Live Site</span>
+        <div class="topbar-actions">
+            <span class="topbar-status"><span class="status-pulse"></span> SYSTEM ONLINE</span>
+            <button type="button" class="command-trigger" data-command-open aria-keyshortcuts="Control+K Meta+K">
+                <i class="bi bi-search"></i><span>SEARCH</span><kbd>CTRL K</kbd>
+            </button>
+            <a href="{% url 'home' %}" target="_blank" rel="noopener noreferrer" class="live-site-link">
+                <i class="bi bi-arrow-up-right"></i> <span>LIVE SITE</span>
             </a>
         </div>
     </header>
@@ -286,40 +308,40 @@
         <div class="viewport-blur-overlay" id="responsiveBlurOverlay"></div>
 
         <!-- System Navigation Panel Sidebar Component -->
-        <nav class="floating-sidebar" id="interactiveSidebarNode">
-            <span class="menu-group-title">Core Management</span>
-            <a href="{% url 'admin_dashboard' %}" class="nav-anchor-node">
-                <span class="anchor-content-core"><i class="bi bi-sliders2 icon-node-brand"></i> Operational Hub</span>
+        <nav class="floating-sidebar" id="interactiveSidebarNode" aria-label="Admin workspace">
+            <span class="menu-group-title">Workspace</span>
+            <a href="{% url 'admin_dashboard' %}" class="nav-anchor-node {% if request.resolver_match.url_name == 'admin_dashboard' %}active-route-node{% endif %}">
+                <span class="anchor-content-core"><i class="bi bi-grid-1x2-fill icon-node-brand"></i> Overview</span>
             </a>
-            <a href="/" target="_blank" class="nav-anchor-node">
-                <span class="anchor-content-core"><i class="bi bi-cursor icon-node-brand"></i> Launch Client View</span>
+            <a href="{% url 'home' %}" target="_blank" rel="noopener noreferrer" class="nav-anchor-node">
+                <span class="anchor-content-core"><i class="bi bi-box-arrow-up-right icon-node-brand"></i> Public portfolio</span>
             </a>
 
-            <span class="menu-group-title">Modular Engines</span>
-            <a href="{% url 'admin_project' %}" class="nav-anchor-node">
-                <span class="anchor-content-core"><i class="bi bi-kanban icon-node-brand"></i> Project Repository</span>
-                <i class="bi bi-chevron-right icon-node-chevron"></i>
+            <span class="menu-group-title">Content systems</span>
+            <a href="{% url 'admin_project' %}" class="nav-anchor-node {% if request.resolver_match.url_name == 'admin_project' or request.resolver_match.url_name == 'admin_add_project' or request.resolver_match.url_name == 'admin_edit_project' %}active-route-node{% endif %}">
+                <span class="anchor-content-core"><i class="bi bi-kanban icon-node-brand"></i> Projects</span>
+                <i class="bi bi-arrow-up-right icon-node-chevron"></i>
             </a>
-            <a href="{% url 'admin_resume' %}" class="nav-anchor-node">
-                <span class="anchor-content-core"><i class="bi bi-file-earmark-text"></i> Resume Builder</span>
-                <i class="bi bi-chevron-right icon-node-chevron"></i>
+            <a href="{% url 'admin_resume' %}" class="nav-anchor-node {% if request.resolver_match.url_name == 'admin_resume' or request.resolver_match.url_name == 'edit_resume_item' %}active-route-node{% endif %}">
+                <span class="anchor-content-core"><i class="bi bi-file-earmark-text icon-node-brand"></i> Resume data</span>
+                <i class="bi bi-arrow-up-right icon-node-chevron"></i>
             </a>
-            <a href="{% url 'admin_contacts' %}" class="nav-anchor-node">
-                <span class="anchor-content-core"><i class="bi bi-chat-square-quote icon-node-brand"></i> Leads & Communications</span>
-                <i class="bi bi-chevron-right icon-node-chevron"></i>
+            <a href="{% url 'admin_contacts' %}" class="nav-anchor-node {% if request.resolver_match.url_name == 'admin_contacts' or request.resolver_match.url_name == 'admin_contact_detail' %}active-route-node{% endif %}">
+                <span class="anchor-content-core"><i class="bi bi-inbox icon-node-brand"></i> Inbox</span>
+                <i class="bi bi-arrow-up-right icon-node-chevron"></i>
             </a>
-            <a href="{% url 'admin_create_post' %}" class="nav-anchor-node">
-                <span class="anchor-content-core"><i class="bi bi-layers icon-node-brand"></i> Editorial Publisher</span>
-                <i class="bi bi-chevron-right icon-node-chevron"></i>
+            <a href="{% url 'admin_create_post' %}" class="nav-anchor-node {% if request.resolver_match.url_name == 'admin_create_post' or request.resolver_match.url_name == 'admin_edit_post' %}active-route-node{% endif %}">
+                <span class="anchor-content-core"><i class="bi bi-journal-richtext icon-node-brand"></i> Publishing</span>
+                <i class="bi bi-arrow-up-right icon-node-chevron"></i>
             </a>
-            <a href="{% url 'admin_analytics' %}" class="nav-anchor-node">
-                <span class="anchor-content-core"><i class="bi bi-pie-chart icon-node-brand"></i> Performance Matrix</span>
-                <i class="bi bi-chevron-right icon-node-chevron"></i>
+            <a href="{% url 'admin_analytics' %}" class="nav-anchor-node {% if request.resolver_match.url_name == 'admin_analytics' %}active-route-node{% endif %}">
+                <span class="anchor-content-core"><i class="bi bi-activity icon-node-brand"></i> Analytics</span>
+                <i class="bi bi-arrow-up-right icon-node-chevron"></i>
             </a>
 
             <div class="session-terminate-box">
                 <a href="{% url 'admin_logout' %}" class="nav-anchor-node session-terminate-trigger">
-                    <span class="anchor-content-core"><i class="bi bi-escape"></i> Terminate Session</span>
+                    <span class="anchor-content-core"><i class="bi bi-box-arrow-left"></i> Sign out</span>
                 </a>
             </div>
         </nav>
@@ -330,34 +352,32 @@
         </main>
     </div>
 
+    <dialog class="command-palette" id="commandPalette" data-search-url="{% url 'admin_dashboard' %}" aria-labelledby="commandPaletteTitle">
+        <div class="command-palette-head">
+            <div>
+                <span class="terminal-eyebrow">WORKSPACE / GLOBAL SEARCH</span>
+                <h2 id="commandPaletteTitle">Find a record or go somewhere.</h2>
+            </div>
+            <button type="button" class="command-close" data-command-close aria-label="Close search"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <label class="command-search-field">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <input id="commandSearchInput" type="search" autocomplete="off" placeholder="Search projects, posts, messages, resume…" aria-label="Search all admin content">
+            <kbd>ESC</kbd>
+        </label>
+        <div class="command-quick-links" id="commandQuickLinks">
+            <span class="command-section-label">QUICK ACTIONS</span>
+            <a href="{% url 'admin_add_project' %}"><i class="bi bi-plus-square"></i><span>Add project</span><kbd>P</kbd></a>
+            <a href="{% url 'admin_create_post' %}"><i class="bi bi-pencil-square"></i><span>Write article</span><kbd>W</kbd></a>
+            <a href="{% url 'admin_resume' %}"><i class="bi bi-person-vcard"></i><span>Update resume</span><kbd>R</kbd></a>
+            <a href="{% url 'admin_contacts' %}?read=unread"><i class="bi bi-inbox"></i><span>Unread inbox</span><kbd>I</kbd></a>
+        </div>
+        <div class="command-results" id="commandSearchResults" role="listbox" aria-label="Search results" aria-live="polite"></div>
+        <div class="command-palette-footer"><span>↑ ↓ NAVIGATE</span><span>ENTER OPEN</span><span>ESC CLOSE</span></div>
+    </dialog>
+
     <!-- Interface Logic Pipelines -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggleTrigger = document.getElementById('responsiveNavToggle');
-            const sidebarElement = document.getElementById('interactiveSidebarNode');
-            const overlayElement = document.getElementById('responsiveBlurOverlay');
-
-            function toggleDrawerState() {
-                sidebarElement.classList.toggle('mobile-drawer-active');
-                overlayElement.classList.toggle('mobile-drawer-active');
-            }
-
-            if(toggleTrigger && sidebarElement && overlayElement) {
-                toggleTrigger.addEventListener('click', toggleDrawerState);
-                overlayElement.addEventListener('click', toggleDrawerState);
-            }
-
-            // Sync structural route tracking indicators
-            const activeLocationPath = window.location.pathname;
-            const navigationAnchors = document.querySelectorAll('.floating-sidebar a');
-            
-            navigationAnchors.forEach(anchor => {
-                const targetRoute = anchor.getAttribute('href');
-                if (targetRoute && activeLocationPath === targetRoute && !anchor.classList.contains('session-terminate-trigger')) {
-                    anchor.classList.add('active-route-node');
-                }
-            });
-        });
-    </script>
+    <script src="{% static 'js/admin-console.js' %}" defer></script>
+    {% block extra_scripts %}{% endblock %}
 </body>
 </html>

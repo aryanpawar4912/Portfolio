@@ -200,6 +200,23 @@
         <div class="panel-subtitle">Intercept, examine, and process inbound system message queues</div>
     </div>
 
+    <form class="inbox-filter-bar" method="get" action="{% url 'admin_contacts' %}">
+        <label class="inbox-search">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <input type="search" name="search" value="{{ search_query }}" placeholder="Search name, email, or message…" aria-label="Search contact messages">
+        </label>
+        <label class="inbox-read-filter">
+            <span class="mono">STATUS</span>
+            <select name="read" aria-label="Filter by read status">
+                <option value="" {% if not read_filter %}selected{% endif %}>All messages</option>
+                <option value="unread" {% if read_filter == 'unread' %}selected{% endif %}>Unread</option>
+                <option value="read" {% if read_filter == 'read' %}selected{% endif %}>Read</option>
+            </select>
+        </label>
+        <button type="submit" class="console-filter-submit">Apply filter</button>
+        {% if search_query or read_filter %}<a class="console-filter-reset" href="{% url 'admin_contacts' %}">Reset</a>{% endif %}
+    </form>
+
     <!-- Main Datagrid -->
     <div class="cyber-card data-grid-container">
         {% if contacts %}

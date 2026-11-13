@@ -1,127 +1,79 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}About - Aryan Pawar Portfolio{% endblock %}
+{% block title %}Aryan Pawar | Developer & Builder{% endblock %}
 
 {% block content %}
-<style>
-  /* Service Section Layout Styling Grid */
-  .service {
-    margin-top: 3rem;
-  }
-  
-  .service-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    color: var(--text-main);
-  }
+<section class="hero-section" aria-labelledby="hero-title">
+  <div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div>
+  <span class="hero-spark spark-one">✳</span><span class="hero-spark spark-two">✦</span><span class="hero-spark spark-three">✳</span>
+  <div class="hero-emblem" aria-hidden="true"><span>AP</span><i></i></div>
+  <p class="hero-kicker"><span class="eyebrow-line"></span> COMPUTER ENGINEERING <span class="mono">· NASHIK, INDIA ·</span></p>
+  <h1 class="hero-title" id="hero-title">MADE TO BUILD,<br><em>built to matter.</em></h1>
+  <p class="hero-intro">I’m Aryan — a developer and student exploring the space between useful software, thoughtful design, and machine learning.</p>
+  <div class="hero-actions">
+    <a class="button button-primary" href="{% url 'portfolio' %}">Explore my work <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+    <a class="button button-quiet" href="{% url 'contact' %}">Let’s talk <i class="bi bi-arrow-down-right" aria-hidden="true"></i></a>
+  </div>
+  <div class="hero-index mono"><span>01</span> — INDEPENDENTLY CURIOUS</div>
+</section>
 
-  .service-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    list-style: none;
-  }
+<section class="ticker hero-ticker" aria-label="Areas of focus">
+  <div class="ticker-track" aria-hidden="true">
+    {% for skill in skills %}<span>{{ skill.name }}</span><i>✳</i>{% empty %}
+      <span>PYTHON</span><i>✳</i><span>DJANGO</span><i>✳</i><span>MACHINE LEARNING</span><i>✳</i><span>PRODUCT THINKING</span><i>✳</i>
+    {% endfor %}
+    {% for skill in skills %}<span>{{ skill.name }}</span><i>✳</i>{% empty %}
+      <span>PYTHON</span><i>✳</i><span>DJANGO</span><i>✳</i><span>MACHINE LEARNING</span><i>✳</i><span>PRODUCT THINKING</span><i>✳</i>
+    {% endfor %}
+  </div>
+</section>
 
-  .service-item {
-    background: var(--bg-surface-elevated);
-    border: 1px solid var(--border-color);
-    padding: 2rem;
-    border-radius: var(--radius-lg);
-    display: flex;
-    gap: 1.5rem;
-    align-items: flex-start;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
+<section class="editorial-section about-section" id="about">
+  <div class="section-label"><span class="mono">01 / A LITTLE ABOUT ME</span><span class="section-rule"></span></div>
+  <div class="about-grid">
+    <h2 class="section-title">CURIOUS BY<br><em>default.</em><span class="ghost-word">CURIOUS</span></h2>
+    <div class="about-copy">
+      <p>I’m a Computer Engineering student at Mahavir Polytechnic, Nashik, specializing in full-stack Python development and machine learning. I enjoy turning complex ideas into useful, clear, and accessible software.</p>
+      <p>As a former intern at Sumago Infotech, I gained hands-on experience with Django and full-stack development. My interests span scalable web applications, data-driven solutions, and applied AI/ML—including research on onion market forecasting.</p>
+      <div class="about-facts">
+        <div><span class="mono fact-label">CURRENTLY</span><strong>Learning, building, iterating</strong></div>
+        <div><span class="mono fact-label">FOCUS</span><strong>Python · Django · ML</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
 
-  .service-item:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  }
+<section class="editorial-section services-section">
+  <div class="section-label"><span class="mono">02 / WHAT I DO</span><span class="section-rule"></span></div>
+  <div class="services-heading">
+    <h2 class="section-title">FROM IDEA<br><em>to impact.</em></h2>
+    <p>Curiosity is a good starting point.<br>Making something useful is the point.</p>
+  </div>
+  <div class="service-grid">
+    <article class="service-card" data-reveal>
+      <span class="mono service-number">01 <i>/ WEB</i></span>
+      <div class="service-icon"><i class="bi bi-window-stack" aria-hidden="true"></i><span>01</span></div>
+      <div class="service-copy"><h3>Digital experiences</h3><p>Thoughtful web products, from robust Django backends to crisp, responsive interfaces.</p><span class="service-tags mono">PYTHON <b>·</b> DJANGO <b>·</b> FRONTEND</span></div>
+      <span class="service-arrow" aria-hidden="true">↗</span>
+    </article>
+    <article class="service-card" data-reveal>
+      <span class="mono service-number">02 <i>/ MOBILE</i></span>
+      <div class="service-icon"><i class="bi bi-phone" aria-hidden="true"></i><span>02</span></div>
+      <div class="service-copy"><h3>Mobile, made useful</h3><p>Native Android apps built around clear flows, practical details, and real people.</p><span class="service-tags mono">ANDROID <b>·</b> JAVA <b>·</b> UX</span></div>
+      <span class="service-arrow" aria-hidden="true">↗</span>
+    </article>
+    <article class="service-card" data-reveal>
+      <span class="mono service-number">03 <i>/ RESEARCH</i></span>
+      <div class="service-icon"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i><span>03</span></div>
+      <div class="service-copy"><h3>Data with direction</h3><p>Machine learning and forecasting that turn messy data into grounded decisions.</p><span class="service-tags mono">MACHINE LEARNING <b>·</b> DATA</span></div>
+      <span class="service-arrow" aria-hidden="true">↗</span>
+    </article>
+  </div>
+</section>
 
-  .service-icon-box {
-    color: var(--accent-primary);
-    font-size: 2rem;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .service-content-box {
-    flex: 1;
-  }
-
-  .service-item-title {
-    font-size: 1.15rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: var(--text-main);
-  }
-
-  .service-item-text {
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    line-height: 1.5;
-  }
-
-  .about-text p {
-    color: var(--text-muted);
-    margin-bottom: 1.5rem;
-    font-size: 1rem;
-  }
-  
-  .about-text p:last-child {
-    margin-bottom: 0;
-  }
-</style>
-
-<article class="about active" data-page="about">
-  <header>
-    <h2 class="h2 article-title">About me</h2>
-  </header>
-
-  <section class="about-text">
-    <p>I'm a Third-Year Diploma student in Computer Engineering at Mahavir Polytechnic, Nashik, specializing in full-stack Python development and machine learning. Currently immersed in circuits, programming, and problem-solving with a strong foundation in computer science fundamentals.</p>
-    <p>Former intern at Sumago Infotech, I've gained hands-on experience in Django, Bootstrap, and full-stack development. I'm passionate about building scalable applications, data-driven solutions, and exploring AI/ML technologies to solve real-world problems. My published research on onion market forecasting demonstrates my commitment to applying machine learning to agricultural economics.</p>
-  </section>
-
-  <section class="service">
-    <h3 class="h3 service-title">What I do</h3>
-    <ul class="service-list">
-
-      <li class="service-item">
-        <div class="service-icon-box">
-          <i class="bi bi-phone"></i>
-        </div>
-        <div class="service-content-box">
-          <h4 class="h4 service-item-title">Android Development</h4>
-          <p class="service-item-text">Native Android apps with Java and best practices.</p>
-        </div>
-      </li>
-
-      <li class="service-item">
-        <div class="service-icon-box">
-          <i class="bi bi-code-slash"></i>
-        </div>
-        <div class="service-content-box">
-          <h4 class="h4 service-item-title">Django Web Development</h4>
-          <p class="service-item-text">Scalable backend systems with Django and Python.</p>
-        </div>
-      </li>
-
-      <li class="service-item">
-        <div class="service-icon-box">
-          <i class="bi bi-cpu"></i>
-        </div>
-        <div class="service-content-box">
-          <h4 class="h4 service-item-title">Machine Learning</h4>
-          <p class="service-item-text">Data analysis and forecasting models for real-world problems.</p>
-        </div>
-      </li>
-
-    </ul>
-  </section>
-</article>
+<section class="closing-cta" data-reveal>
+  <p class="mono">HAVE A PROJECT IN MIND?</p>
+  <div><h2>Let’s make it<br><em>meaningful.</em></h2><a class="round-link" href="{% url 'contact' %}" aria-label="Contact Aryan"><i class="bi bi-arrow-up-right" aria-hidden="true"></i></a></div>
+</section>
 {% endblock %}

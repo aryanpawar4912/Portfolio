@@ -370,6 +370,9 @@
                                 
                                 <td>
                                     <div class="row-actions">
+                                        <a href="{% url 'admin_dashboard' %}?preview=project&amp;id={{ project.id }}" class="action-icon-btn action-open" title="Preview public project" target="_blank" rel="noopener noreferrer">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
                                         <a href="{% url 'admin_edit_project' project.id %}" class="action-icon-btn action-edit" title="Modify Node">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>

@@ -334,6 +334,9 @@
 
             <div class="btn-deck">
                 <a href="{% url 'admin_dashboard' %}" class="cyber-btn cyber-btn-secondary">Discard Changes</a>
+                <button type="submit" class="cyber-btn cyber-btn-secondary" formaction="{% url 'admin_dashboard' %}?preview=draft" formmethod="post" formtarget="_blank" name="content_type" value="post">
+                    <i class="bi bi-eye"></i> Preview draft
+                </button>
                 <button type="submit" class="cyber-btn cyber-btn-primary">
                     <i class="bi bi-cloud-arrow-up"></i> {% if is_edit %}Save Commit Changes{% else %}Publish Node{% endif %}
                 </button>
@@ -371,6 +374,9 @@
                         </div>
 
                         <div class="row-actions">
+                            <a href="{% url 'admin_dashboard' %}?preview=post&amp;id={{ h_post.id }}" class="action-icon-btn action-open" title="Preview public article" target="_blank" rel="noopener noreferrer">
+                                <i class="bi bi-eye"></i>
+                            </a>
                             <a href="{% url 'admin_edit_post' h_post.id %}" class="action-icon-btn action-edit" title="Modify Record">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
