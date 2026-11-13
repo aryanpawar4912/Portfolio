@@ -83,6 +83,24 @@ document.addEventListener('DOMContentLoaded', () => {
     updateThemeButton();
   });
 
+  const progressBar = document.querySelector('.scroll-progress > span');
+  if (progressBar) {
+    let progressFrame = 0;
+    const updateScrollProgress = () => {
+      progressFrame = 0;
+      const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = scrollableHeight > 0 ? window.scrollY / scrollableHeight : 0;
+      progressBar.style.transform = `scaleX(${Math.max(0, Math.min(1, progress))})`;
+    };
+    const scheduleScrollProgress = () => {
+      if (!progressFrame) progressFrame = window.requestAnimationFrame(updateScrollProgress);
+    };
+
+    window.addEventListener('scroll', scheduleScrollProgress, { passive: true });
+    window.addEventListener('resize', scheduleScrollProgress);
+    updateScrollProgress();
+  }
+
   const navToggle = document.querySelector('.nav-toggle');
   const navPanel = document.querySelector('.nav-panel');
 
@@ -120,7 +138,91 @@ document.addEventListener('DOMContentLoaded', () => {
     updateHomeNavigation();
   }
 
+  const heroSection = document.querySelector('.hero-section');
+  const heroOrbits = heroSection?.querySelectorAll('.hero-orbit');
+  const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (heroSection && heroOrbits?.length) {
+    let orbitFrame = 0;
+    const updateOrbitParallax = () => {
+      orbitFrame = 0;
+      if (reducedMotionQuery.matches) {
+        heroOrbits.forEach((orbit) => {
+          orbit.style.removeProperty('--orbit-shift-x');
+          orbit.style.removeProperty('--orbit-shift-y');
+        });
+        return;
+      }
+
+      const bounds = heroSection.getBoundingClientRect();
+      const progress = Math.max(0, Math.min(1, -bounds.top / bounds.height));
+      heroOrbits.forEach((orbit, index) => {
+        const direction = index % 2 === 0 ? -1 : 1;
+        orbit.style.setProperty('--orbit-shift-x', `${progress * direction * 16}px`);
+        orbit.style.setProperty('--orbit-shift-y', `${progress * direction * 24}px`);
+      });
+    };
+    const scheduleOrbitParallax = () => {
+      if (!orbitFrame) orbitFrame = window.requestAnimationFrame(updateOrbitParallax);
+    };
+
+    window.addEventListener('scroll', scheduleOrbitParallax, { passive: true });
+    window.addEventListener('resize', scheduleOrbitParallax);
+    updateOrbitParallax();
+  }
+
+  if (finePointer) {
+    document.querySelectorAll('.project-card.interactive-card').forEach((card) => {
+      card.addEventListener('pointermove', (event) => {
+        if (event.pointerType !== 'mouse' || reducedMotionQuery.matches) return;
+        const bounds = card.getBoundingClientRect();
+        card.style.setProperty('--pointer-x', `${event.clientX - bounds.left}px`);
+        card.style.setProperty('--pointer-y', `${event.clientY - bounds.top}px`);
+      }, { passive: true });
+      card.addEventListener('pointerleave', () => {
+        card.style.removeProperty('--pointer-x');
+        card.style.removeProperty('--pointer-y');
+      });
+    });
+
+    const magneticElements = document.querySelectorAll('.nav-cta, .hero-actions .button, .round-link');
+    magneticElements.forEach((element) => {
+      element.classList.add('is-magnetic');
+      element.addEventListener('pointermove', (event) => {
+        if (event.pointerType !== 'mouse' || reducedMotionQuery.matches) return;
+        const bounds = element.getBoundingClientRect();
+        const offsetX = (event.clientX - bounds.left - bounds.width / 2) / bounds.width;
+        const offsetY = (event.clientY - bounds.top - bounds.height / 2) / bounds.height;
+        element.style.setProperty('--magnet-x', `${offsetX * 7}px`);
+        element.style.setProperty('--magnet-y', `${offsetY * 5}px`);
+      }, { passive: true });
+      element.addEventListener('pointerleave', () => {
+        element.style.removeProperty('--magnet-x');
+        element.style.removeProperty('--magnet-y');
+      });
+    });
+
+    reducedMotionQuery.addEventListener('change', (event) => {
+      if (!event.matches) return;
+      document.querySelectorAll('.project-card.interactive-card').forEach((card) => {
+        card.style.removeProperty('--pointer-x');
+        card.style.removeProperty('--pointer-y');
+      });
+      magneticElements.forEach((element) => {
+        element.style.removeProperty('--magnet-x');
+        element.style.removeProperty('--magnet-y');
+      });
+    });
+  }
+
   const revealItems = document.querySelectorAll('[data-reveal]');
+  revealItems.forEach((item) => {
+    const siblings = Array.from(item.parentElement.children)
+      .filter((sibling) => sibling.hasAttribute('data-reveal'));
+    const index = siblings.indexOf(item);
+    if (index > 0) item.style.setProperty('--reveal-delay', `${Math.min(index * 90, 360)}ms`);
+  });
+
   if ('IntersectionObserver' in window) {
     const revealObserver = new IntersectionObserver((entries, observer) => {
       entries.forEach((entry) => {
