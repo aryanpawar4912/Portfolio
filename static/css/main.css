@@ -47,7 +47,7 @@ html[data-theme="dark"] {
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 100px; }
+html { overflow-x: clip; scroll-behavior: smooth; scroll-padding-top: 100px; }
 body { margin: 0; overflow-x: clip; color: var(--ink); background: var(--cream); font: 16px/1.65 var(--sans); -webkit-font-smoothing: antialiased; }
 body, button, input, textarea { font-family: var(--sans); }
 body:has(.nav-panel.is-open), body.dialog-open { overflow: hidden; }
