@@ -7,7 +7,7 @@ from django.test import TestCase, override_settings
 from django.urls import Resolver404, resolve, reverse
 from urllib.parse import urljoin, urlsplit
 
-from .models import Contact, PageView, Post, Project, SiteStatistic, Skill
+from .models import Contact, Experience, PageView, Post, Project, SiteStatistic, Skill
 
 TEST_STORAGES = {
     'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
@@ -92,6 +92,46 @@ class ContactFormTests(TestCase):
 
 @override_settings(STORAGES=TEST_STORAGES)
 class AdminAndAnalyticsTests(TestCase):
+    def test_contact_admin_does_not_interpolate_message_into_javascript(self):
+        staff_user = User.objects.create_superuser(
+            username='admin-editor',
+            email='admin@example.com',
+            password='safe-test-password',
+        )
+        malicious_message = "\\');alert(document.domain);//"
+        contact = Contact.objects.create(
+            name='Potentially malicious visitor',
+            email='visitor@example.com',
+            message=malicious_message,
+        )
+        self.client.force_login(staff_user)
+
+        response = self.client.get(reverse('admin:projects_contact_changelist'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            reverse('admin:projects_contact_change', args=(contact.pk,)),
+        )
+        self.assertNotContains(response, 'onclick=')
+        self.assertNotContains(response, 'alert(document.domain)')
+
+    def test_resume_escapes_experience_description_html(self):
+        Experience.objects.create(
+            title='Test role',
+            company='Test company',
+            duration='2025',
+            description='<script>alert(1)</script>\nBuilt a useful service.',
+        )
+
+        response = self.client.get(reverse('resume'))
+        html = response.content.decode()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('&lt;script&gt;alert(1)&lt;/script&gt;', html)
+        self.assertNotIn('<script>alert(1)</script>', html)
+        self.assertIn('Built a useful service.', html)
+
     def test_contact_statistics_follow_contact_creation_and_deletion(self):
         contact = Contact.objects.create(
             name='Test Contact',

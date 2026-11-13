@@ -157,7 +157,7 @@ class Experience(models.Model):
     title = models.CharField(max_length=200, verbose_name="Job Title")
     company = models.CharField(max_length=200)
     duration = models.CharField(max_length=100, help_text="e.g., Jun 2026 - Present • Ongoing")
-    description = models.TextField(help_text="Supports standard text. Wrap key phrases in strong tags if needed.")
+    description = models.TextField(help_text="Plain text; HTML is escaped when displayed publicly.")
     order = models.PositiveIntegerField(default=0)
 
     class Meta:

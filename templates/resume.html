@@ -30,7 +30,7 @@
         {% for exp in experiences %}
         <article class="timeline-entry" data-reveal>
           <span class="mono timeline-date">{{ exp.duration }}</span>
-          <div><h2>{{ exp.title }}</h2><p class="timeline-org">{{ exp.company }}</p><p class="timeline-description">{{ exp.description|safe }}</p></div>
+          <div><h2>{{ exp.title }}</h2><p class="timeline-org">{{ exp.company }}</p><div class="timeline-description">{{ exp.description|linebreaks }}</div></div>
         </article>
         {% endfor %}
       </div>

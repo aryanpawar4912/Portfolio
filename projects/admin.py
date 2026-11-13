@@ -31,15 +31,15 @@ class ContactAdmin(admin.ModelAdmin):
     
     def status_badge(self, obj):
         if obj.is_read:
-            return format_html('<span style="color: green;">✓ Read</span>')
+            return format_html('<span style="color: {};">{}</span>', 'green', '✓ Read')
         else:
-            return format_html('<span style="color: red;">✗ Unread</span>')
+            return format_html('<span style="color: {};">{}</span>', 'red', '✗ Unread')
     status_badge.short_description = 'Status'
     
     def view_message(self, obj):
         return format_html(
-            '<a class="button" href="#" onclick="alert(\'{}\'); return false;">View</a>',
-            obj.message.replace("'", "\\'").replace("\n", "\\n")
+            '<a class="button" href="{}">View</a>',
+            reverse('admin:projects_contact_change', args=[obj.pk]),
         )
     view_message.short_description = 'Message'
     
