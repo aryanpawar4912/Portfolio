@@ -6,22 +6,23 @@ services:
     startCommand: gunicorn portfolio.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
-        value: "3.14.10"
+        value: "3.10"
       - key: DJANGO_DEBUG
         value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: "aryan-pawar.onrender.com"
+      - key: DJANGO_SUPERUSER_USERNAME
+        value: "aryanpawar4912"
+      - key: DJANGO_SUPERUSER_EMAIL
+        value: "aryanpawar04120@gmail.com"
+      # Secure keys synced via Render Dashboard / environment settings
       - key: DJANGO_SECRET_KEY
         sync: false 
-      - key: DJANGO_ALLOWED_HOSTS
-        value: "portfolio-website.onrender.com"
       - key: DATABASE_URL
         sync: false 
       - key: DJANGO_EMAIL_USER
         sync: false
       - key: DJANGO_EMAIL_PASSWORD
         sync: false 
-      - key: DJANGO_SUPERUSER_USERNAME
-        value: "aryanpawar4912"
-      - key: DJANGO_SUPERUSER_EMAIL
-        value: "aryanpawar04120@gmail.com"
       - key: DJANGO_SUPERUSER_PASSWORD
         sync: false
