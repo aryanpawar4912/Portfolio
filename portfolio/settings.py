@@ -27,6 +27,10 @@ ALLOWED_HOSTS = [
     h.strip() for h in os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',') if h.strip()
 ]
 
+# Automatic fallback for your Render deployment domain
+if not DEBUG:
+    ALLOWED_HOSTS.append('aryan-pawar.onrender.com')
+
 if DEBUG:
     ALLOWED_HOSTS.extend(['localhost', '127.0.0.1'])
 elif not ALLOWED_HOSTS:
